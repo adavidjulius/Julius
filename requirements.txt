@@ -1,5 +1,0 @@
-airllm
-torch
-transformers
-soundfile
-gradio

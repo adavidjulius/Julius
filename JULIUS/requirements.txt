@@ -16,4 +16,3 @@ gTTS
 click
 pyyaml
 jupyter
-EOF

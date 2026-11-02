@@ -1,0 +1,10 @@
+PyQt6==6.11.0
+qasync==0.28.0
+playwright==1.60.0
+rich==15.0.0
+pynput==1.8.2
+PyAutoGUI==0.9.54
+pillow==12.2.0
+sounddevice==0.5.5
+SpeechRecognition==3.17.0
+numpy==2.4.6

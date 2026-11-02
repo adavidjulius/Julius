@@ -1,0 +1,871 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "Julius-SBOM",
+  "documentNamespace": "https://julius.ai/spdx/1793452238",
+  "creationInfo": {
+    "created": "2026-10-31T13:10:38Z",
+    "creators": [
+      "Tool: Julius-SBOM-Generator-1.0"
+    ]
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-aiohappyeyeballs",
+      "name": "aiohappyeyeballs",
+      "versionInfo": "2.7.1",
+      "licenseConcluded": "PSF-2.0",
+      "homepage": "Bug Tracker, https://github.com/aio-libs/aiohappyeyeballs/issues",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-aiohttp",
+      "name": "aiohttp",
+      "versionInfo": "3.14.5",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/aio-libs/aiohttp",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-aiosignal",
+      "name": "aiosignal",
+      "versionInfo": "1.4.0",
+      "licenseConcluded": "Apache 2.0",
+      "homepage": "https://github.com/aio-libs/aiosignal",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-annotated-doc",
+      "name": "annotated-doc",
+      "versionInfo": "0.0.5",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/fastapi/annotated-doc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-annotated-types",
+      "name": "annotated-types",
+      "versionInfo": "0.8.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/annotated-types/annotated-types",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-anyio",
+      "name": "anyio",
+      "versionInfo": "4.15.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://anyio.readthedocs.io/en/latest/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-attrs",
+      "name": "attrs",
+      "versionInfo": "26.1.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://www.attrs.org/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-certifi",
+      "name": "certifi",
+      "versionInfo": "2026.7.22",
+      "licenseConcluded": "MPL-2.0",
+      "homepage": "https://github.com/certifi/python-certifi",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-cffi",
+      "name": "cffi",
+      "versionInfo": "2.1.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://cffi.readthedocs.io/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-charset-normalizer",
+      "name": "charset-normalizer",
+      "versionInfo": "3.5.2",
+      "licenseConcluded": "MIT",
+      "homepage": "Changelog, https://github.com/jawah/charset_normalizer/blob/master/CHANGELOG.md",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-click",
+      "name": "click",
+      "versionInfo": "8.5.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changes, https://click.palletsprojects.com/page/changes/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-cryptography",
+      "name": "cryptography",
+      "versionInfo": "50.0.2",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "changelog, https://cryptography.io/en/latest/changelog/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-ezdxf",
+      "name": "ezdxf",
+      "versionInfo": "1.4.4",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Repository, https://github.com/mozman/ezdxf",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fastapi",
+      "name": "fastapi",
+      "versionInfo": "0.143.2",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/fastapi/fastapi",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-filelock",
+      "name": "filelock",
+      "versionInfo": "4.2.4",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://py-filelock.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fonttools",
+      "name": "fonttools",
+      "versionInfo": "4.67.0",
+      "licenseConcluded": "MIT",
+      "homepage": "http://github.com/fonttools/fonttools",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-frozenlist",
+      "name": "frozenlist",
+      "versionInfo": "1.8.0",
+      "licenseConcluded": "Apache-2.0",
+      "homepage": "https://github.com/aio-libs/frozenlist",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fsspec",
+      "name": "fsspec",
+      "versionInfo": "2026.9.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://filesystem-spec.readthedocs.io/en/latest/changelog.html",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gallery_dl",
+      "name": "gallery_dl",
+      "versionInfo": "1.32.17",
+      "licenseConcluded": "GPL-2.0-only",
+      "homepage": "https://codeberg.org/mikf/gallery-dl",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-greenlet",
+      "name": "greenlet",
+      "versionInfo": "3.5.6",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://greenlet.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-h11",
+      "name": "h11",
+      "versionInfo": "0.16.0",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/python-hyper/h11",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-hf-xet",
+      "name": "hf-xet",
+      "versionInfo": "1.8.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://huggingface.co/docs/hub/xet/index",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-httpcore",
+      "name": "httpcore",
+      "versionInfo": "1.0.9",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://www.encode.io/httpcore",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-httpcore2",
+      "name": "httpcore2",
+      "versionInfo": "2.13.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://github.com/pydantic/httpx2/blob/main/src/httpcore2/CHANGELOG.md",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-httpx",
+      "name": "httpx",
+      "versionInfo": "0.28.1",
+      "licenseConcluded": "BSD-3-Clause",
+      "homepage": "Changelog, https://github.com/encode/httpx/blob/master/CHANGELOG.md",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-httpx2",
+      "name": "httpx2",
+      "versionInfo": "2.13.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://github.com/pydantic/httpx2/blob/main/src/httpx2/CHANGELOG.md",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-huggingface_hub",
+      "name": "huggingface_hub",
+      "versionInfo": "2.4.0",
+      "licenseConcluded": "Apache-2.0",
+      "homepage": "https://github.com/huggingface/huggingface_hub",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-idna",
+      "name": "idna",
+      "versionInfo": "3.20",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://github.com/kjd/idna/blob/master/HISTORY.md",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-ImageIO",
+      "name": "ImageIO",
+      "versionInfo": "2.38.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "homepage, https://github.com/imageio/imageio",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-iniconfig",
+      "name": "iniconfig",
+      "versionInfo": "2.3.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/pytest-dev/iniconfig",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jaraco.classes",
+      "name": "jaraco.classes",
+      "versionInfo": "3.4.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "https://github.com/jaraco/jaraco.classes",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jaraco.context",
+      "name": "jaraco.context",
+      "versionInfo": "6.1.2",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Source, https://github.com/jaraco/jaraco.context",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jaraco.functools",
+      "name": "jaraco.functools",
+      "versionInfo": "4.6.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Source, https://github.com/jaraco/jaraco.functools",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jiter",
+      "name": "jiter",
+      "versionInfo": "0.17.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "https://github.com/pydantic/jiter/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jsonschema",
+      "name": "jsonschema",
+      "versionInfo": "4.26.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/python-jsonschema/jsonschema",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jsonschema-specifications",
+      "name": "jsonschema-specifications",
+      "versionInfo": "2025.9.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://jsonschema-specifications.readthedocs.io/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-keyring",
+      "name": "keyring",
+      "versionInfo": "25.7.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Source, https://github.com/jaraco/keyring",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-linkify-it-py",
+      "name": "linkify-it-py",
+      "versionInfo": "2.2.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://github.com/tsutsu3/linkify-it-py",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-markdown-it-py",
+      "name": "markdown-it-py",
+      "versionInfo": "4.2.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://markdown-it-py.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-mcp",
+      "name": "mcp",
+      "versionInfo": "2.3.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://modelcontextprotocol.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-mcp-types",
+      "name": "mcp-types",
+      "versionInfo": "2.3.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://modelcontextprotocol.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-mdit-py-plugins",
+      "name": "mdit-py-plugins",
+      "versionInfo": "0.6.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://mdit-py-plugins.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-mdurl",
+      "name": "mdurl",
+      "versionInfo": "0.1.2",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/executablebooks/mdurl",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-more-itertools",
+      "name": "more-itertools",
+      "versionInfo": "11.2.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://more-itertools.readthedocs.io/en/stable/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-multidict",
+      "name": "multidict",
+      "versionInfo": "7.1.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/aio-libs/multidict",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-numpy",
+      "name": "numpy",
+      "versionInfo": "2.5.4",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "homepage, https://numpy.org",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-openai",
+      "name": "openai",
+      "versionInfo": "3.31.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/openai/openai-python",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-opentelemetry-api",
+      "name": "opentelemetry-api",
+      "versionInfo": "1.45.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/open-telemetry/opentelemetry-python/tree/main/opentelemetry-api",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-packaging",
+      "name": "packaging",
+      "versionInfo": "26.3",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://packaging.pypa.io/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pillow",
+      "name": "pillow",
+      "versionInfo": "12.3.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip",
+      "name": "pip",
+      "versionInfo": "26.2.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://pip.pypa.io/en/stable/news/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-platformdirs",
+      "name": "platformdirs",
+      "versionInfo": "4.13.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://platformdirs.readthedocs.io/en/latest/changelog.html",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-playwright",
+      "name": "playwright",
+      "versionInfo": "1.63.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "homepage, https://github.com/Microsoft/playwright-python",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pluggy",
+      "name": "pluggy",
+      "versionInfo": "1.6.0",
+      "licenseConcluded": "MIT",
+      "homepage": "",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-propcache",
+      "name": "propcache",
+      "versionInfo": "0.5.4",
+      "licenseConcluded": "Apache-2.0",
+      "homepage": "https://github.com/aio-libs/propcache",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pycapcut",
+      "name": "pycapcut",
+      "versionInfo": "0.0.4",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "https://github.com/GuanYixuan/pycapcut",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pycparser",
+      "name": "pycparser",
+      "versionInfo": "3.11",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/eliben/pycparser",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pydantic",
+      "name": "pydantic",
+      "versionInfo": "2.14.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/pydantic/pydantic",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pydantic-settings",
+      "name": "pydantic-settings",
+      "versionInfo": "2.16.2",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/pydantic/pydantic-settings",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pydantic_core",
+      "name": "pydantic_core",
+      "versionInfo": "2.50.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "https://github.com/pydantic/pydantic",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyee",
+      "name": "pyee",
+      "versionInfo": "13.0.1",
+      "licenseConcluded": "MIT",
+      "homepage": "Repository, https://github.com/jfhbrook/pyee",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Pygments",
+      "name": "Pygments",
+      "versionInfo": "2.21.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://pygments.org",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-PyJWT",
+      "name": "PyJWT",
+      "versionInfo": "2.15.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/jpadilla/pyjwt",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pymediainfo",
+      "name": "pymediainfo",
+      "versionInfo": "7.0.1",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://github.com/sbraz/pymediainfo",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pynput",
+      "name": "pynput",
+      "versionInfo": "1.8.2",
+      "licenseConcluded": "LGPLv3",
+      "homepage": "https://github.com/moses-palmer/pynput",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyobjc-core",
+      "name": "pyobjc-core",
+      "versionInfo": "12.2.2",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/ronaldoussoren/pyobjc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyobjc-framework-ApplicationServices",
+      "name": "pyobjc-framework-ApplicationServices",
+      "versionInfo": "12.2.2",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/ronaldoussoren/pyobjc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyobjc-framework-Cocoa",
+      "name": "pyobjc-framework-Cocoa",
+      "versionInfo": "12.2.2",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/ronaldoussoren/pyobjc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyobjc-framework-CoreText",
+      "name": "pyobjc-framework-CoreText",
+      "versionInfo": "12.2.2",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/ronaldoussoren/pyobjc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyobjc-framework-Quartz",
+      "name": "pyobjc-framework-Quartz",
+      "versionInfo": "12.2.2",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/ronaldoussoren/pyobjc",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyparsing",
+      "name": "pyparsing",
+      "versionInfo": "3.3.3",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pypdf",
+      "name": "pypdf",
+      "versionInfo": "6.20.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Bug Reports, https://github.com/py-pdf/pypdf/issues",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pyperclip",
+      "name": "pyperclip",
+      "versionInfo": "1.11.0",
+      "licenseConcluded": "BSD",
+      "homepage": "Homepage, https://github.com/asweigart/pyperclip",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pytest",
+      "name": "pytest",
+      "versionInfo": "9.1.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://docs.pytest.org/en/stable/changelog.html",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pytest-asyncio",
+      "name": "pytest-asyncio",
+      "versionInfo": "1.4.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Bug Tracker, https://github.com/pytest-dev/pytest-asyncio/issues",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-python-dotenv",
+      "name": "python-dotenv",
+      "versionInfo": "1.2.4",
+      "licenseConcluded": "BSD-3-Clause",
+      "homepage": "Source, https://github.com/theskumar/python-dotenv",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-python-multipart",
+      "name": "python-multipart",
+      "versionInfo": "0.0.32",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/Kludex/python-multipart",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-PyYAML",
+      "name": "PyYAML",
+      "versionInfo": "6.0.3",
+      "licenseConcluded": "MIT",
+      "homepage": "https://pyyaml.org/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-redis",
+      "name": "redis",
+      "versionInfo": "8.1.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changes, https://github.com/redis/redis-py/releases",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-referencing",
+      "name": "referencing",
+      "versionInfo": "0.37.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://referencing.readthedocs.io/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-regex",
+      "name": "regex",
+      "versionInfo": "2026.9.29",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/mrabarnett/mrab-regex",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-reportlab",
+      "name": "reportlab",
+      "versionInfo": "5.0.1",
+      "licenseConcluded": "BSD license (see license.txt for details), Copyright (c) 2000-2025, ReportLab Inc.",
+      "homepage": "https://www.reportlab.com/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-requests",
+      "name": "requests",
+      "versionInfo": "2.34.2",
+      "licenseConcluded": "Apache-2.0",
+      "homepage": "Documentation, https://requests.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-rich",
+      "name": "rich",
+      "versionInfo": "15.0.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Documentation, https://rich.readthedocs.io/en/latest/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-rpds-py",
+      "name": "rpds-py",
+      "versionInfo": "2026.9.1",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://rpds.readthedocs.io/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-safetensors",
+      "name": "safetensors",
+      "versionInfo": "0.8.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/huggingface/safetensors",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-shellingham",
+      "name": "shellingham",
+      "versionInfo": "1.5.4",
+      "licenseConcluded": "ISC License",
+      "homepage": "https://github.com/sarugaku/shellingham",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-six",
+      "name": "six",
+      "versionInfo": "1.17.0",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/benjaminp/six",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-sniffio",
+      "name": "sniffio",
+      "versionInfo": "1.3.1",
+      "licenseConcluded": "MIT OR Apache-2.0",
+      "homepage": "Homepage, https://github.com/python-trio/sniffio",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-spotipy",
+      "name": "spotipy",
+      "versionInfo": "2.26.0",
+      "licenseConcluded": "MIT",
+      "homepage": "https://spotipy.readthedocs.org/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-sse-starlette",
+      "name": "sse-starlette",
+      "versionInfo": "3.5.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/sysid/sse-starlette",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-starlette",
+      "name": "starlette",
+      "versionInfo": "1.8.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/Kludex/starlette",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-textual",
+      "name": "textual",
+      "versionInfo": "8.2.8",
+      "licenseConcluded": "MIT",
+      "homepage": "Bug Tracker, https://github.com/Textualize/textual/issues",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tokenizers",
+      "name": "tokenizers",
+      "versionInfo": "0.23.3",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/huggingface/tokenizers",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tqdm",
+      "name": "tqdm",
+      "versionInfo": "4.70.1",
+      "licenseConcluded": "MPL-2.0 AND MIT",
+      "homepage": "homepage, https://tqdm.github.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-transformers",
+      "name": "transformers",
+      "versionInfo": "5.22.1",
+      "licenseConcluded": "Apache 2.0 License",
+      "homepage": "https://github.com/huggingface/transformers",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tree-sitter",
+      "name": "tree-sitter",
+      "versionInfo": "0.26.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://tree-sitter.github.io/tree-sitter/",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tree-sitter-javascript",
+      "name": "tree-sitter-javascript",
+      "versionInfo": "0.25.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://github.com/tree-sitter/tree-sitter-javascript",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tree-sitter-python",
+      "name": "tree-sitter-python",
+      "versionInfo": "0.25.0",
+      "licenseConcluded": "MIT",
+      "homepage": "Homepage, https://github.com/tree-sitter/tree-sitter-python",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-truststore",
+      "name": "truststore",
+      "versionInfo": "0.10.5",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Documentation, https://truststore.readthedocs.io",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-typer",
+      "name": "typer",
+      "versionInfo": "0.27.3",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/fastapi/typer",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-typing-inspection",
+      "name": "typing-inspection",
+      "versionInfo": "0.4.4",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Homepage, https://github.com/pydantic/typing-inspection",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-typing_extensions",
+      "name": "typing_extensions",
+      "versionInfo": "4.16.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Bug Tracker, https://github.com/python/typing_extensions/issues",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-urllib3",
+      "name": "urllib3",
+      "versionInfo": "2.8.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://github.com/urllib3/urllib3/blob/main/CHANGES.rst",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-uvicorn",
+      "name": "uvicorn",
+      "versionInfo": "0.54.0",
+      "licenseConcluded": "UNKNOWN",
+      "homepage": "Changelog, https://uvicorn.dev/release-notes",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-watchfiles",
+      "name": "watchfiles",
+      "versionInfo": "1.3.0",
+      "licenseConcluded": "MIT",
+      "homepage": "https://github.com/samuelcolvin/watchfiles",
+      "downloadLocation": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-yarl",
+      "name": "yarl",
+      "versionInfo": "1.25.1",
+      "licenseConcluded": "Apache-2.0",
+      "homepage": "https://github.com/aio-libs/yarl",
+      "downloadLocation": "NOASSERTION"
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+/* ==========================================================================
+   Julius Design System & Prerequisites Base
+   Tokens synchronized with src/julius/tui_ts/src/theme/tokens.ts
+   ========================================================================== */
+
+/* Font Face: Authentic Julius Custom Handwriting Brand Font */
+@font-face {
+  font-family: 'Julius';
+  src: url('../fonts/Julius-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Julius';
+  src: url('../fonts/Julius-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Julius Dark Base */
+  --bg: #121214;
+  --bg-elevated: #1c1c1e;
+  --bg-raised: #2c2c2e;
+  --bg-canvas: #1F1F1E;
+  --bg-pill: rgba(255, 255, 255, 0.04);
+  --bg-pill-hover: rgba(255, 255, 255, 0.08);
+
+  /* Brand Palette */
+  --brand-gold: #c8b896;      /* Dusty antique parchment */
+  --brand-crimson: #731a1a;   /* Roman Crimson */
+  --brand-obsidian: #1a1a1a;
+
+  /* Primary Forest Green */
+  --green: #006A25;
+  --green-dim: rgba(0, 106, 37, 0.16);
+  --green-glow: rgba(0, 106, 37, 0.35);
+  --green-bright: #30d158;
+
+  /* System Accents */
+  --warning: #ffd60a;
+  --error: #ff453a;
+  --blue: #0a84ff;
+
+  /* Borders */
+  --border-idle: rgba(255, 255, 255, 0.09);
+  --border-focus: #c8b896;
+  --border-active: rgba(0, 106, 37, 0.40);
+
+  /* Text Contrast Hierarchy */
+  --text-high: #f5f5f7;
+  --text-mid: rgba(255, 255, 255, 0.65);
+  --text-dim: #86868b;
+  --text-faint: #48484a;
+
+  /* Typography Stacks */
+  --font-brand: 'Julius', system-ui, sans-serif;
+  --font-primary: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-thinking: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+}
+
+/* ==========================================================================
+   STRICT CURSOR STANDARD (from AGENTS.md)
+   "The cursor must ALWAYS remain a normal arrow pointer (pointer: default).
+   Never allow the cursor to get stuck in an I-beam / text-selection shape
+   across general window surfaces."
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  cursor: default;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--text-high);
+  font-family: var(--font-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, textarea {
+  cursor: text;
+}
+
+button, a, summary, [role="button"], select, input[type="range"] {
+  cursor: pointer;
+}
+
+/* Base Canvas Layout */
+#app-root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+}
+
+.prerequisite-ready-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+
+.prerequisite-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-idle);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  max-width: 640px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.prerequisite-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  color: var(--green-bright);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
+}
+
+.prerequisite-title {
+  font-family: var(--font-brand);
+  font-size: 32px;
+  color: var(--brand-gold);
+  margin: 0 0 12px;
+}
+
+.prerequisite-desc {
+  font-size: 14.5px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.prerequisite-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+.prerequisite-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-idle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.prerequisite-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-high);
+  margin-bottom: 4px;
+}
+
+.prerequisite-item-status {
+  font-size: 11px;
+  color: var(--green-bright);
+  font-family: var(--font-mono);
+}

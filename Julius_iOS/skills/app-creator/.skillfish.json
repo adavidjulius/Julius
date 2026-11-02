@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "app-creator",
+  "owner": "antranapp",
+  "repo": "skills",
+  "path": "skills/app-creator",
+  "branch": "main",
+  "sha": "bfd20aa56dfa1125056eef0e7dee3ac73f150fc0",
+  "source": "manual"
+}

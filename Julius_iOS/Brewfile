@@ -1,0 +1,18 @@
+# Julius iOS — Homebrew Dependencies
+# Usage: brew bundle --file=Brewfile
+
+# Node.js runtime & npx (Used for skillfish and tool scripts)
+brew "node"
+
+# Code formatting & styling
+brew "swiftformat"
+
+# Build log formatter for Xcode
+brew "xcbeautify"
+
+# Fastlane for automated builds, screenshot capture, and TestFlight deployment
+brew "fastlane"
+
+# Tuist: Scalable project generation and Xcode workspace management
+cask "tuist"
+

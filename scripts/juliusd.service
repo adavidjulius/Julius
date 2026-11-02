@@ -1,0 +1,13 @@
+[Unit]
+Description=Julius Agent Background Daemon
+After=network.target
+
+[Service]
+Type=simple
+Environment=PLAYWRIGHT_BROWSERS_PATH=/opt/julius/.playwright-browsers
+ExecStart=/opt/julius/.venv/bin/python3 /opt/julius/juliusd.py /opt/julius
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

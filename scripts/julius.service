@@ -1,0 +1,21 @@
+[Unit]
+Description=Julius 24/7 Agent Server & WhatsApp Assistant
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+EnvironmentFile=/home/ct2026503517/.Julius/.env
+Type=simple
+WorkingDirectory=/home/ct2026503517/.Julius
+ExecStart=/home/ct2026503517/.Julius/.venv/bin/python3 -u julius_gui.py --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+KillMode=mixed
+TimeoutStopSec=15
+StandardOutput=append:/home/ct2026503517/.Julius/logs/julius_server.log
+StandardError=append:/home/ct2026503517/.Julius/logs/julius_server.log
+
+[Install]
+WantedBy=default.target

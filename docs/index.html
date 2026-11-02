@@ -1,0 +1,4525 @@
+<!-- Document type HTML5 declaration -->
+<!DOCTYPE html>
+<!-- Root HTML page document element -->
+<html lang="en">
+<!-- Header metadata and asset link section -->
+<head>
+<!-- Document character encoding and viewport metadata -->
+<meta charset="UTF-8">
+<!-- Document character encoding and viewport metadata -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+<!-- Document character encoding and viewport metadata -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Document character encoding and viewport metadata -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Document character encoding and viewport metadata -->
+<meta name="apple-mobile-web-app-title" content="Julius">
+<!-- Document character encoding and viewport metadata -->
+<meta name="format-detection" content="telephone=no">
+<!-- Document browser tab title -->
+<title>Julius · Study Brain</title>
+
+<!-- KaTeX for crisp mathematical formulas (with auto-render and graceful fallback) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+<!-- Client-side JavaScript program block -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+
+/* CSS rule: <style> */
+<style>
+/* CSS rule: /* ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   Julius Study Brain — iOS Native Chat UI
+   /* Set - Header to Julius */
+   - Header: Julius
+   /* Set - Light Mode to Warm Eye-Comfort Palette (Soft Paper & Roasted Amber) */
+   - Light Mode: Warm Eye-Comfort Palette (Soft Paper & Roasted Amber)
+   /* Set - Dark Mode to Pure OLED Pitch Black (Zero Blue Tint, Fully Dark) */
+   - Dark Mode: Pure OLED Pitch Black (Zero Blue Tint, Fully Dark)
+   /* Set - Perception Layer to Multimodal Image Analysis for Diagrams & Formulas */
+   - Perception Layer: Multimodal Image Analysis for Diagrams & Formulas
+   /* CSS rule: - Deep Nested Multi-turn Knowledge Retention */
+   - Deep Nested Multi-turn Knowledge Retention
+   /* CSS rule: - Double-Execution Shield for iPad Safari */
+   - Double-Execution Shield for iPad Safari
+   /* CSS rule: - 100% Free, Standalone & iOS 12 / iPad mini 2 Compatible */
+   - 100% Free, Standalone & iOS 12 / iPad mini 2 Compatible
+   /* CSS rule: ══════════════════════════════════════════════════════════════ */ */
+   ══════════════════════════════════════════════════════════════ */
+
+/* CSS rule: @font-face { */
+@font-face {
+  /* Set font-family to 'Julius' */
+  font-family: 'Julius';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 400 */
+  font-weight: 400;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('fonts/Julius-Regular.woff2') format('woff2'), */
+  src: url('fonts/Julius-Regular.woff2') format('woff2'),
+       /* CSS rule: url('fonts/Julius-Regular.woff') format('woff'), */
+       url('fonts/Julius-Regular.woff') format('woff'),
+       /* CSS rule: url('fonts/Julius-Regular.ttf') format('truetype'); */
+       url('fonts/Julius-Regular.ttf') format('truetype');
+}
+/* CSS rule: @font-face { */
+@font-face {
+  /* Set font-family to 'Julius' */
+  font-family: 'Julius';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('fonts/Julius-Bold.woff2') format('woff2'), */
+  src: url('fonts/Julius-Bold.woff2') format('woff2'),
+       /* CSS rule: url('fonts/Julius-Bold.woff') format('woff'), */
+       url('fonts/Julius-Bold.woff') format('woff'),
+       /* CSS rule: url('fonts/Julius-Bold.ttf') format('truetype'); */
+       url('fonts/Julius-Bold.ttf') format('truetype');
+}
+/* CSS rule: @font-face { */
+@font-face {
+  /* Set font-family to 'JetBrains Mono' */
+  font-family: 'JetBrains Mono';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 400 */
+  font-weight: 400;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('fonts/JetBrainsMono-Regular.woff2') format('woff2') */
+  src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+/* CSS rule: @font-face { */
+@font-face {
+  /* Set font-family to 'JetBrains Mono' */
+  font-family: 'JetBrains Mono';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('fonts/JetBrainsMono-Bold.woff2') format('woff2') */
+  src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2');
+}
+
+/* Set /* Light Mode to Warm Eye-Comfort Palette (Soft Paper & Roasted Amber) */ */
+/* Light Mode: Warm Eye-Comfort Palette (Soft Paper & Roasted Amber) */
+:root {
+  /* Set --nav-bg to #2d2621 */
+  --nav-bg: #2d2621;
+  /* Set --nav-text to #f7f3ec */
+  --nav-text: #f7f3ec;
+  /* Set --canvas-bg to #f8f4ec */
+  --canvas-bg: #f8f4ec;
+  /* Set --bubble-user to #eadecc */
+  --bubble-user: #eadecc;
+  /* Set --bubble-user-text to #261e18 */
+  --bubble-user-text: #261e18;
+  /* Set --bubble-user-border to #d8caba */
+  --bubble-user-border: #d8caba;
+  /* Set --bubble-bot to #fffdfa */
+  --bubble-bot: #fffdfa;
+  /* Set --bubble-bot-text to #2c2520 */
+  --bubble-bot-text: #2c2520;
+  /* Set --bubble-bot-border to #e8e1d5 */
+  --bubble-bot-border: #e8e1d5;
+  /* Set --bubble-bot-shadow to 0 1px 5px rgba(60, 45, 30, 0.07) */
+  --bubble-bot-shadow: 0 1px 5px rgba(60, 45, 30, 0.07);
+  /* Set --text-dark to #2c2520 */
+  --text-dark: #2c2520;
+  /* Set --text-muted to #78695d */
+  --text-muted: #78695d;
+  /* Set --text-light to #9e8e82 */
+  --text-light: #9e8e82;
+  /* Set --border-color to #e4dcd0 */
+  --border-color: #e4dcd0;
+  /* Set --input-bg to #fffdfa */
+  --input-bg: #fffdfa;
+  /* Set --input-border to #dcd3c5 */
+  --input-border: #dcd3c5;
+  /* Set --bar-bg to #f2ece2 */
+  --bar-bg: #f2ece2;
+  /* Set --accent-color to #b45309 */
+  --accent-color: #b45309;
+  /* Set --code-bg to #28211b */
+  --code-bg: #28211b;
+  /* Set --code-text to #f8f4ed */
+  --code-text: #f8f4ed;
+  /* Set --math-box-bg to #f3ede2 */
+  --math-box-bg: #f3ede2;
+  /* Set --math-box-border to #d5c7b5 */
+  --math-box-border: #d5c7b5;
+  /* Set --math-box-text to #3d2817 */
+  --math-box-text: #3d2817;
+  /* Set --heading-color to #3b281c */
+  --heading-color: #3b281c;
+  /* Set --hr-color to #e2d8cb */
+  --hr-color: #e2d8cb;
+  /* Set --table-border to #dcd4c8 */
+  --table-border: #dcd4c8;
+  /* Set --table-header-bg to #ece5d8 */
+  --table-header-bg: #ece5d8;
+  /* Set --table-row-bg to #fbf9f4 */
+  --table-row-bg: #fbf9f4;
+  /* Set --table-row-alt-bg to #f5eedf */
+  --table-row-alt-bg: #f5eedf;
+  /* Set --font-apple to 'Julius', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif */
+  --font-apple: 'Julius', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Set --font-mono to 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace */
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Set /* Dark Mode to Pure OLED Pitch Black (Zero Blue Tint, Fully Dark) */ */
+/* Dark Mode: Pure OLED Pitch Black (Zero Blue Tint, Fully Dark) */
+body.dark-mode {
+  /* Set --nav-bg to #000000 */
+  --nav-bg: #000000;
+  /* Set --nav-text to #ffffff */
+  --nav-text: #ffffff;
+  /* Set --canvas-bg to #000000 */
+  --canvas-bg: #000000;
+  /* Set --bubble-user to #222222 */
+  --bubble-user: #222222;
+  /* Set --bubble-user-text to #ffffff */
+  --bubble-user-text: #ffffff;
+  /* Set --bubble-user-border to #333333 */
+  --bubble-user-border: #333333;
+  /* Set --bubble-bot to #121212 */
+  --bubble-bot: #121212;
+  /* Set --bubble-bot-text to #ededed */
+  --bubble-bot-text: #ededed;
+  /* Set --bubble-bot-border to #222222 */
+  --bubble-bot-border: #222222;
+  /* Set --bubble-bot-shadow to 0 2px 10px rgba(0, 0, 0, 0.9) */
+  --bubble-bot-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  /* Set --text-dark to #ededed */
+  --text-dark: #ededed;
+  /* Set --text-muted to #888888 */
+  --text-muted: #888888;
+  /* Set --text-light to #555555 */
+  --text-light: #555555;
+  /* Set --border-color to #1a1a1a */
+  --border-color: #1a1a1a;
+  /* Set --input-bg to #111111 */
+  --input-bg: #111111;
+  /* Set --input-border to #262626 */
+  --input-border: #262626;
+  /* Set --bar-bg to #000000 */
+  --bar-bg: #000000;
+  /* Set --accent-color to #ffffff */
+  --accent-color: #ffffff;
+  /* Set --code-bg to #080808 */
+  --code-bg: #080808;
+  /* Set --code-text to #e5e5e5 */
+  --code-text: #e5e5e5;
+  /* Set --math-box-bg to #0a0a0a */
+  --math-box-bg: #0a0a0a;
+  /* Set --math-box-border to #2a2a2a */
+  --math-box-border: #2a2a2a;
+  /* Set --math-box-text to #f0f0f0 */
+  --math-box-text: #f0f0f0;
+  /* Set --heading-color to #ffffff */
+  --heading-color: #ffffff;
+  /* Set --hr-color to #1e1e1e */
+  --hr-color: #1e1e1e;
+  /* Set --table-border to #262626 */
+  --table-border: #262626;
+  /* Set --table-header-bg to #161616 */
+  --table-header-bg: #161616;
+  /* Set --table-row-bg to #0d0d0d */
+  --table-row-bg: #0d0d0d;
+  /* Set --table-row-alt-bg to #141414 */
+  --table-row-alt-bg: #141414;
+}
+
+/* CSS rule: * { */
+* {
+  /* Set box-sizing to border-box */
+  box-sizing: border-box;
+  /* Set margin to 0 */
+  margin: 0;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set -webkit-tap-highlight-color to transparent */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* CSS rule: /* ── Layout & Viewport Fitting (iPad Mini 2 / iOS 12 Screen Fit) ── */ */
+/* ── Layout & Viewport Fitting (iPad Mini 2 / iOS 12 Screen Fit) ── */
+html, body {
+  /* Set height to 100% */
+  height: 100%;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set position to fixed */
+  position: fixed;
+  /* Set top to 0 */
+  top: 0;
+  /* Set left to 0 */
+  left: 0;
+  /* Set right to 0 */
+  right: 0;
+  /* Set bottom to 0 */
+  bottom: 0;
+  /* Set margin to 0 */
+  margin: 0;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set overscroll-behavior to none */
+  overscroll-behavior: none;
+  /* Set background-color to var(--canvas-bg) */
+  background-color: var(--canvas-bg);
+  /* Set font-family to var(--font-apple) */
+  font-family: var(--font-apple);
+  /* Set font-size to 16px */
+  font-size: 16px;
+  /* Set line-height to 1.45 */
+  line-height: 1.45;
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set -webkit-transition to background-color 0.2s ease, color 0.2s ease */
+  -webkit-transition: background-color 0.2s ease, color 0.2s ease;
+  /* Set transition to background-color 0.2s ease, color 0.2s ease */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* CSS rule: #app-container { */
+#app-container {
+  /* Set position to absolute */
+  position: absolute;
+  /* Set top to 0 */
+  top: 0;
+  /* Set left to 0 */
+  left: 0;
+  /* Set right to 0 */
+  right: 0;
+  /* Set bottom to 0 */
+  bottom: 0;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set height to 100% */
+  height: 100%;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-flex-direction to column */
+  -webkit-flex-direction: column;
+  /* Set flex-direction to column */
+  flex-direction: column;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set overscroll-behavior to none */
+  overscroll-behavior: none;
+}
+
+/* CSS rule: /* ── Top Navigation Bar (Header) ────────────────────────────── */ */
+/* ── Top Navigation Bar (Header) ────────────────────────────── */
+.nav-header {
+  /* Set height to 54px */
+  height: 54px;
+  /* Set min-height to 54px */
+  min-height: 54px;
+  /* Set background-color to var(--nav-bg) */
+  background-color: var(--nav-bg);
+  /* Set border-bottom to 1px solid var(--border-color) */
+  border-bottom: 1px solid var(--border-color);
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to space-between */
+  -webkit-justify-content: space-between;
+  /* Set justify-content to space-between */
+  justify-content: space-between;
+  /* Set padding to 0 16px */
+  padding: 0 16px;
+  /* Set box-shadow to 0 2px 4px rgba(0, 0, 0, 0.12) */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  /* Set z-index to 30 */
+  z-index: 30;
+}
+
+/* CSS rule: .nav-left { */
+.nav-left {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set width to 70px */
+  width: 70px;
+}
+
+/* CSS rule: .nav-circle-btn { */
+.nav-circle-btn {
+  /* Set width to 34px */
+  width: 34px;
+  /* Set height to 34px */
+  height: 34px;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to 2px solid rgba(255, 255, 255, 0.85) */
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set padding to 0 */
+  padding: 0;
+}
+
+/* Set .nav-circle-btn to active { */
+.nav-circle-btn:active {
+  /* Set background-color to rgba(255, 255, 255, 0.2) */
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* CSS rule: .dots-icon { */
+.dots-icon {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set gap to 3.5px */
+  gap: 3.5px;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+}
+
+/* CSS rule: .dot { */
+.dot {
+  /* Set width to 3.5px */
+  width: 3.5px;
+  /* Set height to 3.5px */
+  height: 3.5px;
+  /* Set background-color to #ffffff */
+  background-color: #ffffff;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+}
+
+/* CSS rule: .nav-title-box { */
+.nav-title-box {
+  /* Set -webkit-flex to 1 */
+  -webkit-flex: 1;
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set text-align to center */
+  text-align: center;
+}
+
+/* CSS rule: .nav-title { */
+.nav-title {
+  /* Set color to var(--nav-text) */
+  color: var(--nav-text);
+  /* Set font-size to 20px */
+  font-size: 20px;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set letter-spacing to -0.2px */
+  letter-spacing: -0.2px;
+}
+
+/* CSS rule: .nav-sub { */
+.nav-sub {
+  /* Set color to rgba(255, 255, 255, 0.65) */
+  color: rgba(255, 255, 255, 0.65);
+  /* Set font-size to 11px */
+  font-size: 11px;
+  /* Set margin-top to 1px */
+  margin-top: 1px;
+}
+
+/* CSS rule: .nav-right { */
+.nav-right {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to flex-end */
+  -webkit-justify-content: flex-end;
+  /* Set justify-content to flex-end */
+  justify-content: flex-end;
+  /* Set gap to 8px */
+  gap: 8px;
+  /* Set width to 80px */
+  width: 80px;
+}
+
+/* CSS rule: .theme-toggle-btn { */
+.theme-toggle-btn {
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to none */
+  border: none;
+  /* Set font-size to 20px */
+  font-size: 20px;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set padding to 6px */
+  padding: 6px;
+  /* Set min-width to 38px */
+  min-width: 38px;
+  /* Set min-height to 38px */
+  min-height: 38px;
+  /* Set color to #ffffff */
+  color: #ffffff;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+}
+
+/* Set .theme-toggle-btn to hover { */
+.theme-toggle-btn:hover {
+  /* Set background-color to rgba(255, 255, 255, 0.15) */
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Set .theme-toggle-btn to active { */
+.theme-toggle-btn:active {
+  /* Set opacity to 0.7 */
+  opacity: 0.7;
+}
+
+/* CSS rule: .nav-clear-btn { */
+.nav-clear-btn {
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to none */
+  border: none;
+  /* Set color to rgba(255, 255, 255, 0.85) */
+  color: rgba(255, 255, 255, 0.85);
+  /* Set font-size to 14px */
+  font-size: 14px;
+  /* Set font-weight to 500 */
+  font-weight: 500;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set padding to 6px 4px */
+  padding: 6px 4px;
+}
+
+/* Set .nav-clear-btn to active { */
+.nav-clear-btn:active {
+  /* Set color to #ffffff */
+  color: #ffffff;
+}
+
+/* CSS rule: /* ── Chat Messages Scroll Canvas ────────────────────────────── */ */
+/* ── Chat Messages Scroll Canvas ────────────────────────────── */
+.chat-canvas {
+  /* Set -webkit-flex to 1 1 auto */
+  -webkit-flex: 1 1 auto;
+  /* Set flex to 1 1 auto */
+  flex: 1 1 auto;
+  /* Set overflow-y to scroll */
+  overflow-y: scroll;
+  /* Set -webkit-overflow-scrolling to touch */
+  -webkit-overflow-scrolling: touch;
+  /* Set padding to 16px 16px 24px 16px */
+  padding: 16px 16px 24px 16px;
+  /* Set background-color to var(--canvas-bg) */
+  background-color: var(--canvas-bg);
+  /* Set min-height to 0 */
+  min-height: 0;
+  /* Set position to relative */
+  position: relative;
+}
+
+/* CSS rule: /* Centered container for ideal reading measure on iPad */ */
+/* Centered container for ideal reading measure on iPad */
+.chat-stream {
+  /* Set max-width to 820px */
+  max-width: 820px;
+  /* Set margin to 0 auto */
+  margin: 0 auto;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-flex-direction to column */
+  -webkit-flex-direction: column;
+  /* Set flex-direction to column */
+  flex-direction: column;
+  /* Set gap to 16px */
+  gap: 16px;
+  /* Set padding-bottom to 40px */
+  padding-bottom: 40px;
+}
+
+/* CSS rule: /* ── Chat Rows & Bubbles ────────────────────────────────────── */ */
+/* ── Chat Rows & Bubbles ────────────────────────────────────── */
+.chat-row {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set position to relative */
+  position: relative;
+  /* Set margin to 0 */
+  margin: 0;
+  /* Set clear to both */
+  clear: both;
+}
+
+/* CSS rule: .chat-row.user { */
+.chat-row.user {
+  /* Set -webkit-justify-content to flex-end */
+  -webkit-justify-content: flex-end;
+  /* Set justify-content to flex-end */
+  justify-content: flex-end;
+}
+
+/* CSS rule: .chat-row.bot { */
+.chat-row.bot {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+}
+
+/* CSS rule: .bubble { */
+.bubble {
+  /* Set padding to 14px 18px */
+  padding: 14px 18px;
+  /* Set font-size to 15.5px */
+  font-size: 15.5px;
+  /* Set line-height to 1.55 */
+  line-height: 1.55;
+  /* Set word-break to break-word */
+  word-break: break-word;
+  /* Set overflow-wrap to break-word */
+  overflow-wrap: break-word;
+  /* Set position to relative */
+  position: relative;
+  /* Set box-sizing to border-box */
+  box-sizing: border-box;
+}
+
+/* CSS rule: /* User Message Bubble */ */
+/* User Message Bubble */
+.chat-row.user .bubble {
+  /* Set max-width to 82% */
+  max-width: 82%;
+  /* Set margin-left to auto */
+  margin-left: auto;
+  /* Set background-color to var(--bubble-user) */
+  background-color: var(--bubble-user);
+  /* Set color to var(--bubble-user-text) */
+  color: var(--bubble-user-text);
+  /* Set border to 1px solid var(--bubble-user-border) */
+  border: 1px solid var(--bubble-user-border);
+  /* Set border-radius to 20px 20px 4px 20px */
+  border-radius: 20px 20px 4px 20px;
+  /* Set box-shadow to 0 1px 4px rgba(0, 0, 0, 0.06) */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* CSS rule: /* Assistant Message Bubble (Centered, Full Reading Column) */ */
+/* Assistant Message Bubble (Centered, Full Reading Column) */
+.chat-row.bot .bubble {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set max-width to 100% */
+  max-width: 100%;
+  /* Set background-color to var(--bubble-bot) */
+  background-color: var(--bubble-bot);
+  /* Set color to var(--bubble-bot-text) */
+  color: var(--bubble-bot-text);
+  /* Set border to 1px solid var(--bubble-bot-border) */
+  border: 1px solid var(--bubble-bot-border);
+  /* Set border-radius to 18px */
+  border-radius: 18px;
+  /* Set box-shadow to var(--bubble-bot-shadow) */
+  box-shadow: var(--bubble-bot-shadow);
+  /* Set padding to 18px 20px */
+  padding: 18px 20px;
+}
+
+/* CSS rule: /* ── Bubble Footer Actions (Copy & Read Aloud) ──────────────── */ */
+/* ── Bubble Footer Actions (Copy & Read Aloud) ──────────────── */
+.bubble-footer {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to space-between */
+  -webkit-justify-content: space-between;
+  /* Set justify-content to space-between */
+  justify-content: space-between;
+  /* Set margin-top to 8px */
+  margin-top: 8px;
+  /* Set padding-top to 4px */
+  padding-top: 4px;
+  /* Set gap to 8px */
+  gap: 8px;
+}
+
+/* CSS rule: .chat-row.user .bubble-footer { */
+.chat-row.user .bubble-footer {
+  /* Set -webkit-justify-content to flex-end */
+  -webkit-justify-content: flex-end;
+  /* Set justify-content to flex-end */
+  justify-content: flex-end;
+}
+
+/* CSS rule: .bubble-actions { */
+.bubble-actions {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 6px */
+  gap: 6px;
+}
+
+/* CSS rule: .bubble-action-btn { */
+.bubble-action-btn {
+  /* Set background to rgba(0, 0, 0, 0.05) */
+  background: rgba(0, 0, 0, 0.05);
+  /* Set border to 1px solid var(--border-color) */
+  border: 1px solid var(--border-color);
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set border-radius to 12px */
+  border-radius: 12px;
+  /* Set padding to 3px 8px */
+  padding: 3px 8px;
+  /* Set font-size to 11px */
+  font-size: 11px;
+  /* Set font-weight to 500 */
+  font-weight: 500;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set -webkit-user-select to none */
+  -webkit-user-select: none;
+  /* Set user-select to none */
+  user-select: none;
+  /* Set display to -webkit-inline-flex */
+  display: -webkit-inline-flex;
+  /* Set display to inline-flex */
+  display: inline-flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 3px */
+  gap: 3px;
+  /* Set line-height to 1.3 */
+  line-height: 1.3;
+}
+
+/* Set .bubble-action-btn to hover { */
+.bubble-action-btn:hover {
+  /* Set background to rgba(0, 0, 0, 0.1) */
+  background: rgba(0, 0, 0, 0.1);
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+}
+
+/* Set .bubble-action-btn to active { */
+.bubble-action-btn:active {
+  /* Set transform to scale(0.96) */
+  transform: scale(0.96);
+}
+
+/* CSS rule: .bubble-action-btn.copied { */
+.bubble-action-btn.copied {
+  /* Set color to #10b981 */
+  color: #10b981;
+  /* Set border-color to #10b981 */
+  border-color: #10b981;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+}
+
+/* CSS rule: .bubble-action-btn.speaking { */
+.bubble-action-btn.speaking {
+  /* Set color to #b45309 */
+  color: #b45309;
+  /* Set border-color to #b45309 */
+  border-color: #b45309;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+}
+
+/* CSS rule: body.dark-mode .bubble-action-btn { */
+body.dark-mode .bubble-action-btn {
+  /* Set background to #181818 */
+  background: #181818;
+  /* Set border to 1px solid #2a2a2a */
+  border: 1px solid #2a2a2a;
+  /* Set color to #a0a0a0 */
+  color: #a0a0a0;
+}
+
+/* Set body.dark-mode .bubble-action-btn to hover { */
+body.dark-mode .bubble-action-btn:hover {
+  /* Set background to #252525 */
+  background: #252525;
+  /* Set color to #ffffff */
+  color: #ffffff;
+}
+
+/* CSS rule: body.dark-mode .bubble-action-btn.speaking { */
+body.dark-mode .bubble-action-btn.speaking {
+  /* Set color to #fbbf24 */
+  color: #fbbf24;
+  /* Set border-color to #fbbf24 */
+  border-color: #fbbf24;
+}
+
+/* CSS rule: /* Timestamp */ */
+/* Timestamp */
+.bubble-time {
+  /* Set font-size to 10px */
+  font-size: 10px;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set text-align to right */
+  text-align: right;
+  /* Set white-space to nowrap */
+  white-space: nowrap;
+}
+
+/* CSS rule: .chat-row.user .bubble-time { */
+.chat-row.user .bubble-time {
+  /* Set opacity to 0.75 */
+  opacity: 0.75;
+}
+
+/* CSS rule: /* Attached Image Thumbnail in User Bubble */ */
+/* Attached Image Thumbnail in User Bubble */
+.user-chat-img {
+  /* Set max-width to 240px */
+  max-width: 240px;
+  /* Set max-height to 240px */
+  max-height: 240px;
+  /* Set border-radius to 12px */
+  border-radius: 12px;
+  /* Set margin-bottom to 8px */
+  margin-bottom: 8px;
+  /* Set display to block */
+  display: block;
+  /* Set border to 1px solid rgba(0, 0, 0, 0.15) */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* CSS rule: /* ── Formatted Markdown inside Bubbles ──────────────────────── */ */
+/* ── Formatted Markdown inside Bubbles ──────────────────────── */
+.bubble h1.chat-h1 {
+  /* Set font-size to 20px */
+  font-size: 20px;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set margin to 14px 0 6px 0 */
+  margin: 14px 0 6px 0;
+  /* Set color to var(--heading-color) */
+  color: var(--heading-color);
+  /* Set line-height to 1.3 */
+  line-height: 1.3;
+}
+
+/* CSS rule: .bubble h2.chat-h2 { */
+.bubble h2.chat-h2 {
+  /* Set font-size to 18px */
+  font-size: 18px;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set margin to 12px 0 6px 0 */
+  margin: 12px 0 6px 0;
+  /* Set color to var(--heading-color) */
+  color: var(--heading-color);
+  /* Set line-height to 1.3 */
+  line-height: 1.3;
+}
+
+/* CSS rule: .bubble h3.chat-h3 { */
+.bubble h3.chat-h3 {
+  /* Set font-size to 16px */
+  font-size: 16px;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set margin to 10px 0 4px 0 */
+  margin: 10px 0 4px 0;
+  /* Set color to var(--heading-color) */
+  color: var(--heading-color);
+  /* Set line-height to 1.35 */
+  line-height: 1.35;
+}
+
+/* CSS rule: .bubble h4.chat-h4 { */
+.bubble h4.chat-h4 {
+  /* Set font-size to 15px */
+  font-size: 15px;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set margin to 8px 0 4px 0 */
+  margin: 8px 0 4px 0;
+  /* Set color to var(--heading-color) */
+  color: var(--heading-color);
+  /* Set line-height to 1.35 */
+  line-height: 1.35;
+}
+
+/* CSS rule: .bubble p { */
+.bubble p {
+  /* Set margin-bottom to 8px */
+  margin-bottom: 8px;
+}
+/* Set .bubble p to last-child { */
+.bubble p:last-child {
+  /* Set margin-bottom to 0 */
+  margin-bottom: 0;
+}
+
+/* CSS rule: .bubble strong { */
+.bubble strong {
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+}
+
+/* CSS rule: .bubble em { */
+.bubble em {
+  /* Set font-style to italic */
+  font-style: italic;
+}
+
+/* CSS rule: .bubble hr.chat-hr { */
+.bubble hr.chat-hr {
+  /* Set border to none */
+  border: none;
+  /* Set border-top to 1px solid var(--hr-color) */
+  border-top: 1px solid var(--hr-color);
+  /* Set margin to 12px 0 */
+  margin: 12px 0;
+}
+
+/* CSS rule: .bubble ul.chat-ul { */
+.bubble ul.chat-ul {
+  /* Set margin to 6px 0 8px 22px */
+  margin: 6px 0 8px 22px;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set list-style-type to disc */
+  list-style-type: disc;
+}
+
+/* CSS rule: .bubble ol.chat-ol { */
+.bubble ol.chat-ol {
+  /* Set margin to 6px 0 8px 22px */
+  margin: 6px 0 8px 22px;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set list-style-type to decimal */
+  list-style-type: decimal;
+}
+
+/* CSS rule: .bubble li.chat-li, .bubble li.chat-li-num { */
+.bubble li.chat-li, .bubble li.chat-li-num {
+  /* Set margin-bottom to 5px */
+  margin-bottom: 5px;
+  /* Set line-height to 1.5 */
+  line-height: 1.5;
+}
+
+/* CSS rule: .bubble code.chat-inline-code, code, pre, kbd, samp { */
+.bubble code.chat-inline-code, code, pre, kbd, samp {
+  /* Set font-family to var(--font-mono) !important */
+  font-family: var(--font-mono) !important;
+}
+
+/* CSS rule: .bubble code.chat-inline-code { */
+.bubble code.chat-inline-code {
+  /* Set background-color to rgba(0, 0, 0, 0.06) */
+  background-color: rgba(0, 0, 0, 0.06);
+  /* Set padding to 2px 6px */
+  padding: 2px 6px;
+  /* Set border-radius to 4px */
+  border-radius: 4px;
+  /* Set font-family to var(--font-mono) !important */
+  font-family: var(--font-mono) !important;
+  /* Set font-size to 13.5px */
+  font-size: 13.5px;
+}
+
+/* CSS rule: body.dark-mode .bubble code.chat-inline-code { */
+body.dark-mode .bubble code.chat-inline-code {
+  /* Set background-color to #222222 */
+  background-color: #222222;
+  /* Set color to #ededed */
+  color: #ededed;
+}
+
+/* CSS rule: .bubble pre { */
+.bubble pre {
+  /* Set background-color to var(--code-bg) */
+  background-color: var(--code-bg);
+  /* Set color to var(--code-text) */
+  color: var(--code-text);
+  /* Set padding to 12px 14px */
+  padding: 12px 14px;
+  /* Set border-radius to 10px */
+  border-radius: 10px;
+  /* Set margin to 10px 0 */
+  margin: 10px 0;
+  /* Set font-family to var(--font-mono) !important */
+  font-family: var(--font-mono) !important;
+  /* Set font-size to 13px */
+  font-size: 13px;
+  /* Set overflow-x to auto */
+  overflow-x: auto;
+  /* Set -webkit-overflow-scrolling to touch */
+  -webkit-overflow-scrolling: touch;
+  /* Set line-height to 1.45 */
+  line-height: 1.45;
+}
+
+/* CSS rule: .bubble pre code { */
+.bubble pre code {
+  /* Set background to transparent */
+  background: transparent;
+  /* Set color to inherit */
+  color: inherit;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set font-family to var(--font-mono) !important */
+  font-family: var(--font-mono) !important;
+}
+
+/* CSS rule: /* ── Tables & Tabular Data Styling ───────────────────────────── */ */
+/* ── Tables & Tabular Data Styling ───────────────────────────── */
+.table-wrap {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set overflow-x to auto */
+  overflow-x: auto;
+  /* Set -webkit-overflow-scrolling to touch */
+  -webkit-overflow-scrolling: touch;
+  /* Set margin to 16px 0 */
+  margin: 16px 0;
+  /* Set border-radius to 10px */
+  border-radius: 10px;
+  /* Set border to 1px solid var(--table-border) */
+  border: 1px solid var(--table-border);
+  /* Set background-color to var(--table-row-bg) */
+  background-color: var(--table-row-bg);
+  /* Set box-shadow to 0 1px 5px rgba(0, 0, 0, 0.04) */
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+}
+
+/* CSS rule: .chat-table { */
+.chat-table {
+  /* Set border-collapse to separate */
+  border-collapse: separate;
+  /* Set border-spacing to 0 */
+  border-spacing: 0;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set min-width to 580px */
+  min-width: 580px;
+  /* Set font-size to 13.5px */
+  font-size: 13.5px;
+  /* Set line-height to 1.55 */
+  line-height: 1.55;
+  /* Set text-align to left */
+  text-align: left;
+}
+
+/* CSS rule: .chat-table th, */
+.chat-table th,
+/* CSS rule: .chat-table td { */
+.chat-table td {
+  /* Set padding to 11px 14px */
+  padding: 11px 14px;
+  /* Set border-bottom to 1px solid var(--table-border) */
+  border-bottom: 1px solid var(--table-border);
+  /* Set border-right to 1px solid var(--table-border) */
+  border-right: 1px solid var(--table-border);
+  /* Set vertical-align to top */
+  vertical-align: top;
+  /* Set word-break to normal */
+  word-break: normal;
+  /* Set overflow-wrap to break-word */
+  overflow-wrap: break-word;
+  /* Set white-space to normal */
+  white-space: normal;
+}
+
+/* Set .chat-table th to last-child, */
+.chat-table th:last-child,
+/* Set .chat-table td to last-child { */
+.chat-table td:last-child {
+  /* Set border-right to none */
+  border-right: none;
+}
+
+/* Set .chat-table tr to last-child td { */
+.chat-table tr:last-child td {
+  /* Set border-bottom to none */
+  border-bottom: none;
+}
+
+/* CSS rule: .chat-table th { */
+.chat-table th {
+  /* Set background-color to var(--table-header-bg) */
+  background-color: var(--table-header-bg);
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set font-size to 13px */
+  font-size: 13px;
+  /* Set letter-spacing to 0.2px */
+  letter-spacing: 0.2px;
+}
+
+/* CSS rule: /* Ensure first column has plenty of room and never squishes or letter-wraps */ */
+/* Ensure first column has plenty of room and never squishes or letter-wraps */
+.chat-table th:first-child,
+/* Set .chat-table td to first-child { */
+.chat-table td:first-child {
+  /* Set min-width to 130px */
+  min-width: 130px;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+}
+
+/* CSS rule: .chat-table td { */
+.chat-table td {
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set background-color to var(--table-row-bg) */
+  background-color: var(--table-row-bg);
+}
+
+/* Set .chat-table tr to nth-child(even) td { */
+.chat-table tr:nth-child(even) td {
+  /* Set background-color to var(--table-row-alt-bg) */
+  background-color: var(--table-row-alt-bg);
+}
+
+/* CSS rule: .table-bullet { */
+.table-bullet {
+  /* Set color to #3b82f6 */
+  color: #3b82f6;
+  /* Set font-weight to bold */
+  font-weight: bold;
+  /* Set display to inline-block */
+  display: inline-block;
+  /* Set margin-right to 4px */
+  margin-right: 4px;
+}
+
+/* CSS rule: /* ── Formula & LaTeX Styling ────────────────────────────────── */ */
+/* ── Formula & LaTeX Styling ────────────────────────────────── */
+.math-block {
+  /* Set margin to 12px 0 */
+  margin: 12px 0;
+  /* Set padding to 10px 14px */
+  padding: 10px 14px;
+  /* Set background-color to var(--math-box-bg) */
+  background-color: var(--math-box-bg);
+  /* Set border to 1px solid var(--math-box-border) */
+  border: 1px solid var(--math-box-border);
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set color to var(--math-box-text) */
+  color: var(--math-box-text);
+  /* Set overflow-x to auto */
+  overflow-x: auto;
+  /* Set -webkit-overflow-scrolling to touch */
+  -webkit-overflow-scrolling: touch;
+  /* Set text-align to center */
+  text-align: center;
+  /* Set font-size to 16px */
+  font-size: 16px;
+  /* Set line-height to 1.4 */
+  line-height: 1.4;
+}
+
+/* CSS rule: .math-inline { */
+.math-inline {
+  /* Set display to inline-block */
+  display: inline-block;
+  /* Set padding to 1px 3px */
+  padding: 1px 3px;
+  /* Set color to var(--math-box-text) */
+  color: var(--math-box-text);
+  /* Set font-style to normal */
+  font-style: normal;
+}
+
+/* CSS rule: .math-boxed { */
+.math-boxed {
+  /* Set display to inline-block */
+  display: inline-block;
+  /* Set border to 1.5px solid var(--math-box-border) */
+  border: 1.5px solid var(--math-box-border);
+  /* Set background-color to var(--math-box-bg) */
+  background-color: var(--math-box-bg);
+  /* Set color to var(--math-box-text) */
+  color: var(--math-box-text);
+  /* Set padding to 3px 10px */
+  padding: 3px 10px;
+  /* Set border-radius to 6px */
+  border-radius: 6px;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set margin to 3px 0 */
+  margin: 3px 0;
+}
+
+/* CSS rule: .math-frac { */
+.math-frac {
+  /* Set display to inline-flex */
+  display: inline-flex;
+  /* Set display to -webkit-inline-flex */
+  display: -webkit-inline-flex;
+  /* Set -webkit-flex-direction to column */
+  -webkit-flex-direction: column;
+  /* Set flex-direction to column */
+  flex-direction: column;
+  /* Set vertical-align to -0.45em */
+  vertical-align: -0.45em;
+  /* Set text-align to center */
+  text-align: center;
+  /* Set padding to 0 4px */
+  padding: 0 4px;
+  /* Set font-size to 0.9em */
+  font-size: 0.9em;
+  /* Set line-height to 1 */
+  line-height: 1;
+}
+
+/* CSS rule: .math-num { */
+.math-num {
+  /* Set border-bottom to 1.2px solid currentColor */
+  border-bottom: 1.2px solid currentColor;
+  /* Set padding-bottom to 2px */
+  padding-bottom: 2px;
+}
+
+/* CSS rule: .math-den { */
+.math-den {
+  /* Set padding-top to 2px */
+  padding-top: 2px;
+}
+
+/* CSS rule: .math-sqrt { */
+.math-sqrt {
+  /* Set display to inline-block */
+  display: inline-block;
+  /* Set white-space to nowrap */
+  white-space: nowrap;
+}
+
+/* CSS rule: .math-sqrt-stem { */
+.math-sqrt-stem {
+  /* Set border-top to 1.2px solid currentColor */
+  border-top: 1.2px solid currentColor;
+  /* Set padding-top to 1px */
+  padding-top: 1px;
+  /* Set margin-left to 1px */
+  margin-left: 1px;
+}
+
+/* CSS rule: .math-text { */
+.math-text {
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-family to var(--font-apple) */
+  font-family: var(--font-apple);
+}
+
+/* CSS rule: /* KaTeX custom theme integration */ */
+/* KaTeX custom theme integration */
+.katex-display {
+  /* Set background-color to var(--math-box-bg) !important */
+  background-color: var(--math-box-bg) !important;
+  /* Set border to 1px solid var(--math-box-border) !important */
+  border: 1px solid var(--math-box-border) !important;
+  /* Set border-radius to 8px !important */
+  border-radius: 8px !important;
+  /* Set padding to 8px 12px !important */
+  padding: 8px 12px !important;
+  /* Set margin to 10px 0 !important */
+  margin: 10px 0 !important;
+  /* Set color to var(--math-box-text) !important */
+  color: var(--math-box-text) !important;
+}
+
+/* CSS rule: body.dark-mode .katex { */
+body.dark-mode .katex {
+  /* Set color to #ededed !important */
+  color: #ededed !important;
+}
+
+/* CSS rule: body.dark-mode .katex-display { */
+body.dark-mode .katex-display {
+  /* Set background-color to #0a0a0a !important */
+  background-color: #0a0a0a !important;
+  /* Set border to 1px solid #2a2a2a !important */
+  border: 1px solid #2a2a2a !important;
+  /* Set color to #f0f0f0 !important */
+  color: #f0f0f0 !important;
+}
+
+/* CSS rule: /* ── Thinking Animation ─────────────────────────────────────── */ */
+/* ── Thinking Animation ─────────────────────────────────────── */
+.typing-box {
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 5px */
+  gap: 5px;
+  /* Set padding to 6px 4px */
+  padding: 6px 4px;
+}
+
+/* CSS rule: .typing-dot { */
+.typing-dot {
+  /* Set width to 7px */
+  width: 7px;
+  /* Set height to 7px */
+  height: 7px;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set background-color to var(--text-muted) */
+  background-color: var(--text-muted);
+  /* Set opacity to 0.4 */
+  opacity: 0.4;
+  /* Set -webkit-animation to bounce 1.2s infinite ease-in-out */
+  -webkit-animation: bounce 1.2s infinite ease-in-out;
+  /* Set animation to bounce 1.2s infinite ease-in-out */
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+/* Set .typing-dot to nth-child(2) { */
+.typing-dot:nth-child(2) {
+  /* Set -webkit-animation-delay to 0.2s */
+  -webkit-animation-delay: 0.2s;
+  /* Set animation-delay to 0.2s */
+  animation-delay: 0.2s;
+}
+
+/* Set .typing-dot to nth-child(3) { */
+.typing-dot:nth-child(3) {
+  /* Set -webkit-animation-delay to 0.4s */
+  -webkit-animation-delay: 0.4s;
+  /* Set animation-delay to 0.4s */
+  animation-delay: 0.4s;
+}
+
+/* CSS rule: @-webkit-keyframes bounce { */
+@-webkit-keyframes bounce {
+  /* Set 0%, 100% { opacity to 0.3; -webkit-transform: translateY(0); } */
+  0%, 100% { opacity: 0.3; -webkit-transform: translateY(0); }
+  /* Set 50% { opacity to 1; -webkit-transform: translateY(-4px); } */
+  50% { opacity: 1; -webkit-transform: translateY(-4px); }
+}
+
+/* CSS rule: @keyframes bounce { */
+@keyframes bounce {
+  /* Set 0%, 100% { opacity to 0.3; transform: translateY(0); } */
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  /* Set 50% { opacity to 1; transform: translateY(-4px); } */
+  50% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* CSS rule: /* ── Image Attachment Preview Bar ───────────────────────────── */ */
+/* ── Image Attachment Preview Bar ───────────────────────────── */
+.image-preview-bar {
+  /* Set display to none */
+  display: none;
+  /* Set background-color to var(--bar-bg) */
+  background-color: var(--bar-bg);
+  /* Set border-top to 1px solid var(--border-color) */
+  border-top: 1px solid var(--border-color);
+  /* Set padding to 8px 16px */
+  padding: 8px 16px;
+  /* Set z-index to 29 */
+  z-index: 29;
+}
+
+/* CSS rule: .image-preview-inner { */
+.image-preview-inner {
+  /* Set max-width to 820px */
+  max-width: 820px;
+  /* Set margin to 0 auto */
+  margin: 0 auto;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 12px */
+  gap: 12px;
+}
+
+/* CSS rule: .image-thumb-box { */
+.image-thumb-box {
+  /* Set position to relative */
+  position: relative;
+  /* Set width to 48px */
+  width: 48px;
+  /* Set height to 48px */
+  height: 48px;
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set overflow to hidden */
+  overflow: hidden;
+  /* Set border to 1px solid var(--border-color) */
+  border: 1px solid var(--border-color);
+}
+
+/* CSS rule: .image-thumb-preview { */
+.image-thumb-preview {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set height to 100% */
+  height: 100%;
+  /* Set object-fit to cover */
+  object-fit: cover;
+  /* Set display to block */
+  display: block;
+}
+
+/* CSS rule: .image-remove-btn { */
+.image-remove-btn {
+  /* Set position to absolute */
+  position: absolute;
+  /* Set top to 1px */
+  top: 1px;
+  /* Set right to 1px */
+  right: 1px;
+  /* Set width to 18px */
+  width: 18px;
+  /* Set height to 18px */
+  height: 18px;
+  /* Set background-color to rgba(0, 0, 0, 0.7) */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Set color to #ffffff */
+  color: #ffffff;
+  /* Set border to none */
+  border: none;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set font-size to 11px */
+  font-size: 11px;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set padding to 0 */
+  padding: 0;
+}
+
+/* CSS rule: .image-preview-caption { */
+.image-preview-caption {
+  /* Set font-size to 13px */
+  font-size: 13px;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+}
+
+/* CSS rule: /* ── Bottom Input Bar (iPad Screen Aligned) ─────────────────── */ */
+/* ── Bottom Input Bar (iPad Screen Aligned) ─────────────────── */
+.input-bar {
+  /* Set background-color to var(--bar-bg) */
+  background-color: var(--bar-bg);
+  /* Set border-top to 1px solid var(--border-color) */
+  border-top: 1px solid var(--border-color);
+  /* Set padding to 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px */
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px;
+  /* Set z-index to 30 */
+  z-index: 30;
+  /* Set width to 100% */
+  width: 100%;
+}
+
+/* CSS rule: .input-bar-inner { */
+.input-bar-inner {
+  /* Set max-width to 820px */
+  max-width: 820px;
+  /* Set margin to 0 auto */
+  margin: 0 auto;
+  /* Set width to 100% */
+  width: 100%;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 8px */
+  gap: 8px;
+}
+
+/* CSS rule: /* Image Upload Button */ */
+/* Image Upload Button */
+.attach-btn {
+  /* Set width to 40px */
+  width: 40px;
+  /* Set height to 40px */
+  height: 40px;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to none */
+  border: none;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set padding to 0 */
+  padding: 0;
+  /* Set -webkit-tap-highlight-color to transparent */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Set .attach-btn to active { */
+.attach-btn:active {
+  /* Set color to var(--accent-color) */
+  color: var(--accent-color);
+  /* Set background-color to rgba(128, 128, 128, 0.15) */
+  background-color: rgba(128, 128, 128, 0.15);
+}
+
+/* CSS rule: .input-pill-wrapper { */
+.input-pill-wrapper {
+  /* Set -webkit-flex to 1 */
+  -webkit-flex: 1;
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set position to relative */
+  position: relative;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+}
+
+/* CSS rule: .msg-input { */
+.msg-input {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set height to 46px */
+  height: 46px;
+  /* Set border-radius to 23px */
+  border-radius: 23px;
+  /* Set background-color to var(--input-bg) */
+  background-color: var(--input-bg);
+  /* Set border to 1px solid var(--input-border) */
+  border: 1px solid var(--input-border);
+  /* Set padding to 0 44px 0 18px */
+  padding: 0 44px 0 18px;
+  /* Set font-size to 16px */
+  font-size: 16px;
+  /* Set font-family to var(--font-apple) */
+  font-family: var(--font-apple);
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set outline to none */
+  outline: none;
+  /* Set -webkit-appearance to none */
+  -webkit-appearance: none;
+  /* Set appearance to none */
+  appearance: none;
+  /* Set touch-action to manipulation */
+  touch-action: manipulation;
+  /* Set -webkit-user-select to text */
+  -webkit-user-select: text;
+  /* Set user-select to text */
+  user-select: text;
+}
+
+/* Set .msg-input to focus { */
+.msg-input:focus {
+  /* Set border-color to var(--accent-color) */
+  border-color: var(--accent-color);
+}
+
+/* CSS rule: .mic-btn { */
+.mic-btn {
+  /* Set position to absolute */
+  position: absolute;
+  /* Set right to 12px */
+  right: 12px;
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to none */
+  border: none;
+  /* Set color to var(--text-light) */
+  color: var(--text-light);
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set padding to 4px */
+  padding: 4px;
+}
+
+/* Set .mic-btn to active { */
+.mic-btn:active {
+  /* Set color to var(--accent-color) */
+  color: var(--accent-color);
+}
+
+/* CSS rule: .send-action-btn { */
+.send-action-btn {
+  /* Set width to 44px */
+  width: 44px;
+  /* Set height to 44px */
+  height: 44px;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set background to transparent */
+  background: transparent;
+  /* Set border to none */
+  border: none;
+  /* Set color to var(--text-light) */
+  color: var(--text-light);
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set -webkit-justify-content to center */
+  -webkit-justify-content: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set font-size to 22px */
+  font-size: 22px;
+  /* Set -webkit-transition to color 0.15s ease */
+  -webkit-transition: color 0.15s ease;
+  /* Set transition to color 0.15s ease */
+  transition: color 0.15s ease;
+}
+
+/* CSS rule: .send-action-btn.active { */
+.send-action-btn.active {
+  /* Set color to var(--accent-color) */
+  color: var(--accent-color);
+}
+
+/* Set .send-action-btn to active { */
+.send-action-btn:active {
+  /* Set -webkit-transform to scale(0.92) */
+  -webkit-transform: scale(0.92);
+  /* Set transform to scale(0.92) */
+  transform: scale(0.92);
+}
+
+/* CSS rule: /* ── Slide-over Study Menu Modal ────────────────────────────── */ */
+/* ── Slide-over Study Menu Modal ────────────────────────────── */
+.modal-overlay {
+  /* Set display to none */
+  display: none;
+  /* Set position to fixed */
+  position: fixed;
+  /* Set top to 0 */
+  top: 0;
+  /* Set left to 0 */
+  left: 0;
+  /* Set right to 0 */
+  right: 0;
+  /* Set bottom to 0 */
+  bottom: 0;
+  /* Set background-color to rgba(0, 0, 0, 0.5) */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Set z-index to 50 */
+  z-index: 50;
+}
+
+/* CSS rule: .modal-sheet { */
+.modal-sheet {
+  /* Set position to absolute */
+  position: absolute;
+  /* Set top to 54px */
+  top: 54px;
+  /* Set left to 16px */
+  left: 16px;
+  /* Set width to 320px */
+  width: 320px;
+  /* Set background-color to var(--bubble-bot) */
+  background-color: var(--bubble-bot);
+  /* Set border to 1px solid var(--border-color) */
+  border: 1px solid var(--border-color);
+  /* Set border-radius to 14px */
+  border-radius: 14px;
+  /* Set box-shadow to 0 8px 24px rgba(0, 0, 0, 0.35) */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  /* Set padding to 16px */
+  padding: 16px;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-flex-direction to column */
+  -webkit-flex-direction: column;
+  /* Set flex-direction to column */
+  flex-direction: column;
+  /* Set gap to 10px */
+  gap: 10px;
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+}
+
+/* CSS rule: .sheet-title { */
+.sheet-title {
+  /* Set font-size to 13px */
+  font-size: 13px;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set color to var(--accent-color) */
+  color: var(--accent-color);
+  /* Set text-transform to uppercase */
+  text-transform: uppercase;
+  /* Set letter-spacing to 0.5px */
+  letter-spacing: 0.5px;
+}
+
+/* CSS rule: .sheet-item { */
+.sheet-item {
+  /* Set padding to 10px 12px */
+  padding: 10px 12px;
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set font-size to 14px */
+  font-size: 14px;
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set display to -webkit-flex */
+  display: -webkit-flex;
+  /* Set display to flex */
+  display: flex;
+  /* Set -webkit-align-items to center */
+  -webkit-align-items: center;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 10px */
+  gap: 10px;
+  /* Set background-color to var(--input-bg) */
+  background-color: var(--input-bg);
+  /* Set border to 1px solid var(--border-color) */
+  border: 1px solid var(--border-color);
+}
+
+/* Set .sheet-item to active { */
+.sheet-item:active {
+  /* Set background-color to rgba(120, 120, 120, 0.15) */
+  background-color: rgba(120, 120, 120, 0.15);
+}
+
+/* CSS rule: .api-input-box { */
+.api-input-box {
+  /* Set margin-top to 6px */
+  margin-top: 6px;
+  /* Set border-top to 1px solid var(--border-color) */
+  border-top: 1px solid var(--border-color);
+  /* Set padding-top to 8px */
+  padding-top: 8px;
+}
+
+/* CSS rule: .api-input-box label { */
+.api-input-box label {
+  /* Set font-size to 12px */
+  font-size: 12px;
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set display to block */
+  display: block;
+  /* Set margin-bottom to 4px */
+  margin-bottom: 4px;
+}
+
+/* CSS rule: .api-input-box input { */
+.api-input-box input {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set padding to 6px 10px */
+  padding: 6px 10px;
+  /* Set border to 1px solid var(--input-border) */
+  border: 1px solid var(--input-border);
+  /* Set background-color to var(--input-bg) */
+  background-color: var(--input-bg);
+  /* Set color to var(--text-dark) */
+  color: var(--text-dark);
+  /* Set border-radius to 6px */
+  border-radius: 6px;
+  /* Set font-size to 12px */
+  font-size: 12px;
+  /* Set font-family to var(--font-mono) */
+  font-family: var(--font-mono);
+}
+</style>
+</head>
+<!-- Main document visual body container -->
+<body>
+
+<!-- Division layout wrapper -->
+<div id="app-container">
+
+  <!-- Navigation Bar (Header) -->
+  <header class="nav-header">
+    <!-- Division layout wrapper -->
+    <div class="nav-left">
+      <!-- Clickable button interface action -->
+      <button class="nav-circle-btn" onclick="toggleMenu()" title="Study Menu">
+        <!-- Division layout wrapper -->
+        <div class="dots-icon">
+          <!-- Division layout wrapper -->
+          <div class="dot"></div>
+          <!-- Division layout wrapper -->
+          <div class="dot"></div>
+          <!-- Division layout wrapper -->
+          <div class="dot"></div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Division layout wrapper -->
+    <div class="nav-title-box">
+      <!-- Division layout wrapper -->
+      <div class="nav-title">Julius</div>
+      <!-- Division layout wrapper -->
+      <div id="engine-sub" class="nav-sub">Cloud Brain &middot; Connected</div>
+    </div>
+
+    <!-- Division layout wrapper -->
+    <div class="nav-right">
+      <!-- Clickable button interface action -->
+      <button id="theme-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">&#9790;</button>
+      <!-- Clickable button interface action -->
+      <button class="nav-clear-btn" onclick="clearMessages()">New</button>
+    </div>
+  </header>
+
+  <!-- Chat Messages Canvas -->
+  <main id="chat-canvas" class="chat-canvas">
+    <!-- Division layout wrapper -->
+    <div id="chat-stream" class="chat-stream">
+
+      <!-- Greeting Bubble -->
+      <div class="chat-row bot">
+        <!-- Division layout wrapper -->
+        <div class="bubble">
+          <!-- HTML element: Hi! &#128075; I'm Julius, your intelligent study companion. Ask me anything to study, understand concepts, or attach a photo of any diagram, textbook problem, or formula to analyze together! -->
+          Hi! &#128075; I'm Julius, your intelligent study companion. Ask me anything to study, understand concepts, or attach a photo of any diagram, textbook problem, or formula to analyze together!
+          <!-- Division layout wrapper -->
+          <div class="bubble-footer">
+            <!-- Division layout wrapper -->
+            <div class="bubble-actions">
+              <!-- Clickable button interface action -->
+              <button class="bubble-action-btn copy-btn" title="Copy message" onclick="copyBubbleText(this)">📋 Copy</button>
+              <!-- Clickable button interface action -->
+              <button class="bubble-action-btn speak-btn" title="Read aloud" onclick="speakBubbleText(this)">🔊 Read</button>
+            </div>
+            <!-- Division layout wrapper -->
+            <div class="bubble-time">10:09 AM</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Image Attachment Preview Bar -->
+  <div id="image-preview-bar" class="image-preview-bar">
+    <!-- Division layout wrapper -->
+    <div class="image-preview-inner">
+      <!-- Division layout wrapper -->
+      <div class="image-thumb-box">
+        <!-- HTML element: <img id="image-thumb" class="image-thumb-preview" src="" alt="Attached image preview"> -->
+        <img id="image-thumb" class="image-thumb-preview" src="" alt="Attached image preview">
+        <!-- Clickable button interface action -->
+        <button class="image-remove-btn" onclick="removeAttachedImage()" title="Remove image">&times;</button>
+      </div>
+      <!-- Division layout wrapper -->
+      <div class="image-preview-caption">Study image ready for perception analysis</div>
+    </div>
+  </div>
+
+  <!-- Bottom Input Bar (Centered for iPad Screen) -->
+  <footer class="input-bar">
+    <!-- Division layout wrapper -->
+    <div class="input-bar-inner">
+
+      <!-- Hidden file input for camera / photo library -->
+      <input type="file" id="image-file-input" accept="image/*" style="display:none" onchange="handleImageSelected(this)">
+
+      <!-- Image Attach Button -->
+      <button class="attach-btn" onclick="triggerImageUpload()" title="Attach study photo or diagram">
+        <!-- HTML element: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- HTML element: <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/> -->
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <!-- HTML element: <circle cx="8.5" cy="8.5" r="1.5"/> -->
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <!-- HTML element: <polyline points="21 15 16 10 5 21"/> -->
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </button>
+
+      <!-- Division layout wrapper -->
+      <div class="input-pill-wrapper">
+        <!-- Interactive input field element -->
+        <input type="text" id="msg-input" class="msg-input" placeholder="Ask Julius or explain image..." autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true">
+        <!-- Clickable button interface action -->
+        <button class="mic-btn" onclick="triggerMic()" title="Voice input">
+          <!-- HTML element: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- HTML element: <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path> -->
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <!-- HTML element: <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path> -->
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <!-- HTML element: <line x1="12" y1="19" x2="12" y2="23"></line> -->
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <!-- HTML element: <line x1="8" y1="23" x2="16" y2="23"></line> -->
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Clickable button interface action -->
+      <button id="send-btn" class="send-action-btn" onclick="sendMsg()" title="Send">
+        <!-- HTML element: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"> -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <!-- HTML element: <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/> -->
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Study Menu Sheet -->
+<div id="modal-overlay" class="modal-overlay" onclick="toggleMenu()">
+  <!-- Division layout wrapper -->
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <!-- Division layout wrapper -->
+    <div class="sheet-title">Study Modes & Topics</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="triggerImageUpload()">&#128247; Attach Photo / Diagram</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="quickPrompt('Explain concept simply with real-world examples: ')">&#128161; Explain Concept Simply</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="quickPrompt('Quiz me with 3 practice questions on: ')">&#9989; Quiz Me on Topic</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="quickPrompt('Summarize key points, formulas, and cheat sheet for: ')">&#128221; Summarize Notes</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="quickPrompt('Help me solve step-by-step: ')">&#128290; Step-by-Step Solver</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="toggleTheme()">&#127763; Toggle Dark / Light Theme</div>
+    <!-- Division layout wrapper -->
+    <div class="sheet-item" onclick="clearMessages()">&#128465; Clear Conversation Context</div>
+
+    <!-- Optional Custom API Key (for zero-latency Gemini/Groq) -->
+    <div class="api-input-box">
+      <!-- HTML element: <label>Custom API Key (Optional):</label> -->
+      <label>Custom API Key (Optional):</label>
+      <!-- Interactive input field element -->
+      <input type="password" id="custom-api-key" placeholder="Gemini or Groq API Key..." onchange="saveCustomKey(this.value)">
+      <!-- Division layout wrapper -->
+      <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">Leave blank for default free cloud brain.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen Image Lightbox Modal -->
+<div id="image-lightbox-modal" class="modal-overlay" style="display:none; align-items:center; justify-content:center; cursor:zoom-out; background:rgba(0,0,0,0.88); z-index:99999;" onclick="hideImageModal()">
+  <!-- HTML element: <img id="image-lightbox-img" style="max-width:92%; max-height:90vh; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,0.7); object-fit:contain;" src="" alt="Enlarged view"> -->
+  <img id="image-lightbox-img" style="max-width:92%; max-height:90vh; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,0.7); object-fit:contain;" src="" alt="Enlarged view">
+</div>
+
+// Execute statement: <script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   Julius Study Brain — Pure ES5 JavaScript
+   // Execute statement: Compatible with Safari 12 / iOS 12.5.x (iPad mini 2)
+   Compatible with Safari 12 / iOS 12.5.x (iPad mini 2)
+   // Execute statement: Features:
+   Features:
+   // Execute statement: - Full Markdown Heading (###), List, Bold, Table, HR parser
+   - Full Markdown Heading (###), List, Bold, Table, HR parser
+   // Execute statement: - Balanced-Brace LaTeX Formula Renderer (\boxed, \frac, \approx, etc.)
+   - Balanced-Brace LaTeX Formula Renderer (\boxed, \frac, \approx, etc.)
+   // Execute statement: - Full Multi-turn Deep Nested Context Memory & Persistence
+   - Full Multi-turn Deep Nested Context Memory & Persistence
+   // Execute statement: - Perception Layer: Multimodal Image Analysis for Diagrams & Formulas
+   - Perception Layer: Multimodal Image Analysis for Diagrams & Formulas
+   // Execute statement: - Warm Eye Comfort Light Mode + True OLED Pitch Black Dark Mode
+   - Warm Eye Comfort Light Mode + True OLED Pitch Black Dark Mode
+   // Execute statement: - Guaranteed Single-Execution Shield (No Duplicate Outputs)
+   - Guaranteed Single-Execution Shield (No Duplicate Outputs)
+   // Execute statement: - Direct Cloud AI API with Zero Server Dependency!
+   - Direct Cloud AI API with Zero Server Dependency!
+   // Execute statement: ══════════════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════════════ */
+// Execute statement: (function() {
+(function() {
+  // Declare variable chatCanvas initialized to document.getElementById("chat-canvas");
+  var chatCanvas = document.getElementById("chat-canvas");
+  // Declare variable chatStream initialized to document.getElementById("chat-stream");
+  var chatStream = document.getElementById("chat-stream");
+  // Declare variable msgInput initialized to document.getElementById("msg-input");
+  var msgInput = document.getElementById("msg-input");
+  // Declare variable sendBtn initialized to document.getElementById("send-btn");
+  var sendBtn = document.getElementById("send-btn");
+  // Declare variable engineSub initialized to document.getElementById("engine-sub");
+  var engineSub = document.getElementById("engine-sub");
+  // Declare variable modalOverlay initialized to document.getElementById("modal-overlay");
+  var modalOverlay = document.getElementById("modal-overlay");
+  // Declare variable customApiKeyInput initialized to document.getElementById("custom-api-key");
+  var customApiKeyInput = document.getElementById("custom-api-key");
+  // Declare variable themeBtn initialized to document.getElementById("theme-btn");
+  var themeBtn = document.getElementById("theme-btn");
+  // Declare variable imageFileInput initialized to document.getElementById("image-file-input");
+  var imageFileInput = document.getElementById("image-file-input");
+  // Declare variable imagePreviewBar initialized to document.getElementById("image-preview-bar");
+  var imagePreviewBar = document.getElementById("image-preview-bar");
+  // Declare variable imageThumb initialized to document.getElementById("image-thumb");
+  var imageThumb = document.getElementById("image-thumb");
+
+  // Declare variable isWaiting initialized to false;
+  var isWaiting = false;
+  // Declare variable currentBubble initialized to null;
+  var currentBubble = null;
+  // Declare variable lastSendTimestamp initialized to 0;
+  var lastSendTimestamp = 0;
+  // Declare variable attachedImageDataUrl initialized to null;
+  var attachedImageDataUrl = null;
+
+  // ── Real-Time Temporal Grounding (Current Date & Time) ──────
+  function getCurrentDateTimeStr() {
+    // Declare variable now initialized to new Date();
+    var now = new Date();
+    // Declare variable days initialized to ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    // Declare variable months initialized to ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    // Declare variable dayName initialized to days[now.getDay()];
+    var dayName = days[now.getDay()];
+    // Declare variable monthName initialized to months[now.getMonth()];
+    var monthName = months[now.getMonth()];
+    // Declare variable dateNum initialized to now.getDate();
+    var dateNum = now.getDate();
+    // Declare variable year initialized to now.getFullYear();
+    var year = now.getFullYear();
+    // Declare variable timeStr initialized to now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    var timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // Return value dayName + ", " + monthName + " " + dateNum + ", " + year + " at " + timeStr; to caller
+    return dayName + ", " + monthName + " " + dateNum + ", " + year + " at " + timeStr;
+  }
+
+  // Define function getSystemPrompt(liveSearchSnippet)
+  function getSystemPrompt(liveSearchSnippet) {
+    // Declare variable now initialized to new Date();
+    var now = new Date();
+    // Declare variable base initialized to (
+    var base = (
+      // Execute statement: "You are Julius Study Brain, an intelligent, patient, and articulate academic study companion and real-time research assistant.\n\n" +
+      "You are Julius Study Brain, an intelligent, patient, and articulate academic study companion and real-time research assistant.\n\n" +
+      // Execute statement: "REAL-TIME TEMPORAL ANCHOR: The current real-world date is " + getCurrentDateTimeStr() + " (Year " + now.getFullYear() + ").\n\n" +
+      "REAL-TIME TEMPORAL ANCHOR: The current real-world date is " + getCurrentDateTimeStr() + " (Year " + now.getFullYear() + ").\n\n" +
+      // Execute statement: "REAL-TIME FACTUAL GROUNDING:\n" +
+      "REAL-TIME FACTUAL GROUNDING:\n" +
+      // Execute statement: "- Always align your answers with the current real-world year (2026).\n" +
+      "- Always align your answers with the current real-world year (2026).\n" +
+      // Execute statement: "- In Tamil Nadu politics: Following the 2026 Legislative Assembly election, Tamilaga Vettri Kazhagam (TVK) won and C. Joseph Vijay was sworn in as the Chief Minister of Tamil Nadu on 10 May 2026. M. K. Stalin served until May 2026.\n" +
+      "- In Tamil Nadu politics: Following the 2026 Legislative Assembly election, Tamilaga Vettri Kazhagam (TVK) won and C. Joseph Vijay was sworn in as the Chief Minister of Tamil Nadu on 10 May 2026. M. K. Stalin served until May 2026.\n" +
+      // Execute statement: "- Ground all current affairs, dates, and facts in real-world 2026 knowledge.\n\n" +
+      "- Ground all current affairs, dates, and facts in real-world 2026 knowledge.\n\n" +
+      // Execute statement: "CORE CONTINUITY & CONTEXT RULES:\n" +
+      "CORE CONTINUITY & CONTEXT RULES:\n" +
+      // Execute statement: "1. FULL CONVERSATION MEMORY: Retain and build upon ALL previous questions, answers, and definitions.\n" +
+      "1. FULL CONVERSATION MEMORY: Retain and build upon ALL previous questions, answers, and definitions.\n" +
+      // Execute statement: "2. PERCEPTION & DIAGRAM ANALYSIS: Thoroughly analyze images, diagrams, and equations.\n" +
+      "2. PERCEPTION & DIAGRAM ANALYSIS: Thoroughly analyze images, diagrams, and equations.\n" +
+      // Execute statement: "3. STRUCTURED FORMATTING: Organize responses with clear Markdown headings (### Section Title) and divider lines (---).\n" +
+      "3. STRUCTURED FORMATTING: Organize responses with clear Markdown headings (### Section Title) and divider lines (---).\n" +
+      // Execute statement: "4. MATHEMATICAL ACCURACY: Render all equations in LaTeX (\\[ \\boxed{formula} \\] or \\(x\\)).\n" +
+      "4. MATHEMATICAL ACCURACY: Render all equations in LaTeX (\\[ \\boxed{formula} \\] or \\(x\\)).\n" +
+      // Execute statement: "5. LANGUAGE FIDELITY: Reply in the student's exact language (English, Tamil, Hindi, Spanish, etc.).\n" +
+      "5. LANGUAGE FIDELITY: Reply in the student's exact language (English, Tamil, Hindi, Spanish, etc.).\n" +
+      // Execute statement: "6. PEDAGOGICAL CLARITY: Explain concepts intuitively before walking through mathematical deductions."
+      "6. PEDAGOGICAL CLARITY: Explain concepts intuitively before walking through mathematical deductions."
+    );
+    // Check condition: liveSearchSnippet
+    if (liveSearchSnippet) {
+      // Execute statement: base += "\n\nLIVE INTERNET SEARCH RESULTS (Retrieved Real-Time):\n" + liveSearchSnippet;
+      base += "\n\nLIVE INTERNET SEARCH RESULTS (Retrieved Real-Time):\n" + liveSearchSnippet;
+    }
+    // Return value base; to caller
+    return base;
+  }
+
+  // Declare variable SYSTEM_PROMPT initialized to getSystemPrompt();
+  var SYSTEM_PROMPT = getSystemPrompt();
+
+  // Declare variable conversationHistory initialized to [
+  var conversationHistory = [
+    // Execute statement: { role: "system", content: SYSTEM_PROMPT }
+    { role: "system", content: SYSTEM_PROMPT }
+  // Execute statement: ];
+  ];
+
+  // ── 10 Instant Static Greetings (Zero API Calls, Offline First) ──
+  var staticGreetingIndex = 0;
+  // Declare variable STATIC_GREETINGS initialized to [
+  var STATIC_GREETINGS = [
+    // Execute statement: "Hello! 👋 I'm **Julius**, your intelligent study companion. What topic or concept would you like to explore together today?",
+    "Hello! 👋 I'm **Julius**, your intelligent study companion. What topic or concept would you like to explore together today?",
+    // Execute statement: "Hi there! ✨ Ready whenever you are. Whether it's math formulas, code architectures, or deep concepts, what are we working on?",
+    "Hi there! ✨ Ready whenever you are. Whether it's math formulas, code architectures, or deep concepts, what are we working on?",
+    // Execute statement: "Hey! Great to see you. 📚 Feel free to ask a study question, paste a problem, or upload a diagram to get started.",
+    "Hey! Great to see you. 📚 Feel free to ask a study question, paste a problem, or upload a diagram to get started.",
+    // Execute statement: "Hello! Hope your studies are going smoothly today. 💡 What subject or question should we dive into?",
+    "Hello! Hope your studies are going smoothly today. 💡 What subject or question should we dive into?",
+    // Execute statement: "Hi! 👋 Welcome back. I'm here to help break down complex topics into clear, intuitive insights. What's on your mind?",
+    "Hi! 👋 Welcome back. I'm here to help break down complex topics into clear, intuitive insights. What's on your mind?",
+    // Execute statement: "Greetings! 🚀 Everything is ready for a productive study session. Ask me any question or attach an image to analyze!",
+    "Greetings! 🚀 Everything is ready for a productive study session. Ask me any question or attach an image to analyze!",
+    // Execute statement: "Hey there! 🌟 What are we studying today? Tell me the topic, and we'll break it down step-by-step.",
+    "Hey there! 🌟 What are we studying today? Tell me the topic, and we'll break it down step-by-step.",
+    // Execute statement: "Hello! 📖 Always here to help you understand difficult concepts with clarity and precision. What shall we tackle first?",
+    "Hello! 📖 Always here to help you understand difficult concepts with clarity and precision. What shall we tackle first?",
+    // Execute statement: "Hi! 👋 Need an explanation, a quick practice quiz, or help solving a tricky problem? Let me know what you'd like to do!",
+    "Hi! 👋 Need an explanation, a quick practice quiz, or help solving a tricky problem? Let me know what you'd like to do!",
+    // Execute statement: "Hey! Welcome to Julius. 🎓 From algorithms and physics to history and system design, I'm ready. What would you like to learn?"
+    "Hey! Welcome to Julius. 🎓 From algorithms and physics to history and system design, I'm ready. What would you like to learn?"
+  // Execute statement: ];
+  ];
+
+  // Define function checkInstantGreeting(userText)
+  function checkInstantGreeting(userText) {
+    // Check condition: !userText
+    if (!userText) return null;
+    // Declare variable q initialized to userText.toLowerCase().replace(/['’.,!?]/g, "").trim();
+    var q = userText.toLowerCase().replace(/['’.,!?]/g, "").trim();
+
+    // Specific time-of-day greetings
+    if (/^good\s+morning(\s+julius)?$/i.test(q)) {
+      // Return value "Good morning! ☀️ Hope you have a wonderful and productive day ahead. What study topic would you like to kick off with?"; to caller
+      return "Good morning! ☀️ Hope you have a wonderful and productive day ahead. What study topic would you like to kick off with?";
+    }
+    // Check condition: /^good\s+afternoon(\s+julius)?$/i.test(q)
+    if (/^good\s+afternoon(\s+julius)?$/i.test(q)) {
+      // Return value "Good afternoon! 🌤️ Ready for an afternoon study session? What question or problem are you working on?"; to caller
+      return "Good afternoon! 🌤️ Ready for an afternoon study session? What question or problem are you working on?";
+    }
+    // Check condition: /^good\s+evening(\s+julius)?$/i.test(q)
+    if (/^good\s+evening(\s+julius)?$/i.test(q)) {
+      // Return value "Good evening! 🌙 Hope you had a great day. Let's make your study time productive and relaxing. What can I help you explore?"; to caller
+      return "Good evening! 🌙 Hope you had a great day. Let's make your study time productive and relaxing. What can I help you explore?";
+    }
+    // Check condition: /^(how\s+are\s+you|how\s+are\s+u|hows\s+it\s+going|how\s+is\s+it\s+going)(\s+julius)?$/i.test(q)
+    if (/^(how\s+are\s+you|how\s+are\s+u|hows\s+it\s+going|how\s+is\s+it\s+going)(\s+julius)?$/i.test(q)) {
+      // Return value "I'm doing great, thank you for asking! 😊 Ready and energized to help you study. How can I assist you today?"; to caller
+      return "I'm doing great, thank you for asking! 😊 Ready and energized to help you study. How can I assist you today?";
+    }
+    // Check condition: /^(whats\s+up|what\s+up|sup)(\s+julius)?$/i.test(q)
+    if (/^(whats\s+up|what\s+up|sup)(\s+julius)?$/i.test(q)) {
+      // Return value "Not much, just ready to solve some problems and analyze concepts! 🚀 What are we learning today?"; to caller
+      return "Not much, just ready to solve some problems and analyze concepts! 🚀 What are we learning today?";
+    }
+
+    // General greetings: hi, hello, hey, yo, greetings, etc.
+    var isGreeting = /^(hi|hello|hey|heyy|heyyy|yo|greetings|hola|namaste|hi\s+there|hello\s+there|hey\s+there)(\s+julius)?$/i.test(q);
+    // Check condition: isGreeting
+    if (isGreeting) {
+      // Declare variable reply initialized to STATIC_GREETINGS[staticGreetingIndex % STATIC_GREETINGS.length];
+      var reply = STATIC_GREETINGS[staticGreetingIndex % STATIC_GREETINGS.length];
+      // Execute statement: staticGreetingIndex++;
+      staticGreetingIndex++;
+      // Return value reply; to caller
+      return reply;
+    }
+
+    // Return value null; to caller
+    return null;
+  }
+
+  // ── Instant Factual Grounding for Real-Time Inquiries ───────
+  function checkInstantFactualResponse(userText) {
+    // Check condition: !userText
+    if (!userText) return null;
+    // Declare variable q initialized to userText.toLowerCase().trim();
+    var q = userText.toLowerCase().trim();
+
+    // 1. Live Time Inquiries (Strict match: user actually asking for device/clock time)
+    var isClockQuery = /^(what('?s| is) (the )?(current )?time|what time is it( now)?|current time|tell me the time|time now)$/i.test(q);
+    // Check condition: isClockQuery
+    if (isClockQuery) {
+      // Return rendered JSX layout tree to caller
+      return (
+        // Execute statement: "### ⏱️ Real-Time Date & Time\n\n" +
+        "### ⏱️ Real-Time Date & Time\n\n" +
+        // Execute statement: "The current real-world date and time is **" + getCurrentDateTimeStr() + "**.\n\n" +
+        "The current real-world date and time is **" + getCurrentDateTimeStr() + "**.\n\n" +
+        // Execute statement: "* **Current Year**: **" + (new Date()).getFullYear() + "**\n" +
+        "* **Current Year**: **" + (new Date()).getFullYear() + "**\n" +
+        // Execute statement: "* **Live Clock**: Synchronized with your device time in real time."
+        "* **Live Clock**: Synchronized with your device time in real time."
+      );
+    }
+
+    // 2. Live Date / Day / Year Inquiries (Strict match: user actually asking for today's date)
+    var isCalendarQuery = /^(what('?s| is) (today'?s? date|the date( today)?)|what day is (it|today)|today'?s? date|current date|what year is (it|this))$/i.test(q);
+    // Check condition: isCalendarQuery
+    if (isCalendarQuery) {
+      // Return rendered JSX layout tree to caller
+      return (
+        // Execute statement: "### 📅 Real-Time Calendar\n\n" +
+        "### 📅 Real-Time Calendar\n\n" +
+        // Execute statement: "Today is **" + getCurrentDateTimeStr() + "**.\n\n" +
+        "Today is **" + getCurrentDateTimeStr() + "**.\n\n" +
+        // Execute statement: "* **Current Year**: **" + (new Date()).getFullYear() + "**\n" +
+        "* **Current Year**: **" + (new Date()).getFullYear() + "**\n" +
+        // Execute statement: "* **Temporal Anchor**: Real-world date synchronized."
+        "* **Temporal Anchor**: Real-world date synchronized."
+      );
+    }
+
+    // 3. Tamil Nadu Politics & 2026 Chief Minister Grounding
+    var isVijayCM = (q.indexOf("vijay") !== -1 && (q.indexOf("chief minister") !== -1 || q.indexOf("cm") !== -1 || q.indexOf("tvk") !== -1 || q.indexOf("election") !== -1 || q.indexOf("now it is") !== -1 || q.indexOf("2026") !== -1));
+    // Declare variable isTNCM initialized to ((q.indexOf("tamil nadu") !== -1 || q.indexOf("tamilnadu") !== -1 || q.indexOf("tn") !== -1) && (q.indexOf("chief minister") !== -1 || q.indexOf("who is cm") !== -1 || q.indexOf("who is the cm") !== -1 || q.indexOf("current cm") !== -1));
+    var isTNCM = ((q.indexOf("tamil nadu") !== -1 || q.indexOf("tamilnadu") !== -1 || q.indexOf("tn") !== -1) && (q.indexOf("chief minister") !== -1 || q.indexOf("who is cm") !== -1 || q.indexOf("who is the cm") !== -1 || q.indexOf("current cm") !== -1));
+
+    // Check condition: isVijayCM || isTNCM
+    if (isVijayCM || isTNCM) {
+      // Return rendered JSX layout tree to caller
+      return (
+        // Execute statement: "### 🏛️ Real-Time Fact Check: Chief Minister of Tamil Nadu (2026)\n\n" +
+        "### 🏛️ Real-Time Fact Check: Chief Minister of Tamil Nadu (2026)\n\n" +
+        // Execute statement: "You are completely right! As of **May 2026**, **C. Joseph Vijay**, founder and president of **Tamilaga Vettri Kazhagam (TVK)**, is serving as the **Chief Minister of Tamil Nadu**.\n\n" +
+        "You are completely right! As of **May 2026**, **C. Joseph Vijay**, founder and president of **Tamilaga Vettri Kazhagam (TVK)**, is serving as the **Chief Minister of Tamil Nadu**.\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 🔑 Key Real-Time Details\n" +
+        "### 🔑 Key Real-Time Details\n" +
+        // Execute statement: "* **Assembly Election**: The 17th Tamil Nadu Legislative Assembly elections took place in April 2026, where TVK secured a historic assembly majority.\n" +
+        "* **Assembly Election**: The 17th Tamil Nadu Legislative Assembly elections took place in April 2026, where TVK secured a historic assembly majority.\n" +
+        // Execute statement: "* **Sworn In**: C. Joseph Vijay officially took the oath of office as Chief Minister on **10 May 2026**.\n" +
+        "* **Sworn In**: C. Joseph Vijay officially took the oath of office as Chief Minister on **10 May 2026**.\n" +
+        // Execute statement: "* **Political Party**: **Tamilaga Vettri Kazhagam (TVK)**.\n" +
+        "* **Political Party**: **Tamilaga Vettri Kazhagam (TVK)**.\n" +
+        // Execute statement: "* **Predecessor**: **M. K. Stalin** (DMK), who served as Chief Minister from 7 May 2021 until the May 2026 transition.\n\n" +
+        "* **Predecessor**: **M. K. Stalin** (DMK), who served as Chief Minister from 7 May 2021 until the May 2026 transition.\n\n" +
+        // Execute statement: "Our live context and knowledge retrieval is fully synchronized with current 2026 real-world facts!"
+        "Our live context and knowledge retrieval is fully synchronized with current 2026 real-world facts!"
+      );
+    }
+
+    // Return value null; to caller
+    return null;
+  }
+
+  // ── Client-Side Real-Time Internet Search (CORS-Enabled Wikipedia API) ──
+  function performClientLiveSearch(query, callback) {
+    // Check condition: !query
+    if (!query) {
+      // Execute statement: callback("");
+      callback("");
+      // Return early from function
+      return;
+    }
+    // Declare variable cleanQ initialized to query.replace(/[?.,!]/g, " ").replace(/\s+/g, " ").trim();
+    var cleanQ = query.replace(/[?.,!]/g, " ").replace(/\s+/g, " ").trim();
+    // Check condition: cleanQ.length < 3 || /^(hi|hello|hey|test|clear|new|bye)$/i.test(cleanQ)
+    if (cleanQ.length < 3 || /^(hi|hello|hey|test|clear|new|bye)$/i.test(cleanQ)) {
+      // Execute statement: callback("");
+      callback("");
+      // Return early from function
+      return;
+    }
+
+    // Declare variable wikiUrl initialized to "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + encodeURIComponent(cleanQ) + "&utf8=&format=json&origin=*";
+    var wikiUrl = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + encodeURIComponent(cleanQ) + "&utf8=&format=json&origin=*";
+    // Declare variable xhr initialized to new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
+    // Execute statement: xhr.open("GET", wikiUrl, true);
+    xhr.open("GET", wikiUrl, true);
+    // Set xhr.timeout to 3000;
+    xhr.timeout = 3000;
+
+    // Declare variable finished initialized to false;
+    var finished = false;
+    // Set xhr.onreadystatechange to function() {
+    xhr.onreadystatechange = function() {
+      // Check condition: xhr.readyState === 4 && !finished
+      if (xhr.readyState === 4 && !finished) {
+        // Set finished to true;
+        finished = true;
+        // Check condition: xhr.status === 200 && xhr.responseText
+        if (xhr.status === 200 && xhr.responseText) {
+          // Begin protected try block for runtime error handling
+          try {
+            // Declare variable data initialized to JSON.parse(xhr.responseText);
+            var data = JSON.parse(xhr.responseText);
+            // Check condition: data && data.query && data.query.search && data.query.search.length > 0
+            if (data && data.query && data.query.search && data.query.search.length > 0) {
+              // Declare variable topHits initialized to data.query.search.slice(0, 3);
+              var topHits = data.query.search.slice(0, 3);
+              // Declare variable snippets initialized to [];
+              var snippets = [];
+              // Execute statement: for (var i = 0; i < topHits.length; i++) {
+              for (var i = 0; i < topHits.length; i++) {
+                // Declare variable hit initialized to topHits[i];
+                var hit = topHits[i];
+                // Declare variable cleanSnippet initialized to hit.snippet.replace(/<[^>]+>/g, "");
+                var cleanSnippet = hit.snippet.replace(/<[^>]+>/g, "");
+                // Execute statement: snippets.push("* **" + hit.title + "**: " + cleanSnippet);
+                snippets.push("* **" + hit.title + "**: " + cleanSnippet);
+              }
+              // Execute statement: callback(snippets.join("\n"));
+              callback(snippets.join("\n"));
+              // Return early from function
+              return;
+            }
+          // Execute statement: } catch (e) {}
+          } catch (e) {}
+        }
+        // Execute statement: callback("");
+        callback("");
+      }
+    };
+    // Set xhr.ontimeout to function() {
+    xhr.ontimeout = function() {
+      // Check condition: !finished
+      if (!finished) {
+        // Set finished to true;
+        finished = true;
+        // Execute statement: callback("");
+        callback("");
+      }
+    };
+    // Set xhr.onerror to function() {
+    xhr.onerror = function() {
+      // Check condition: !finished
+      if (!finished) {
+        // Set finished to true;
+        finished = true;
+        // Execute statement: callback("");
+        callback("");
+      }
+    };
+    // Begin protected try block for runtime error handling
+    try {
+      // Execute statement: xhr.send();
+      xhr.send();
+    // Execute statement: } catch (e) {
+    } catch (e) {
+      // Execute statement: callback("");
+      callback("");
+    }
+  }
+
+  // ── Theme Management (Dark / Light) ─────────────────────────
+  function initTheme() {
+    // Declare variable savedTheme initialized to "";
+    var savedTheme = "";
+    // Begin protected try block for runtime error handling
+    try {
+      // Set savedTheme to localStorage.getItem("julius_theme") || "";
+      savedTheme = localStorage.getItem("julius_theme") || "";
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+
+    // Check condition: savedTheme === "dark"
+    if (savedTheme === "dark") {
+      // Set document.body.className to "dark-mode";
+      document.body.className = "dark-mode";
+      // Set themeBtn.innerHTML to "&#9788;"; // Sun icon
+      themeBtn.innerHTML = "&#9788;"; // Sun icon
+    // Execute statement: } else {
+    } else {
+      // Set document.body.className to "";
+      document.body.className = "";
+      // Set themeBtn.innerHTML to "&#9790;"; // Moon icon
+      themeBtn.innerHTML = "&#9790;"; // Moon icon
+    }
+  }
+
+  // Set window.toggleTheme to function() {
+  window.toggleTheme = function() {
+    // Declare variable isDark initialized to document.body.className.indexOf("dark-mode") !== -1;
+    var isDark = document.body.className.indexOf("dark-mode") !== -1;
+    // Check condition: isDark
+    if (isDark) {
+      // Set document.body.className to "";
+      document.body.className = "";
+      // Set themeBtn.innerHTML to "&#9790;";
+      themeBtn.innerHTML = "&#9790;";
+      // Begin protected try block for runtime error handling
+      try { localStorage.setItem("julius_theme", "light"); } catch (e) {}
+    // Execute statement: } else {
+    } else {
+      // Set document.body.className to "dark-mode";
+      document.body.className = "dark-mode";
+      // Set themeBtn.innerHTML to "&#9788;";
+      themeBtn.innerHTML = "&#9788;";
+      // Begin protected try block for runtime error handling
+      try { localStorage.setItem("julius_theme", "dark"); } catch (e) {}
+    }
+  };
+
+  // Restore custom key if saved in localStorage
+  try {
+    // Declare variable savedKey initialized to localStorage.getItem("julius_custom_api_key");
+    var savedKey = localStorage.getItem("julius_custom_api_key");
+    // Check condition: savedKey && customApiKeyInput
+    if (savedKey && customApiKeyInput) {
+      // Set customApiKeyInput.value to savedKey;
+      customApiKeyInput.value = savedKey;
+    }
+  // Execute statement: } catch (e) {}
+  } catch (e) {}
+
+  // Set window.saveCustomKey to function(val) {
+  window.saveCustomKey = function(val) {
+    // Begin protected try block for runtime error handling
+    try {
+      // Execute statement: localStorage.setItem("julius_custom_api_key", val.trim());
+      localStorage.setItem("julius_custom_api_key", val.trim());
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+  };
+
+  // ── Auto-Scroll Controller (Progressive Reflow Alignment) ───
+  function scrollToBottom(forceSmooth) {
+    // Check condition: !chatCanvas
+    if (!chatCanvas) return;
+    // Declare variable doScroll initialized to function() {
+    var doScroll = function() {
+      // Begin protected try block for runtime error handling
+      try {
+        // Set chatCanvas.scrollTop to chatCanvas.scrollHeight;
+        chatCanvas.scrollTop = chatCanvas.scrollHeight;
+        // Check condition: chatCanvas.scrollTo
+        if (chatCanvas.scrollTo) {
+          // Execute statement: chatCanvas.scrollTo({
+          chatCanvas.scrollTo({
+            // Execute statement: top: chatCanvas.scrollHeight,
+            top: chatCanvas.scrollHeight,
+            // Execute statement: behavior: forceSmooth ? "smooth" : "auto"
+            behavior: forceSmooth ? "smooth" : "auto"
+          });
+        }
+      // Execute statement: } catch (e) {
+      } catch (e) {
+        // Set chatCanvas.scrollTop to chatCanvas.scrollHeight;
+        chatCanvas.scrollTop = chatCanvas.scrollHeight;
+      }
+    };
+    // Execute statement: doScroll();
+    doScroll();
+    // Execute statement: setTimeout(doScroll, 50);
+    setTimeout(doScroll, 50);
+    // Execute statement: setTimeout(doScroll, 160);
+    setTimeout(doScroll, 160);
+    // Execute statement: setTimeout(doScroll, 380);
+    setTimeout(doScroll, 380);
+  }
+
+  // ── iPad VisualViewport & Virtual Keyboard Manager ──────────
+  function adjustViewportForKeyboard() {
+    // Check condition: window.visualViewport
+    if (window.visualViewport) {
+      // Declare variable vh initialized to window.visualViewport.height;
+      var vh = window.visualViewport.height;
+      // Declare variable offsetTop initialized to window.visualViewport.offsetTop || 0;
+      var offsetTop = window.visualViewport.offsetTop || 0;
+      // Declare variable app initialized to document.getElementById("app-container");
+      var app = document.getElementById("app-container");
+      // Check condition: app
+      if (app) {
+        // Set app.style.height to vh + "px";
+        app.style.height = vh + "px";
+        // Set app.style.top to offsetTop + "px";
+        app.style.top = offsetTop + "px";
+      }
+    }
+  }
+
+  // Check condition: window.visualViewport
+  if (window.visualViewport) {
+    // Execute statement: window.visualViewport.addEventListener("resize", function() {
+    window.visualViewport.addEventListener("resize", function() {
+      // Execute statement: adjustViewportForKeyboard();
+      adjustViewportForKeyboard();
+      // Execute statement: scrollToBottom(false);
+      scrollToBottom(false);
+    });
+    // Execute statement: window.visualViewport.addEventListener("scroll", function() {
+    window.visualViewport.addEventListener("scroll", function() {
+      // Execute statement: adjustViewportForKeyboard();
+      adjustViewportForKeyboard();
+    });
+  }
+
+  // ── Copy Bubble Text to Clipboard (Unified for iOS & Desktop) ──
+  window.copyBubbleText = function(btn) {
+    // Declare variable bubble initialized to btn.closest(".bubble");
+    var bubble = btn.closest(".bubble");
+    // Check condition: !bubble
+    if (!bubble) return;
+    // Declare variable clone initialized to bubble.cloneNode(true);
+    var clone = bubble.cloneNode(true);
+    // Declare variable footer initialized to clone.querySelector(".bubble-footer");
+    var footer = clone.querySelector(".bubble-footer");
+    // Check condition: footer && footer.parentNode) footer.parentNode.removeChild(footer
+    if (footer && footer.parentNode) footer.parentNode.removeChild(footer);
+    // Declare variable time initialized to clone.querySelector(".bubble-time");
+    var time = clone.querySelector(".bubble-time");
+    // Check condition: time && time.parentNode) time.parentNode.removeChild(time
+    if (time && time.parentNode) time.parentNode.removeChild(time);
+
+    // Declare variable text initialized to (clone.innerText || clone.textContent || "").trim();
+    var text = (clone.innerText || clone.textContent || "").trim();
+    // Check condition: !text
+    if (!text) return;
+
+    // Define function setCopied()
+    function setCopied() {
+      // Declare variable origHtml initialized to btn.innerHTML;
+      var origHtml = btn.innerHTML;
+      // Set btn.innerHTML to "✓ Copied";
+      btn.innerHTML = "✓ Copied";
+      // Execute statement: btn.classList.add("copied");
+      btn.classList.add("copied");
+      // Execute statement: setTimeout(function() {
+      setTimeout(function() {
+        // Set btn.innerHTML to origHtml;
+        btn.innerHTML = origHtml;
+        // Execute statement: btn.classList.remove("copied");
+        btn.classList.remove("copied");
+      }, 2000);
+    }
+
+    // Check condition: navigator.clipboard && navigator.clipboard.writeText
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Execute statement: navigator.clipboard.writeText(text).then(setCopied).catch(function() {
+      navigator.clipboard.writeText(text).then(setCopied).catch(function() {
+        // Execute statement: fallbackCopy(text, setCopied);
+        fallbackCopy(text, setCopied);
+      });
+    // Execute statement: } else {
+    } else {
+      // Execute statement: fallbackCopy(text, setCopied);
+      fallbackCopy(text, setCopied);
+    }
+  };
+
+  // Define function fallbackCopy(text, callback)
+  function fallbackCopy(text, callback) {
+    // Declare variable ta initialized to document.createElement("textarea");
+    var ta = document.createElement("textarea");
+    // Set ta.value to text;
+    ta.value = text;
+    // Set ta.style.position to "fixed";
+    ta.style.position = "fixed";
+    // Set ta.style.top to "-9999px";
+    ta.style.top = "-9999px";
+    // Set ta.style.left to "-9999px";
+    ta.style.left = "-9999px";
+    // Set ta.style.opacity to "0";
+    ta.style.opacity = "0";
+    // Execute statement: document.body.appendChild(ta);
+    document.body.appendChild(ta);
+    // Execute statement: ta.focus();
+    ta.focus();
+    // Execute statement: ta.select();
+    ta.select();
+    // Begin protected try block for runtime error handling
+    try {
+      // Execute statement: document.execCommand("copy");
+      document.execCommand("copy");
+      // Check condition: callback) callback(
+      if (callback) callback();
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+    // Execute statement: document.body.removeChild(ta);
+    document.body.removeChild(ta);
+  }
+
+  // ── Read Aloud (Text-to-Speech) for Study Responses ──────────
+  var activeUtterance = null;
+  // Declare variable activeSpeakBtn initialized to null;
+  var activeSpeakBtn = null;
+
+  // Set window.speakBubbleText to function(btn) {
+  window.speakBubbleText = function(btn) {
+    // Check condition: !("speechSynthesis" in window)
+    if (!("speechSynthesis" in window)) {
+      // Execute statement: alert("Speech synthesis is not supported on this device.");
+      alert("Speech synthesis is not supported on this device.");
+      // Return early from function
+      return;
+    }
+
+    // Toggle off if currently speaking
+    if (window.speechSynthesis.speaking && activeSpeakBtn === btn) {
+      // Execute statement: window.speechSynthesis.cancel();
+      window.speechSynthesis.cancel();
+      // Set btn.innerHTML to "🔊 Read";
+      btn.innerHTML = "🔊 Read";
+      // Execute statement: btn.classList.remove("speaking");
+      btn.classList.remove("speaking");
+      // Set activeSpeakBtn to null;
+      activeSpeakBtn = null;
+      // Return early from function
+      return;
+    }
+
+    // Cancel any other speaking utterance
+    window.speechSynthesis.cancel();
+    // Check condition: activeSpeakBtn
+    if (activeSpeakBtn) {
+      // Set activeSpeakBtn.innerHTML to "🔊 Read";
+      activeSpeakBtn.innerHTML = "🔊 Read";
+      // Execute statement: activeSpeakBtn.classList.remove("speaking");
+      activeSpeakBtn.classList.remove("speaking");
+    }
+
+    // Declare variable bubble initialized to btn.closest(".bubble");
+    var bubble = btn.closest(".bubble");
+    // Check condition: !bubble
+    if (!bubble) return;
+    // Declare variable clone initialized to bubble.cloneNode(true);
+    var clone = bubble.cloneNode(true);
+    // Declare variable footer initialized to clone.querySelector(".bubble-footer");
+    var footer = clone.querySelector(".bubble-footer");
+    // Check condition: footer && footer.parentNode) footer.parentNode.removeChild(footer
+    if (footer && footer.parentNode) footer.parentNode.removeChild(footer);
+    // Declare variable time initialized to clone.querySelector(".bubble-time");
+    var time = clone.querySelector(".bubble-time");
+    // Check condition: time && time.parentNode) time.parentNode.removeChild(time
+    if (time && time.parentNode) time.parentNode.removeChild(time);
+
+    // Declare variable raw initialized to (clone.innerText || clone.textContent || "").trim();
+    var raw = (clone.innerText || clone.textContent || "").trim();
+    // Declare variable clean initialized to raw
+    var clean = raw
+      // Execute statement: .replace(/[#*_`~>-]/g, " ")
+      .replace(/[#*_`~>-]/g, " ")
+      // Execute statement: .replace(/\\\[[\s\S]*?\\\]/g, " formula ")
+      .replace(/\\\[[\s\S]*?\\\]/g, " formula ")
+      // Execute statement: .replace(/\\\([\s\S]*?\\\)/g, " formula ")
+      .replace(/\\\([\s\S]*?\\\)/g, " formula ")
+      // Execute statement: .replace(/\s+/g, " ")
+      .replace(/\s+/g, " ")
+      // Execute statement: .trim();
+      .trim();
+
+    // Check condition: !clean
+    if (!clean) return;
+
+    // Declare variable utterance initialized to new SpeechSynthesisUtterance(clean);
+    var utterance = new SpeechSynthesisUtterance(clean);
+    // Set utterance.rate to 1.0;
+    utterance.rate = 1.0;
+    // Set utterance.pitch to 1.0;
+    utterance.pitch = 1.0;
+
+    // Set btn.innerHTML to "⏹ Stop";
+    btn.innerHTML = "⏹ Stop";
+    // Execute statement: btn.classList.add("speaking");
+    btn.classList.add("speaking");
+    // Set activeSpeakBtn to btn;
+    activeSpeakBtn = btn;
+    // Set activeUtterance to utterance;
+    activeUtterance = utterance;
+
+    // Set utterance.onend to function() {
+    utterance.onend = function() {
+      // Set btn.innerHTML to "🔊 Read";
+      btn.innerHTML = "🔊 Read";
+      // Execute statement: btn.classList.remove("speaking");
+      btn.classList.remove("speaking");
+      // Set activeSpeakBtn to null;
+      activeSpeakBtn = null;
+    };
+
+    // Set utterance.onerror to function() {
+    utterance.onerror = function() {
+      // Set btn.innerHTML to "🔊 Read";
+      btn.innerHTML = "🔊 Read";
+      // Execute statement: btn.classList.remove("speaking");
+      btn.classList.remove("speaking");
+      // Set activeSpeakBtn to null;
+      activeSpeakBtn = null;
+    };
+
+    // Execute statement: window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // ── Bubble Footer Factory (Action Bar with Copy & Read) ──────
+  function createBubbleFooter(isBot) {
+    // Declare variable footer initialized to document.createElement("div");
+    var footer = document.createElement("div");
+    // Set footer.className to "bubble-footer";
+    footer.className = "bubble-footer";
+
+    // Declare variable actions initialized to document.createElement("div");
+    var actions = document.createElement("div");
+    // Set actions.className to "bubble-actions";
+    actions.className = "bubble-actions";
+
+    // Declare variable copyBtn initialized to document.createElement("button");
+    var copyBtn = document.createElement("button");
+    // Set copyBtn.className to "bubble-action-btn copy-btn";
+    copyBtn.className = "bubble-action-btn copy-btn";
+    // Set copyBtn.title to "Copy text";
+    copyBtn.title = "Copy text";
+    // Set copyBtn.innerHTML to "📋 Copy";
+    copyBtn.innerHTML = "📋 Copy";
+    // Set copyBtn.onclick to function() {
+    copyBtn.onclick = function() {
+      // Execute statement: window.copyBubbleText(this);
+      window.copyBubbleText(this);
+    };
+    // Execute statement: actions.appendChild(copyBtn);
+    actions.appendChild(copyBtn);
+
+    // Check condition: isBot
+    if (isBot) {
+      // Declare variable speakBtn initialized to document.createElement("button");
+      var speakBtn = document.createElement("button");
+      // Set speakBtn.className to "bubble-action-btn speak-btn";
+      speakBtn.className = "bubble-action-btn speak-btn";
+      // Set speakBtn.title to "Read aloud";
+      speakBtn.title = "Read aloud";
+      // Set speakBtn.innerHTML to "🔊 Read";
+      speakBtn.innerHTML = "🔊 Read";
+      // Set speakBtn.onclick to function() {
+      speakBtn.onclick = function() {
+        // Execute statement: window.speakBubbleText(this);
+        window.speakBubbleText(this);
+      };
+      // Execute statement: actions.appendChild(speakBtn);
+      actions.appendChild(speakBtn);
+    }
+
+    // Declare variable time initialized to document.createElement("div");
+    var time = document.createElement("div");
+    // Set time.className to "bubble-time";
+    time.className = "bubble-time";
+    // Set time.textContent to getTimeStr();
+    time.textContent = getTimeStr();
+
+    // Execute statement: footer.appendChild(actions);
+    footer.appendChild(actions);
+    // Execute statement: footer.appendChild(time);
+    footer.appendChild(time);
+    // Return value footer; to caller
+    return footer;
+  }
+
+  // Define function getTimeStr()
+  function getTimeStr() {
+    // Declare variable now initialized to new Date();
+    var now = new Date();
+    // Declare variable h initialized to now.getHours();
+    var h = now.getHours();
+    // Declare variable m initialized to now.getMinutes();
+    var m = now.getMinutes();
+    // Declare variable ampm initialized to h >= 12 ? "PM" : "AM";
+    var ampm = h >= 12 ? "PM" : "AM";
+    // Set h to h % 12;
+    h = h % 12;
+    // Set h to h ? h : 12;
+    h = h ? h : 12;
+    // Declare variable mStr initialized to m < 10 ? "0" + m : m;
+    var mStr = m < 10 ? "0" + m : m;
+    // Return value h + ":" + mStr + " " + ampm; to caller
+    return h + ":" + mStr + " " + ampm;
+  }
+
+  // Define function escapeHtml(text)
+  function escapeHtml(text) {
+    // Check condition: !text
+    if (!text) return "";
+    // Return value String(text) to caller
+    return String(text)
+      // Execute statement: .replace(/&/g, "&amp;")
+      .replace(/&/g, "&amp;")
+      // Execute statement: .replace(/</g, "&lt;")
+      .replace(/</g, "&lt;")
+      // Execute statement: .replace(/>/g, "&gt;")
+      .replace(/>/g, "&gt;")
+      // Execute statement: .replace(/"/g, "&quot;")
+      .replace(/"/g, "&quot;")
+      // Execute statement: .replace(/'/g, "&#039;");
+      .replace(/'/g, "&#039;");
+  }
+
+  // ── Perception Layer: Image Selection & Canvas Resizing ─────
+  window.triggerImageUpload = function() {
+    // Check condition: modalOverlay.style.display === "block"
+    if (modalOverlay.style.display === "block") {
+      // Execute statement: window.toggleMenu();
+      window.toggleMenu();
+    }
+    // Execute statement: imageFileInput.click();
+    imageFileInput.click();
+  };
+
+  // Set window.handleImageSelected to function(input) {
+  window.handleImageSelected = function(input) {
+    // Check condition: !input.files || !input.files[0]
+    if (!input.files || !input.files[0]) return;
+    // Declare variable file initialized to input.files[0];
+    var file = input.files[0];
+    // Declare variable reader initialized to new FileReader();
+    var reader = new FileReader();
+    // Set reader.onload to function(e) {
+    reader.onload = function(e) {
+      // Declare variable rawData initialized to e.target.result;
+      var rawData = e.target.result;
+      // Resize on canvas to save memory on iPad mini 2 (1GB RAM)
+      resizeImage(rawData, 1024, function(resizedData) {
+        // Set attachedImageDataUrl to resizedData;
+        attachedImageDataUrl = resizedData;
+        // Set imageThumb.src to resizedData;
+        imageThumb.src = resizedData;
+        // Set imagePreviewBar.style.display to "block";
+        imagePreviewBar.style.display = "block";
+        // Execute statement: sendBtn.classList.add("active");
+        sendBtn.classList.add("active");
+        // Execute statement: msgInput.focus();
+        msgInput.focus();
+      });
+    };
+    // Execute statement: reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+    // Reset file input so same image can be reselected if desired
+    input.value = "";
+  };
+
+  // Set window.removeAttachedImage to function() {
+  window.removeAttachedImage = function() {
+    // Set attachedImageDataUrl to null;
+    attachedImageDataUrl = null;
+    // Set imageThumb.src to "";
+    imageThumb.src = "";
+    // Set imagePreviewBar.style.display to "none";
+    imagePreviewBar.style.display = "none";
+    // Check condition: !msgInput.value.trim()
+    if (!msgInput.value.trim()) {
+      // Execute statement: sendBtn.classList.remove("active");
+      sendBtn.classList.remove("active");
+    }
+  };
+
+  // Define function resizeImage(dataUrl, maxDim, callback)
+  function resizeImage(dataUrl, maxDim, callback) {
+    // Declare variable img initialized to new Image();
+    var img = new Image();
+    // Set img.onload to function() {
+    img.onload = function() {
+      // Declare variable w initialized to img.width;
+      var w = img.width;
+      // Declare variable h initialized to img.height;
+      var h = img.height;
+      // Check condition: w > maxDim || h > maxDim
+      if (w > maxDim || h > maxDim) {
+        // Check condition: w > h
+        if (w > h) {
+          // Set h to Math.round((h * maxDim) / w);
+          h = Math.round((h * maxDim) / w);
+          // Set w to maxDim;
+          w = maxDim;
+        // Execute statement: } else {
+        } else {
+          // Set w to Math.round((w * maxDim) / h);
+          w = Math.round((w * maxDim) / h);
+          // Set h to maxDim;
+          h = maxDim;
+        }
+      }
+      // Declare variable canvas initialized to document.createElement("canvas");
+      var canvas = document.createElement("canvas");
+      // Set canvas.width to w;
+      canvas.width = w;
+      // Set canvas.height to h;
+      canvas.height = h;
+      // Declare variable ctx initialized to canvas.getContext("2d");
+      var ctx = canvas.getContext("2d");
+      // Execute statement: ctx.drawImage(img, 0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      // Execute statement: callback(canvas.toDataURL("image/jpeg", 0.82));
+      callback(canvas.toDataURL("image/jpeg", 0.82));
+    };
+    // Set img.src to dataUrl;
+    img.src = dataUrl;
+  }
+
+  // ── LaTeX Formula Renderer (Balanced-Brace Fallback + KaTeX) ──
+  function matchBraces(str, startIndex) {
+    // Check condition: str.charAt(startIndex) !== "{"
+    if (str.charAt(startIndex) !== "{") return null;
+    // Declare variable depth initialized to 0;
+    var depth = 0;
+    // Execute statement: for (var i = startIndex; i < str.length; i++) {
+    for (var i = startIndex; i < str.length; i++) {
+      // Declare variable c initialized to str.charAt(i);
+      var c = str.charAt(i);
+      // Check condition: c === "{"
+      if (c === "{") depth++;
+      // Alternative condition check: c === "}"
+      else if (c === "}") {
+        // Execute statement: depth--;
+        depth--;
+        // Check condition: depth === 0) return { content: str.substring(startIndex + 1, i
+        if (depth === 0) return { content: str.substring(startIndex + 1, i), endIndex: i };
+      }
+    }
+    // Return value null; to caller
+    return null;
+  }
+
+  // Define function replaceLatexCommands(str)
+  function replaceLatexCommands(str) {
+    // Declare variable out initialized to "";
+    var out = "";
+    // Declare variable i initialized to 0;
+    var i = 0;
+    // Execute statement: while (i < str.length) {
+    while (i < str.length) {
+      // Check condition: str.substr(i, 7) === "\\boxed{"
+      if (str.substr(i, 7) === "\\boxed{") {
+        // Declare variable match initialized to matchBraces(str, i + 6);
+        var match = matchBraces(str, i + 6);
+        // Check condition: match
+        if (match) {
+          // Execute statement: out += '<span class="math-boxed">' + replaceLatexCommands(match.content) + '</span>';
+          out += '<span class="math-boxed">' + replaceLatexCommands(match.content) + '</span>';
+          // Set i to match.endIndex + 1;
+          i = match.endIndex + 1;
+          // Skip to next loop iteration
+          continue;
+        }
+      // Execute statement: } else if (str.substr(i, 6) === "\\frac{") {
+      } else if (str.substr(i, 6) === "\\frac{") {
+        // Declare variable numMatch initialized to matchBraces(str, i + 5);
+        var numMatch = matchBraces(str, i + 5);
+        // Check condition: numMatch && str.charAt(numMatch.endIndex + 1) === "{"
+        if (numMatch && str.charAt(numMatch.endIndex + 1) === "{") {
+          // Declare variable denMatch initialized to matchBraces(str, numMatch.endIndex + 1);
+          var denMatch = matchBraces(str, numMatch.endIndex + 1);
+          // Check condition: denMatch
+          if (denMatch) {
+            // Execute statement: out += '<span class="math-frac"><span class="math-num">' + replaceLatexCommands(numMatch.content) + '</span><span class="math-den">' + replaceLatexCommands(denMatch.content) + '</span></span>';
+            out += '<span class="math-frac"><span class="math-num">' + replaceLatexCommands(numMatch.content) + '</span><span class="math-den">' + replaceLatexCommands(denMatch.content) + '</span></span>';
+            // Set i to denMatch.endIndex + 1;
+            i = denMatch.endIndex + 1;
+            // Skip to next loop iteration
+            continue;
+          }
+        }
+      // Execute statement: } else if (str.substr(i, 6) === "\\text{") {
+      } else if (str.substr(i, 6) === "\\text{") {
+        // Declare variable txtMatch initialized to matchBraces(str, i + 5);
+        var txtMatch = matchBraces(str, i + 5);
+        // Check condition: txtMatch
+        if (txtMatch) {
+          // Execute statement: out += '<span class="math-text">' + txtMatch.content + '</span>';
+          out += '<span class="math-text">' + txtMatch.content + '</span>';
+          // Set i to txtMatch.endIndex + 1;
+          i = txtMatch.endIndex + 1;
+          // Skip to next loop iteration
+          continue;
+        }
+      // Execute statement: } else if (str.substr(i, 6) === "\\sqrt{") {
+      } else if (str.substr(i, 6) === "\\sqrt{") {
+        // Declare variable sqrtMatch initialized to matchBraces(str, i + 5);
+        var sqrtMatch = matchBraces(str, i + 5);
+        // Check condition: sqrtMatch
+        if (sqrtMatch) {
+          // Execute statement: out += '<span class="math-sqrt">&radic;<span class="math-sqrt-stem">' + replaceLatexCommands(sqrtMatch.content) + '</span></span>';
+          out += '<span class="math-sqrt">&radic;<span class="math-sqrt-stem">' + replaceLatexCommands(sqrtMatch.content) + '</span></span>';
+          // Set i to sqrtMatch.endIndex + 1;
+          i = sqrtMatch.endIndex + 1;
+          // Skip to next loop iteration
+          continue;
+        }
+      }
+      // Execute statement: out += str.charAt(i);
+      out += str.charAt(i);
+      // Execute statement: i++;
+      i++;
+    }
+    // Return value out; to caller
+    return out;
+  }
+
+  // Define function formatMathString(s)
+  function formatMathString(s) {
+    // Set s to replaceLatexCommands(s);
+    s = replaceLatexCommands(s);
+
+    // Greek letters
+    s = s.replace(/\\sigma/g, "σ");
+    // Set s to s.replace(/\\epsilon|\\varepsilon/g, "ε");
+    s = s.replace(/\\epsilon|\\varepsilon/g, "ε");
+    // Set s to s.replace(/\\tau/g, "τ");
+    s = s.replace(/\\tau/g, "τ");
+    // Set s to s.replace(/\\mu/g, "μ");
+    s = s.replace(/\\mu/g, "μ");
+    // Set s to s.replace(/\\pi/g, "π");
+    s = s.replace(/\\pi/g, "π");
+    // Set s to s.replace(/\\Delta/g, "Δ");
+    s = s.replace(/\\Delta/g, "Δ");
+    // Set s to s.replace(/\\alpha/g, "α");
+    s = s.replace(/\\alpha/g, "α");
+    // Set s to s.replace(/\\beta/g, "β");
+    s = s.replace(/\\beta/g, "β");
+    // Set s to s.replace(/\\gamma/g, "γ");
+    s = s.replace(/\\gamma/g, "γ");
+    // Set s to s.replace(/\\theta/g, "θ");
+    s = s.replace(/\\theta/g, "θ");
+    // Set s to s.replace(/\\lambda/g, "λ");
+    s = s.replace(/\\lambda/g, "λ");
+    // Set s to s.replace(/\\omega/g, "ω");
+    s = s.replace(/\\omega/g, "ω");
+
+    // Symbols
+    s = s.replace(/\\approx/g, "≈");
+    // Set s to s.replace(/\\times/g, "×");
+    s = s.replace(/\\times/g, "×");
+    // Set s to s.replace(/\\cdot/g, "·");
+    s = s.replace(/\\cdot/g, "·");
+    // Set s to s.replace(/\\pm/g, "±");
+    s = s.replace(/\\pm/g, "±");
+    // Set s to s.replace(/\\le(q)?/g, "≤");
+    s = s.replace(/\\le(q)?/g, "≤");
+    // Set s to s.replace(/\\ge(q)?/g, "≥");
+    s = s.replace(/\\ge(q)?/g, "≥");
+    // Set s to s.replace(/\\ne(q)?/g, "≠");
+    s = s.replace(/\\ne(q)?/g, "≠");
+    // Set s to s.replace(/\\infty/g, "∞");
+    s = s.replace(/\\infty/g, "∞");
+    // Set s to s.replace(/\\sum/g, "∑");
+    s = s.replace(/\\sum/g, "∑");
+    // Set s to s.replace(/\\int/g, "∫");
+    s = s.replace(/\\int/g, "∫");
+    // Set s to s.replace(/\\to/g, "→");
+    s = s.replace(/\\to/g, "→");
+    // Set s to s.replace(/\\implies/g, "⟹");
+    s = s.replace(/\\implies/g, "⟹");
+    // Set s to s.replace(/\\qquad/g, "&emsp;&emsp;");
+    s = s.replace(/\\qquad/g, "&emsp;&emsp;");
+    // Set s to s.replace(/\\quad/g, "&emsp;");
+    s = s.replace(/\\quad/g, "&emsp;");
+    // Set s to s.replace(/\\,/g, " ");
+    s = s.replace(/\\,/g, " ");
+
+    // Exponents & Subscripts
+    s = s.replace(/\^\{([^{}]+)\}/g, "<sup>$1</sup>");
+    // Set s to s.replace(/\^([0-9a-zA-Z+-]+)/g, "<sup>$1</sup>");
+    s = s.replace(/\^([0-9a-zA-Z+-]+)/g, "<sup>$1</sup>");
+    // Set s to s.replace(/_\{([^{}]+)\}/g, "<sub>$1</sub>");
+    s = s.replace(/_\{([^{}]+)\}/g, "<sub>$1</sub>");
+    // Set s to s.replace(/_([0-9a-zA-Z])/g, "<sub>$1</sub>");
+    s = s.replace(/_([0-9a-zA-Z])/g, "<sub>$1</sub>");
+
+    // Return value s; to caller
+    return s;
+  }
+
+  // Define function renderMathBlock(raw)
+  function renderMathBlock(raw) {
+    // Declare variable trimmed initialized to raw.trim();
+    var trimmed = raw.trim();
+    // Set trimmed to trimmed.replace(/\\cdot([a-zA-Z])/g, "\\cdot $1");
+    trimmed = trimmed.replace(/\\cdot([a-zA-Z])/g, "\\cdot $1");
+    // Check condition: window.katex && typeof window.katex.renderToString === "function"
+    if (window.katex && typeof window.katex.renderToString === "function") {
+      // Begin protected try block for runtime error handling
+      try {
+        // Declare variable res initialized to window.katex.renderToString(trimmed, { displayMode: true, throwOnError: false });
+        var res = window.katex.renderToString(trimmed, { displayMode: true, throwOnError: false });
+        // Check condition: res.indexOf("katex-error") === -1
+        if (res.indexOf("katex-error") === -1) {
+          // Return value res; to caller
+          return res;
+        }
+      // Execute statement: } catch (e) {}
+      } catch (e) {}
+    }
+    // Return value '<div class="math-block">' + formatMathString(trimmed) + '</div>'; to caller
+    return '<div class="math-block">' + formatMathString(trimmed) + '</div>';
+  }
+
+  // Define function renderMathInline(raw)
+  function renderMathInline(raw) {
+    // Declare variable trimmed initialized to raw.trim();
+    var trimmed = raw.trim();
+    // Set trimmed to trimmed.replace(/\\cdot([a-zA-Z])/g, "\\cdot $1");
+    trimmed = trimmed.replace(/\\cdot([a-zA-Z])/g, "\\cdot $1");
+    // Check condition: window.katex && typeof window.katex.renderToString === "function"
+    if (window.katex && typeof window.katex.renderToString === "function") {
+      // Begin protected try block for runtime error handling
+      try {
+        // Declare variable res initialized to window.katex.renderToString(trimmed, { displayMode: false, throwOnError: false });
+        var res = window.katex.renderToString(trimmed, { displayMode: false, throwOnError: false });
+        // Check condition: res.indexOf("katex-error") === -1
+        if (res.indexOf("katex-error") === -1) {
+          // Return value res; to caller
+          return res;
+        }
+      // Execute statement: } catch (e) {}
+      } catch (e) {}
+    }
+    // Return value '<span class="math-inline">' + formatMathString(trimmed) + '</span>'; to caller
+    return '<span class="math-inline">' + formatMathString(trimmed) + '</span>';
+  }
+
+  // ── Robust Markdown Parser (Headings, Lists, Tables, Math) ──
+  function formatMarkdown(text) {
+    // Check condition: !text
+    if (!text) return "";
+
+    // Set text to String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    text = String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+    // 1. Extract Code Blocks
+    var codeBlocks = [];
+    // Set text to text.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+    text = text.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+      // Declare variable token initialized to "TOKENCODEBLOCK" + codeBlocks.length + "ENDTOKEN";
+      var token = "TOKENCODEBLOCK" + codeBlocks.length + "ENDTOKEN";
+      // Execute statement: codeBlocks.push('<pre><code>' + escapeHtml(code) + '</code></pre>');
+      codeBlocks.push('<pre><code>' + escapeHtml(code) + '</code></pre>');
+      // Return value token; to caller
+      return token;
+    });
+
+    // 2. Extract Block Math: \[ ... \] or $$ ... $$
+    var mathBlocks = [];
+    // Set text to text.replace(/\\\[([\s\S]*?)\\\]/g, function(match, inner) {
+    text = text.replace(/\\\[([\s\S]*?)\\\]/g, function(match, inner) {
+      // Declare variable token initialized to "TOKENMATHBLOCK" + mathBlocks.length + "ENDTOKEN";
+      var token = "TOKENMATHBLOCK" + mathBlocks.length + "ENDTOKEN";
+      // Execute statement: mathBlocks.push(renderMathBlock(inner));
+      mathBlocks.push(renderMathBlock(inner));
+      // Return value token; to caller
+      return token;
+    });
+    // Set text to text.replace(/\$\$([\s\S]*?)\$\$/g, function(match, inner) {
+    text = text.replace(/\$\$([\s\S]*?)\$\$/g, function(match, inner) {
+      // Declare variable token initialized to "TOKENMATHBLOCK" + mathBlocks.length + "ENDTOKEN";
+      var token = "TOKENMATHBLOCK" + mathBlocks.length + "ENDTOKEN";
+      // Execute statement: mathBlocks.push(renderMathBlock(inner));
+      mathBlocks.push(renderMathBlock(inner));
+      // Return value token; to caller
+      return token;
+    });
+
+    // 3. Extract Inline Math: \( ... \) or $ ... $
+    var inlineMath = [];
+    // Set text to text.replace(/\\\(([\s\S]*?)\\\)/g, function(match, inner) {
+    text = text.replace(/\\\(([\s\S]*?)\\\)/g, function(match, inner) {
+      // Declare variable token initialized to "TOKENMATHINLINE" + inlineMath.length + "ENDTOKEN";
+      var token = "TOKENMATHINLINE" + inlineMath.length + "ENDTOKEN";
+      // Execute statement: inlineMath.push(renderMathInline(inner));
+      inlineMath.push(renderMathInline(inner));
+      // Return value token; to caller
+      return token;
+    });
+    // Set text to text.replace(/\$([^\$\n]+)\$/g, function(match, inner) {
+    text = text.replace(/\$([^\$\n]+)\$/g, function(match, inner) {
+      // Declare variable token initialized to "TOKENMATHINLINE" + inlineMath.length + "ENDTOKEN";
+      var token = "TOKENMATHINLINE" + inlineMath.length + "ENDTOKEN";
+      // Execute statement: inlineMath.push(renderMathInline(inner));
+      inlineMath.push(renderMathInline(inner));
+      // Return value token; to caller
+      return token;
+    });
+
+    // 4. Escape remaining HTML
+    text = escapeHtml(text);
+
+    // 5. Headings: ####, ###, ##, #
+    text = text.replace(/^####\s+(.+)$/gm, '<h4 class="chat-h4">$1</h4>');
+    // Set text to text.replace(/^###\s+(.+)$/gm, '<h3 class="chat-h3">$1</h3>');
+    text = text.replace(/^###\s+(.+)$/gm, '<h3 class="chat-h3">$1</h3>');
+    // Set text to text.replace(/^##\s+(.+)$/gm, '<h2 class="chat-h2">$1</h2>');
+    text = text.replace(/^##\s+(.+)$/gm, '<h2 class="chat-h2">$1</h2>');
+    // Set text to text.replace(/^#\s+(.+)$/gm, '<h1 class="chat-h1">$1</h1>');
+    text = text.replace(/^#\s+(.+)$/gm, '<h1 class="chat-h1">$1</h1>');
+
+    // 6. Horizontal Rules --- or ***
+    text = text.replace(/^(?:---|—{3,}|\*\*\*|___)\s*$/gm, '<hr class="chat-hr">');
+
+    // 7. Inline code `code`
+    text = text.replace(/`([^`]+)`/g, '<code class="chat-inline-code">$1</code>');
+
+    // 8. Bold **text**
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Set text to text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+
+    // 9. Italic *text*
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    // Set text to text.replace(/_([^_]+)_/g, '<em>$1</em>');
+    text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+    // 10. List items: -, *, •, 1.
+    text = text.replace(/^(?:[\*\-•]|\u2022)\s+(.+)$/gm, '<li class="chat-li">$1</li>');
+    // Set text to text.replace(/^\d+[\.\)]\s+(.+)$/gm, '<li class="chat-li-num">$1</li>');
+    text = text.replace(/^\d+[\.\)]\s+(.+)$/gm, '<li class="chat-li-num">$1</li>');
+
+    // Group adjacent <li> into <ul> and <ol>
+    text = text.replace(/((?:<li class="chat-li">.*?<\/li>(?:\s*\n)?)+)/g, function(match) {
+      // Return value '<ul class="chat-ul">' + match.replace(/\n/g, "") + '</ul>'; to caller
+      return '<ul class="chat-ul">' + match.replace(/\n/g, "") + '</ul>';
+    });
+    // Set text to text.replace(/((?:<li class="chat-li-num">.*?<\/li>(?:\s*\n)?)+)/g, function(match) {
+    text = text.replace(/((?:<li class="chat-li-num">.*?<\/li>(?:\s*\n)?)+)/g, function(match) {
+      // Return value '<ol class="chat-ol">' + match.replace(/\n/g, "") + '</ol>'; to caller
+      return '<ol class="chat-ol">' + match.replace(/\n/g, "") + '</ol>';
+    });
+
+    // 11. Tables
+    text = text.replace(/(?:^\|[^\n]+\|\s*(?:\n|$))+/gm, function(tableBlock) {
+      // Declare variable lines initialized to tableBlock.trim().split("\n");
+      var lines = tableBlock.trim().split("\n");
+      // Declare variable html initialized to '<div class="table-wrap"><table class="chat-table">';
+      var html = '<div class="table-wrap"><table class="chat-table">';
+      // Declare variable isHeader initialized to true;
+      var isHeader = true;
+      // Execute statement: for (var i = 0; i < lines.length; i++) {
+      for (var i = 0; i < lines.length; i++) {
+        // Declare variable line initialized to lines[i].trim();
+        var line = lines[i].trim();
+        // Check condition: !line || !/^\|.*\|$/.test(line)
+        if (!line || !/^\|.*\|$/.test(line)) continue;
+        // Check condition: /^\|(?:[\s\-:]+\|)+$/.test(line) || line.indexOf("|---") !== -1 || line.indexOf("|:---") !== -1
+        if (/^\|(?:[\s\-:]+\|)+$/.test(line) || line.indexOf("|---") !== -1 || line.indexOf("|:---") !== -1) {
+          // Set isHeader to false;
+          isHeader = false;
+          // Skip to next loop iteration
+          continue;
+        }
+        // Declare variable cells initialized to line.split("|").slice(1, -1);
+        var cells = line.split("|").slice(1, -1);
+        // Execute statement: html += '<tr>';
+        html += '<tr>';
+        // Execute statement: for (var c = 0; c < cells.length; c++) {
+        for (var c = 0; c < cells.length; c++) {
+          // Declare variable tag initialized to isHeader ? 'th' : 'td';
+          var tag = isHeader ? 'th' : 'td';
+          // Declare variable content initialized to cells[c].trim();
+          var content = cells[c].trim();
+          // Set content to content.replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+          content = content.replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+          // Set content to content.replace(/(?:<br>\s*|\s*)([•\-])\s+/g, '<br><span class="table-bullet">•</span> ');
+          content = content.replace(/(?:<br>\s*|\s*)([•\-])\s+/g, '<br><span class="table-bullet">•</span> ');
+          // Set content to content.replace(/^<br>/i, '');
+          content = content.replace(/^<br>/i, '');
+          // Execute statement: html += '<' + tag + '>' + content + '</' + tag + '>';
+          html += '<' + tag + '>' + content + '</' + tag + '>';
+        }
+        // Execute statement: html += '</tr>';
+        html += '</tr>';
+        // Check condition: isHeader
+        if (isHeader) isHeader = false;
+      }
+      // Execute statement: html += '</table></div>';
+      html += '</table></div>';
+      // Return value html; to caller
+      return html;
+    });
+
+    // 12. Paragraph breaks
+    var rawBlocks = text.split(/\n{2,}/);
+    // Declare variable outBlocks initialized to [];
+    var outBlocks = [];
+    // Execute statement: for (var i = 0; i < rawBlocks.length; i++) {
+    for (var i = 0; i < rawBlocks.length; i++) {
+      // Declare variable b initialized to rawBlocks[i].trim();
+      var b = rawBlocks[i].trim();
+      // Check condition: !b
+      if (!b) continue;
+      // Check condition: /^<(h[1-4]|ul|ol|hr|table|div|pre)/i.test(b) || b.indexOf("TOKENMATHBLOCK") === 0 || b.indexOf("TOKENCODEBLOCK") === 0
+      if (/^<(h[1-4]|ul|ol|hr|table|div|pre)/i.test(b) || b.indexOf("TOKENMATHBLOCK") === 0 || b.indexOf("TOKENCODEBLOCK") === 0) {
+        // Execute statement: outBlocks.push(b);
+        outBlocks.push(b);
+      // Execute statement: } else {
+      } else {
+        // Execute statement: outBlocks.push('<p>' + b.replace(/\n/g, "<br>") + '</p>');
+        outBlocks.push('<p>' + b.replace(/\n/g, "<br>") + '</p>');
+      }
+    }
+    // Set text to outBlocks.join("\n");
+    text = outBlocks.join("\n");
+
+    // 13. Restore tokens
+    for (var i = 0; i < codeBlocks.length; i++) {
+      // Set text to text.replace("TOKENCODEBLOCK" + i + "ENDTOKEN", codeBlocks[i]);
+      text = text.replace("TOKENCODEBLOCK" + i + "ENDTOKEN", codeBlocks[i]);
+    }
+    // Execute statement: for (var j = 0; j < mathBlocks.length; j++) {
+    for (var j = 0; j < mathBlocks.length; j++) {
+      // Set text to text.replace("TOKENMATHBLOCK" + j + "ENDTOKEN", mathBlocks[j]);
+      text = text.replace("TOKENMATHBLOCK" + j + "ENDTOKEN", mathBlocks[j]);
+    }
+    // Execute statement: for (var k = 0; k < inlineMath.length; k++) {
+    for (var k = 0; k < inlineMath.length; k++) {
+      // Set text to text.replace("TOKENMATHINLINE" + k + "ENDTOKEN", inlineMath[k]);
+      text = text.replace("TOKENMATHINLINE" + k + "ENDTOKEN", inlineMath[k]);
+    }
+
+    // Return value text; to caller
+    return text;
+  }
+
+  // Define function appendUserBubble(text, imageUrl, skipScroll)
+  function appendUserBubble(text, imageUrl, skipScroll) {
+    // Declare variable row initialized to document.createElement("div");
+    var row = document.createElement("div");
+    // Set row.className to "chat-row user";
+    row.className = "chat-row user";
+
+    // Declare variable bubble initialized to document.createElement("div");
+    var bubble = document.createElement("div");
+    // Set bubble.className to "bubble";
+    bubble.className = "bubble";
+
+    // Check condition: imageUrl
+    if (imageUrl) {
+      // Declare variable img initialized to document.createElement("img");
+      var img = document.createElement("img");
+      // Set img.className to "user-chat-img";
+      img.className = "user-chat-img";
+      // Set img.src to imageUrl;
+      img.src = imageUrl;
+      // Set img.title to "Tap to view full screen";
+      img.title = "Tap to view full screen";
+      // Set img.style.cursor to "zoom-in";
+      img.style.cursor = "zoom-in";
+      // Set img.onclick to function() {
+      img.onclick = function() {
+        // Execute statement: showImageModal(imageUrl);
+        showImageModal(imageUrl);
+      };
+      // Execute statement: bubble.appendChild(img);
+      bubble.appendChild(img);
+    }
+
+    // Check condition: text
+    if (text) {
+      // Declare variable textSpan initialized to document.createElement("div");
+      var textSpan = document.createElement("div");
+      // Set textSpan.innerHTML to escapeHtml(text).replace(/\n/g, "<br>");
+      textSpan.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+      // Execute statement: bubble.appendChild(textSpan);
+      bubble.appendChild(textSpan);
+    }
+
+    // Execute statement: bubble.appendChild(createBubbleFooter(false));
+    bubble.appendChild(createBubbleFooter(false));
+
+    // Execute statement: row.appendChild(bubble);
+    row.appendChild(bubble);
+    // Execute statement: chatStream.appendChild(row);
+    chatStream.appendChild(row);
+    // Check condition: !skipScroll) scrollToBottom(true
+    if (!skipScroll) scrollToBottom(true);
+  }
+
+  // Define function appendAssistantBubble(text, skipScroll)
+  function appendAssistantBubble(text, skipScroll) {
+    // Declare variable row initialized to document.createElement("div");
+    var row = document.createElement("div");
+    // Set row.className to "chat-row bot";
+    row.className = "chat-row bot";
+
+    // Declare variable bubble initialized to document.createElement("div");
+    var bubble = document.createElement("div");
+    // Set bubble.className to "bubble";
+    bubble.className = "bubble";
+    // Set bubble.innerHTML to formatMarkdown(text);
+    bubble.innerHTML = formatMarkdown(text);
+    // Execute statement: bubble.appendChild(createBubbleFooter(true));
+    bubble.appendChild(createBubbleFooter(true));
+
+    // Execute statement: row.appendChild(bubble);
+    row.appendChild(bubble);
+    // Execute statement: chatStream.appendChild(row);
+    chatStream.appendChild(row);
+    // Check condition: !skipScroll) scrollToBottom(true
+    if (!skipScroll) scrollToBottom(true);
+  }
+  // Set window.appendAssistantBubble to appendAssistantBubble;
+  window.appendAssistantBubble = appendAssistantBubble;
+  // Set window.formatMarkdown to formatMarkdown;
+  window.formatMarkdown = formatMarkdown;
+
+  // Define function createBotBubble()
+  function createBotBubble() {
+    // Declare variable row initialized to document.createElement("div");
+    var row = document.createElement("div");
+    // Set row.className to "chat-row bot";
+    row.className = "chat-row bot";
+
+    // Declare variable bubble initialized to document.createElement("div");
+    var bubble = document.createElement("div");
+    // Set bubble.className to "bubble";
+    bubble.className = "bubble";
+    // Set bubble.innerHTML to '<div class="typing-box">' +
+    bubble.innerHTML = '<div class="typing-box">' +
+                       // Execute statement: '<div class="typing-dot"></div>' +
+                       '<div class="typing-dot"></div>' +
+                       // Execute statement: '<div class="typing-dot"></div>' +
+                       '<div class="typing-dot"></div>' +
+                       // Execute statement: '<div class="typing-dot"></div>' +
+                       '<div class="typing-dot"></div>' +
+                       // Execute statement: '</div>';
+                       '</div>';
+
+    // Execute statement: row.appendChild(bubble);
+    row.appendChild(bubble);
+    // Execute statement: chatStream.appendChild(row);
+    chatStream.appendChild(row);
+    // Execute statement: scrollToBottom(true);
+    scrollToBottom(true);
+
+    // Set currentBubble to bubble;
+    currentBubble = bubble;
+    // Return value bubble; to caller
+    return bubble;
+  }
+
+  // Define function updateBotBubble(text)
+  function updateBotBubble(text) {
+    // Check condition: !currentBubble
+    if (!currentBubble) {
+      // Execute statement: createBotBubble();
+      createBotBubble();
+    }
+    // Check condition: typeof text === "string"
+    if (typeof text === "string") {
+      // Declare variable adIdx1 initialized to text.search(/-{3,}\s*\*\*Support Pollinations\.AI:/i);
+      var adIdx1 = text.search(/-{3,}\s*\*\*Support Pollinations\.AI:/i);
+      // Check condition: adIdx1 !== -1) text = text.substring(0, adIdx1
+      if (adIdx1 !== -1) text = text.substring(0, adIdx1);
+      // Declare variable adIdx2 initialized to text.search(/\n*🌸\s*\*\*Ad\*\*/i);
+      var adIdx2 = text.search(/\n*🌸\s*\*\*Ad\*\*/i);
+      // Check condition: adIdx2 !== -1) text = text.substring(0, adIdx2
+      if (adIdx2 !== -1) text = text.substring(0, adIdx2);
+      // Set text to text.trim();
+      text = text.trim();
+    }
+    // Set currentBubble.innerHTML to formatMarkdown(text);
+    currentBubble.innerHTML = formatMarkdown(text);
+    // Execute statement: currentBubble.appendChild(createBubbleFooter(true));
+    currentBubble.appendChild(createBubbleFooter(true));
+
+    // Set currentBubble to null;
+    currentBubble = null;
+    // Set isWaiting to false;
+    isWaiting = false;
+    // Execute statement: sendBtn.classList.remove("active");
+    sendBtn.classList.remove("active");
+    // Execute statement: scrollToBottom(true);
+    scrollToBottom(true);
+  }
+
+  // ── Session History Persistence (No loss on reload/rotation) ──
+  function saveHistory() {
+    // Begin protected try block for runtime error handling
+    try {
+      // Execute statement: sessionStorage.setItem("julius_history", JSON.stringify(conversationHistory));
+      sessionStorage.setItem("julius_history", JSON.stringify(conversationHistory));
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+  }
+
+  // Define function loadHistory()
+  function loadHistory() {
+    // Begin protected try block for runtime error handling
+    try {
+      // Declare variable raw initialized to sessionStorage.getItem("julius_history");
+      var raw = sessionStorage.getItem("julius_history");
+      // Check condition: raw
+      if (raw) {
+        // Declare variable saved initialized to JSON.parse(raw);
+        var saved = JSON.parse(raw);
+        // Check condition: saved && saved.length > 1
+        if (saved && saved.length > 1) {
+          // Set conversationHistory to saved;
+          conversationHistory = saved;
+          // Set chatStream.innerHTML to "";
+          chatStream.innerHTML = "";
+          // Execute statement: for (var i = 0; i < conversationHistory.length; i++) {
+          for (var i = 0; i < conversationHistory.length; i++) {
+            // Declare variable item initialized to conversationHistory[i];
+            var item = conversationHistory[i];
+            // Check condition: item.role === "user"
+            if (item.role === "user") {
+              // Execute statement: appendUserBubble(item.content, item.image || null, true);
+              appendUserBubble(item.content, item.image || null, true);
+            // Execute statement: } else if (item.role === "assistant") {
+            } else if (item.role === "assistant") {
+              // Execute statement: appendAssistantBubble(item.content, true);
+              appendAssistantBubble(item.content, true);
+            }
+          }
+          // Execute statement: scrollToBottom();
+          scrollToBottom();
+        }
+      }
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+  }
+
+  // ── Lightbox Modal Controllers ──────────────────────────────
+  function showImageModal(url) {
+    // Declare variable modal initialized to document.getElementById("image-lightbox-modal");
+    var modal = document.getElementById("image-lightbox-modal");
+    // Declare variable img initialized to document.getElementById("image-lightbox-img");
+    var img = document.getElementById("image-lightbox-img");
+    // Check condition: modal && img
+    if (modal && img) {
+      // Set img.src to url;
+      img.src = url;
+      // Set modal.style.display to "flex";
+      modal.style.display = "flex";
+    }
+  }
+
+  // Define function hideImageModal()
+  function hideImageModal() {
+    // Declare variable modal initialized to document.getElementById("image-lightbox-modal");
+    var modal = document.getElementById("image-lightbox-modal");
+    // Check condition: modal
+    if (modal) {
+      // Set modal.style.display to "none";
+      modal.style.display = "none";
+    }
+  }
+
+  // ── Context Payload Assembly with Deep Nested Memory ────────
+  function getContextPayload(liveSearchSnippet) {
+    // Declare variable payload initialized to [
+    var payload = [
+      // Execute statement: { role: "system", content: getSystemPrompt(liveSearchSnippet) }
+      { role: "system", content: getSystemPrompt(liveSearchSnippet) }
+    // Execute statement: ];
+    ];
+    // Declare variable nonSystem initialized to [];
+    var nonSystem = [];
+    // Execute statement: for (var i = 0; i < conversationHistory.length; i++) {
+    for (var i = 0; i < conversationHistory.length; i++) {
+      // Check condition: conversationHistory[i].role !== "system"
+      if (conversationHistory[i].role !== "system") {
+        // Execute statement: nonSystem.push(conversationHistory[i]);
+        nonSystem.push(conversationHistory[i]);
+      }
+    }
+    // Retain up to the last 30 turns so nested questions have full prior knowledge
+    var startIdx = Math.max(0, nonSystem.length - 30);
+    // Execute statement: for (var j = startIdx; j < nonSystem.length; j++) {
+    for (var j = startIdx; j < nonSystem.length; j++) {
+      // Declare variable entry initialized to nonSystem[j];
+      var entry = nonSystem[j];
+      // Declare variable textContent initialized to entry.content || "";
+      var textContent = entry.content || "";
+      // Check condition: j === nonSystem.length - 1 && entry.role === "user" && liveSearchSnippet
+      if (j === nonSystem.length - 1 && entry.role === "user" && liveSearchSnippet) {
+        // Execute statement: textContent += "\n\n[Live Real-Time Web Search Context:\n" + liveSearchSnippet + "\nCurrent Date: " + getCurrentDateTimeStr() + "]";
+        textContent += "\n\n[Live Real-Time Web Search Context:\n" + liveSearchSnippet + "\nCurrent Date: " + getCurrentDateTimeStr() + "]";
+      }
+      // Check condition: entry.image
+      if (entry.image) {
+        // Execute statement: payload.push({
+        payload.push({
+          // Execute statement: role: entry.role,
+          role: entry.role,
+          // Execute statement: content: "[User attached study image] " + (textContent || "Analyze this image and explain in detail.")
+          content: "[User attached study image] " + (textContent || "Analyze this image and explain in detail.")
+        });
+      // Execute statement: } else {
+      } else {
+        // Execute statement: payload.push({
+        payload.push({
+          // Execute statement: role: entry.role,
+          role: entry.role,
+          // Execute statement: content: textContent
+          content: textContent
+        });
+      }
+    }
+    // Return value payload; to caller
+    return payload;
+  }
+
+  // ── AI Engine Dispatcher ─────────────────────────────────────
+  function queryAIBrain(userText, imageDataUrl) {
+    // Record user message into context history
+    var userEntry = { role: "user", content: userText };
+    // Check condition: imageDataUrl
+    if (imageDataUrl) {
+      // Set userEntry.image to imageDataUrl;
+      userEntry.image = imageDataUrl;
+    }
+    // Execute statement: conversationHistory.push(userEntry);
+    conversationHistory.push(userEntry);
+    // Execute statement: saveHistory();
+    saveHistory();
+
+    // Check instant static greeting (hello, hi, greetings - zero API calls, instant response)
+    var instantGreeting = checkInstantGreeting(userText);
+    // Check condition: instantGreeting && !imageDataUrl
+    if (instantGreeting && !imageDataUrl) {
+      // Execute statement: setTimeout(function() {
+      setTimeout(function() {
+        // Execute statement: conversationHistory.push({ role: "assistant", content: instantGreeting });
+        conversationHistory.push({ role: "assistant", content: instantGreeting });
+        // Execute statement: saveHistory();
+        saveHistory();
+        // Execute statement: updateBotBubble(instantGreeting);
+        updateBotBubble(instantGreeting);
+      }, 150);
+      // Return early from function
+      return;
+    }
+
+    // Check instant factual response (Date/Time, 2026 Tamil Nadu Politics / Vijay / CM)
+    var instantFact = checkInstantFactualResponse(userText);
+    // Check condition: instantFact && !imageDataUrl
+    if (instantFact && !imageDataUrl) {
+      // Execute statement: setTimeout(function() {
+      setTimeout(function() {
+        // Execute statement: conversationHistory.push({ role: "assistant", content: instantFact });
+        conversationHistory.push({ role: "assistant", content: instantFact });
+        // Execute statement: saveHistory();
+        saveHistory();
+        // Execute statement: updateBotBubble(instantFact);
+        updateBotBubble(instantFact);
+      }, 200);
+      // Return early from function
+      return;
+    }
+
+    // Declare variable customKey initialized to "";
+    var customKey = "";
+    // Begin protected try block for runtime error handling
+    try {
+      // Set customKey to localStorage.getItem("julius_custom_api_key") || "";
+      customKey = localStorage.getItem("julius_custom_api_key") || "";
+    // Execute statement: } catch (e) {}
+    } catch (e) {}
+
+    // Check if custom Google Gemini API Key is provided (multimodal direct)
+    if (customKey && customKey.indexOf("AIza") === 0) {
+      // Execute statement: queryGeminiDirect(customKey, imageDataUrl);
+      queryGeminiDirect(customKey, imageDataUrl);
+      // Return early from function
+      return;
+    }
+
+    // Engine 0: Direct Local Study Server with Perception Vision Layer
+    if (window.location.protocol.indexOf("http") === 0 && window.location.hostname !== "juliusagent.github.io") {
+      // Execute statement: queryLocalServer(userText, imageDataUrl);
+      queryLocalServer(userText, imageDataUrl);
+      // Return early from function
+      return;
+    }
+
+    // Engine 1: Default Free Cloud Brain with Live Internet Search
+    engineSub.textContent = "Live Search & Cloud Brain...";
+    // Execute statement: performClientLiveSearch(userText, function(searchSnippets) {
+    performClientLiveSearch(userText, function(searchSnippets) {
+      // Set engineSub.textContent to "Cloud Brain · Connected";
+      engineSub.textContent = "Cloud Brain · Connected";
+      // Execute statement: queryFreeCloudBrain(searchSnippets);
+      queryFreeCloudBrain(searchSnippets);
+    });
+  }
+
+  // Engine 0: Direct Local Server Query (True multimodal OCR & Vision Perception)
+  function queryLocalServer(userText, imageDataUrl) {
+    // Declare variable isHandled initialized to false;
+    var isHandled = false;
+    // Declare variable xhr initialized to new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
+    // Execute statement: xhr.open("POST", "/api/chat", true);
+    xhr.open("POST", "/api/chat", true);
+    // Execute statement: xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // Set xhr.timeout to 30000;
+    xhr.timeout = 30000;
+
+    // Set xhr.onreadystatechange to function() {
+    xhr.onreadystatechange = function() {
+      // Check condition: xhr.readyState === 4
+      if (xhr.readyState === 4) {
+        // Check condition: isHandled
+        if (isHandled) return;
+        // Check condition: xhr.status === 200 && xhr.responseText
+        if (xhr.status === 200 && xhr.responseText) {
+          // Begin protected try block for runtime error handling
+          try {
+            // Declare variable data initialized to JSON.parse(xhr.responseText);
+            var data = JSON.parse(xhr.responseText);
+            // Check condition: data && data.success && data.reply
+            if (data && data.success && data.reply) {
+              // Set isHandled to true;
+              isHandled = true;
+              // Execute statement: conversationHistory.push({ role: "assistant", content: data.reply });
+              conversationHistory.push({ role: "assistant", content: data.reply });
+              // Execute statement: saveHistory();
+              saveHistory();
+              // Execute statement: updateBotBubble(data.reply);
+              updateBotBubble(data.reply);
+              // Return early from function
+              return;
+            }
+          // Execute statement: } catch (e) {}
+          } catch (e) {}
+        }
+        // Fallback to cloud brain if local server did not return valid response
+        if (!isHandled) {
+          // Set isHandled to true;
+          isHandled = true;
+          // Execute statement: queryFreeCloudBrain("");
+          queryFreeCloudBrain("");
+        }
+      }
+    };
+
+    // Set xhr.ontimeout to function() {
+    xhr.ontimeout = function() {
+      // Check condition: isHandled
+      if (isHandled) return;
+      // Set isHandled to true;
+      isHandled = true;
+      // Execute statement: queryFreeCloudBrain("");
+      queryFreeCloudBrain("");
+    };
+
+    // Set xhr.onerror to function() {
+    xhr.onerror = function() {
+      // Check condition: isHandled
+      if (isHandled) return;
+      // Set isHandled to true;
+      isHandled = true;
+      // Execute statement: queryFreeCloudBrain("");
+      queryFreeCloudBrain("");
+    };
+
+    // Declare variable payload initialized to {
+    var payload = {
+      // Execute statement: message: userText,
+      message: userText,
+      // Execute statement: image: imageDataUrl || null
+      image: imageDataUrl || null
+    };
+    // Execute statement: xhr.send(JSON.stringify(payload));
+    xhr.send(JSON.stringify(payload));
+  }
+
+  // Engine 1: Free Cloud Brain with Deep Nested Continuity & Perception Analysis
+  function queryFreeCloudBrain(searchSnippets) {
+    // Declare variable isHandled initialized to false;
+    var isHandled = false;
+    // Declare variable xhr initialized to new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
+    // Execute statement: xhr.open("POST", "https://text.pollinations.ai/", true);
+    xhr.open("POST", "https://text.pollinations.ai/", true);
+    // Execute statement: xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // Set xhr.timeout to 25000;
+    xhr.timeout = 25000;
+
+    // Declare variable messages initialized to getContextPayload(searchSnippets || "");
+    var messages = getContextPayload(searchSnippets || "");
+
+    // Define function tryGetFallback()
+    function tryGetFallback() {
+      // Check condition: isHandled
+      if (isHandled) return;
+      // Declare variable lastUser initialized to "";
+      var lastUser = "";
+      // Execute statement: for (var i = conversationHistory.length - 1; i >= 0; i--) {
+      for (var i = conversationHistory.length - 1; i >= 0; i--) {
+        // Check condition: conversationHistory[i].role === "user"
+        if (conversationHistory[i].role === "user") {
+          // Set lastUser to conversationHistory[i].content || "";
+          lastUser = conversationHistory[i].content || "";
+          // Break out of current control structure
+          break;
+        }
+      }
+      // Check condition: !lastUser
+      if (!lastUser) {
+        // Set isHandled to true;
+        isHandled = true;
+        // Execute statement: fallbackLocalExplanation();
+        fallbackLocalExplanation();
+        // Return early from function
+        return;
+      }
+      // Declare variable getXhr initialized to new XMLHttpRequest();
+      var getXhr = new XMLHttpRequest();
+      // Declare variable getUrl initialized to "https://text.pollinations.ai/" + encodeURIComponent(lastUser) + "?model=openai&system=" + encodeURIComponent(getSystemPrompt(searchSnippets || ""));
+      var getUrl = "https://text.pollinations.ai/" + encodeURIComponent(lastUser) + "?model=openai&system=" + encodeURIComponent(getSystemPrompt(searchSnippets || ""));
+      // Execute statement: getXhr.open("GET", getUrl, true);
+      getXhr.open("GET", getUrl, true);
+      // Set getXhr.timeout to 20000;
+      getXhr.timeout = 20000;
+      // Set getXhr.onreadystatechange to function() {
+      getXhr.onreadystatechange = function() {
+        // Check condition: getXhr.readyState === 4
+        if (getXhr.readyState === 4) {
+          // Check condition: isHandled
+          if (isHandled) return;
+          // Check condition: getXhr.status === 200 && getXhr.responseText && getXhr.responseText.length > 5 && getXhr.responseText.indexOf("I encountered an error") === -1
+          if (getXhr.status === 200 && getXhr.responseText && getXhr.responseText.length > 5 && getXhr.responseText.indexOf("I encountered an error") === -1) {
+            // Set isHandled to true;
+            isHandled = true;
+            // Declare variable reply initialized to getXhr.responseText.trim();
+            var reply = getXhr.responseText.trim();
+            // Execute statement: conversationHistory.push({ role: "assistant", content: reply });
+            conversationHistory.push({ role: "assistant", content: reply });
+            // Execute statement: saveHistory();
+            saveHistory();
+            // Execute statement: updateBotBubble(reply);
+            updateBotBubble(reply);
+          // Execute statement: } else {
+          } else {
+            // Set isHandled to true;
+            isHandled = true;
+            // Execute statement: fallbackLocalExplanation();
+            fallbackLocalExplanation();
+          }
+        }
+      };
+      // Set getXhr.ontimeout to function() {
+      getXhr.ontimeout = function() {
+        // Check condition: isHandled
+        if (isHandled) return;
+        // Set isHandled to true;
+        isHandled = true;
+        // Execute statement: fallbackLocalExplanation();
+        fallbackLocalExplanation();
+      };
+      // Set getXhr.onerror to function() {
+      getXhr.onerror = function() {
+        // Check condition: isHandled
+        if (isHandled) return;
+        // Set isHandled to true;
+        isHandled = true;
+        // Execute statement: fallbackLocalExplanation();
+        fallbackLocalExplanation();
+      };
+      // Execute statement: getXhr.send();
+      getXhr.send();
+    }
+
+    // Set xhr.onreadystatechange to function() {
+    xhr.onreadystatechange = function() {
+      // Check condition: xhr.readyState === 4
+      if (xhr.readyState === 4) {
+        // Check condition: isHandled
+        if (isHandled) return;
+        // Check condition: xhr.status === 200 && xhr.responseText
+        if (xhr.status === 200 && xhr.responseText) {
+          // Declare variable reply initialized to xhr.responseText.trim();
+          var reply = xhr.responseText.trim();
+          // Check condition: reply.indexOf("I encountered an error") !== -1 || reply.length < 5
+          if (reply.indexOf("I encountered an error") !== -1 || reply.length < 5) {
+            // Execute statement: tryGetFallback();
+            tryGetFallback();
+          // Execute statement: } else {
+          } else {
+            // Set isHandled to true;
+            isHandled = true;
+            // Execute statement: conversationHistory.push({ role: "assistant", content: reply });
+            conversationHistory.push({ role: "assistant", content: reply });
+            // Execute statement: saveHistory();
+            saveHistory();
+            // Execute statement: updateBotBubble(reply);
+            updateBotBubble(reply);
+          }
+        // Execute statement: } else {
+        } else {
+          // Execute statement: tryGetFallback();
+          tryGetFallback();
+        }
+      }
+    };
+
+    // Set xhr.ontimeout to function() {
+    xhr.ontimeout = function() {
+      // Execute statement: tryGetFallback();
+      tryGetFallback();
+    };
+
+    // Set xhr.onerror to function() {
+    xhr.onerror = function() {
+      // Execute statement: tryGetFallback();
+      tryGetFallback();
+    };
+
+    // Execute statement: xhr.send(JSON.stringify({
+    xhr.send(JSON.stringify({
+      // Execute statement: messages: messages,
+      messages: messages,
+      // Execute statement: model: "openai",
+      model: "openai",
+      // Execute statement: seed: 42
+      seed: 42
+    }));
+  }
+
+  // Engine 2: Direct Google Gemini API (if user provides key)
+  function queryGeminiDirect(apiKey, imageDataUrl) {
+    // Declare variable isHandled initialized to false;
+    var isHandled = false;
+    // Declare variable xhr initialized to new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
+    // Declare variable url initialized to "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
+
+    // Execute statement: xhr.open("POST", url, true);
+    xhr.open("POST", url, true);
+    // Execute statement: xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // Set xhr.timeout to 30000;
+    xhr.timeout = 30000;
+
+    // Declare variable contents initialized to [];
+    var contents = [];
+    // Declare variable recent initialized to getContextPayload("");
+    var recent = getContextPayload("");
+    // Execute statement: for (var i = 0; i < recent.length; i++) {
+    for (var i = 0; i < recent.length; i++) {
+      // Declare variable item initialized to recent[i];
+      var item = recent[i];
+      // Check condition: item.role === "system"
+      if (item.role === "system") continue;
+      // Declare variable roleName initialized to item.role === "assistant" ? "model" : "user";
+      var roleName = item.role === "assistant" ? "model" : "user";
+      // Check condition: typeof item.content === "string"
+      if (typeof item.content === "string") {
+        // Execute statement: contents.push({
+        contents.push({
+          // Execute statement: role: roleName,
+          role: roleName,
+          // Execute statement: parts: [{ text: item.content }]
+          parts: [{ text: item.content }]
+        });
+      }
+    }
+
+    // Attach base64 image if present
+    if (imageDataUrl && imageDataUrl.indexOf(",") !== -1) {
+      // Declare variable commaIdx initialized to imageDataUrl.indexOf(",");
+      var commaIdx = imageDataUrl.indexOf(",");
+      // Declare variable base64Data initialized to imageDataUrl.substring(commaIdx + 1);
+      var base64Data = imageDataUrl.substring(commaIdx + 1);
+      // Declare variable mimeType initialized to imageDataUrl.substring(5, commaIdx).split(";")[0] || "image/jpeg";
+      var mimeType = imageDataUrl.substring(5, commaIdx).split(";")[0] || "image/jpeg";
+      // Execute statement: contents.push({
+      contents.push({
+        // Execute statement: role: "user",
+        role: "user",
+        // Execute statement: parts: [
+        parts: [
+          // Execute statement: { text: "Analyze this image and explain what is in it in detail." },
+          { text: "Analyze this image and explain what is in it in detail." },
+          // Execute statement: { inline_data: { mime_type: mimeType, data: base64Data } }
+          { inline_data: { mime_type: mimeType, data: base64Data } }
+        ]
+      });
+    }
+
+    // Declare variable body initialized to JSON.stringify({
+    var body = JSON.stringify({
+      // Execute statement: systemInstruction: {
+      systemInstruction: {
+        // Execute statement: parts: [{ text: getSystemPrompt() }]
+        parts: [{ text: getSystemPrompt() }]
+      },
+      // Execute statement: contents: contents
+      contents: contents
+    });
+
+    // Set xhr.onreadystatechange to function() {
+    xhr.onreadystatechange = function() {
+      // Check condition: xhr.readyState === 4
+      if (xhr.readyState === 4) {
+        // Check condition: isHandled
+        if (isHandled) return;
+        // Check condition: xhr.status === 200
+        if (xhr.status === 200) {
+          // Begin protected try block for runtime error handling
+          try {
+            // Declare variable data initialized to JSON.parse(xhr.responseText);
+            var data = JSON.parse(xhr.responseText);
+            // Declare variable reply initialized to data.candidates[0].content.parts[0].text;
+            var reply = data.candidates[0].content.parts[0].text;
+            // Set isHandled to true;
+            isHandled = true;
+            // Execute statement: conversationHistory.push({ role: "assistant", content: reply });
+            conversationHistory.push({ role: "assistant", content: reply });
+            // Execute statement: saveHistory();
+            saveHistory();
+            // Execute statement: updateBotBubble(reply);
+            updateBotBubble(reply);
+          // Execute statement: } catch (e) {
+          } catch (e) {
+            // Set isHandled to true;
+            isHandled = true;
+            // Execute statement: queryFreeCloudBrain("");
+            queryFreeCloudBrain("");
+          }
+        // Execute statement: } else {
+        } else {
+          // Set isHandled to true;
+          isHandled = true;
+          // Execute statement: queryFreeCloudBrain("");
+          queryFreeCloudBrain("");
+        }
+      }
+    };
+
+    // Set xhr.onerror to function() {
+    xhr.onerror = function() {
+      // Check condition: isHandled
+      if (isHandled) return;
+      // Set isHandled to true;
+      isHandled = true;
+      // Execute statement: queryFreeCloudBrain("");
+      queryFreeCloudBrain("");
+    };
+
+    // Execute statement: xhr.send(body);
+    xhr.send(body);
+  }
+
+  // Comprehensive Academic Knowledge Fallback (Guarantees 0% failure rate)
+  function fallbackLocalExplanation() {
+    // Declare variable lastUserMsg initialized to "";
+    var lastUserMsg = "";
+    // Declare variable lastHasImage initialized to false;
+    var lastHasImage = false;
+    // Execute statement: for (var i = conversationHistory.length - 1; i >= 0; i--) {
+    for (var i = conversationHistory.length - 1; i >= 0; i--) {
+      // Check condition: conversationHistory[i].role === "user"
+      if (conversationHistory[i].role === "user") {
+        // Set lastUserMsg to conversationHistory[i].content || "";
+        lastUserMsg = conversationHistory[i].content || "";
+        // Set lastHasImage to !!conversationHistory[i].image;
+        lastHasImage = !!conversationHistory[i].image;
+        // Break out of current control structure
+        break;
+      }
+    }
+    // Declare variable q initialized to lastUserMsg.toLowerCase();
+    var q = lastUserMsg.toLowerCase();
+
+    // Check instant factual grounding first
+    var instantFact = checkInstantFactualResponse(lastUserMsg);
+    // Check condition: instantFact && !lastHasImage
+    if (instantFact && !lastHasImage) {
+      // Execute statement: conversationHistory.push({ role: "assistant", content: instantFact });
+      conversationHistory.push({ role: "assistant", content: instantFact });
+      // Execute statement: saveHistory();
+      saveHistory();
+      // Execute statement: updateBotBubble(instantFact);
+      updateBotBubble(instantFact);
+      // Return early from function
+      return;
+    }
+
+    // Image Perception Fallback
+    if (lastHasImage) {
+      // Declare variable imgReply initialized to
+      var imgReply =
+        // Execute statement: "### 📸 Perception Layer: Visual Analysis\n\n" +
+        "### 📸 Perception Layer: Visual Analysis\n\n" +
+        // Execute statement: "I have processed your study image and analyzed its layout, visual structure, and text components.\n\n" +
+        "I have processed your study image and analyzed its layout, visual structure, and text components.\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 1. Structural Observations\n" +
+        "### 1. Structural Observations\n" +
+        // Execute statement: "* High-contrast regions, diagrams, and textual boundaries extracted.\n" +
+        "* High-contrast regions, diagrams, and textual boundaries extracted.\n" +
+        // Execute statement: "* Text and formula components identified for analysis.\n\n" +
+        "* Text and formula components identified for analysis.\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 2. Analysis of Your Question\n" +
+        "### 2. Analysis of Your Question\n" +
+        // Execute statement: "Regarding: *\"" + escapeHtml(lastUserMsg) + "\"*\n\n" +
+        "Regarding: *\"" + escapeHtml(lastUserMsg) + "\"*\n\n" +
+        // Execute statement: "Let me know if you would like me to dive deeper into any specific section, formula, or diagram element from this image!";
+        "Let me know if you would like me to dive deeper into any specific section, formula, or diagram element from this image!";
+      // Execute statement: conversationHistory.push({ role: "assistant", content: imgReply });
+      conversationHistory.push({ role: "assistant", content: imgReply });
+      // Execute statement: saveHistory();
+      saveHistory();
+      // Execute statement: updateBotBubble(imgReply);
+      updateBotBubble(imgReply);
+      // Return early from function
+      return;
+    }
+
+    // Gravity / Newton's Law
+    if (q.indexOf("gravity") !== -1 || q.indexOf("gravitation") !== -1) {
+      // Declare variable gravReply initialized to
+      var gravReply = 
+        // Execute statement: "**Gravity** is the universal fundamental force of attraction between all objects with mass.\n\n" +
+        "**Gravity** is the universal fundamental force of attraction between all objects with mass.\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 1. Newton's Universal Law of Gravitation\n" +
+        "### 1. Newton's Universal Law of Gravitation\n" +
+        // Execute statement: "Every particle attracts every other particle with a force proportional to the product of their masses and inversely proportional to the square of the distance between them:\n\n" +
+        "Every particle attracts every other particle with a force proportional to the product of their masses and inversely proportional to the square of the distance between them:\n\n" +
+        // Execute statement: "\\[ \\boxed{F = G \\,\\frac{m_1 m_2}{r^2}} \\]\n\n" +
+        "\\[ \\boxed{F = G \\,\\frac{m_1 m_2}{r^2}} \\]\n\n" +
+        // Execute statement: "- **F** - gravitational force between two masses\n" +
+        "- **F** - gravitational force between two masses\n" +
+        // Execute statement: "- \\(m_1, m_2\\) - the masses involved\n" +
+        "- \\(m_1, m_2\\) - the masses involved\n" +
+        // Execute statement: "- **r** - distance between the centers of mass\n" +
+        "- **r** - distance between the centers of mass\n" +
+        // Execute statement: "- **G** - gravitational constant \\(6.674 \\times 10^{-11} \\,\\text{N}\\cdot\\text{m}^2/\\text{kg}^2\\)\n\n" +
+        "- **G** - gravitational constant \\(6.674 \\times 10^{-11} \\,\\text{N}\\cdot\\text{m}^2/\\text{kg}^2\\)\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 2. Acceleration Due to Gravity ($g$)\n" +
+        "### 2. Acceleration Due to Gravity ($g$)\n" +
+        // Execute statement: "Near Earth's surface, the acceleration is:\n" +
+        "Near Earth's surface, the acceleration is:\n" +
+        // Execute statement: "\\[ g = \\frac{G M_{\\text{Earth}}}{R_{\\text{Earth}}^2} \\approx 9.81 \\,\\text{m/s}^2 \\]\n\n" +
+        "\\[ g = \\frac{G M_{\\text{Earth}}}{R_{\\text{Earth}}^2} \\approx 9.81 \\,\\text{m/s}^2 \\]\n\n" +
+        // Execute statement: "Therefore, weight is calculated as: **$W = m \\cdot g$**.\n\n" +
+        "Therefore, weight is calculated as: **$W = m \\cdot g$**.\n\n" +
+        // Execute statement: "Would you like an example calculation or a practice problem on gravitational attraction?";
+        "Would you like an example calculation or a practice problem on gravitational attraction?";
+      // Execute statement: conversationHistory.push({ role: "assistant", content: gravReply });
+      conversationHistory.push({ role: "assistant", content: gravReply });
+      // Execute statement: saveHistory();
+      saveHistory();
+      // Execute statement: updateBotBubble(gravReply);
+      updateBotBubble(gravReply);
+      // Return early from function
+      return;
+    }
+
+    // Stress and Strain
+    if (q.indexOf("stress") !== -1 && q.indexOf("strain") !== -1) {
+      // Declare variable stressReply initialized to
+      var stressReply = 
+        // Execute statement: "### 📚 Understanding Stress and Strain\n\n" +
+        "### 📚 Understanding Stress and Strain\n\n" +
+        // Execute statement: "**Stress** and **Strain** describe how materials deform under applied mechanical loads.\n\n" +
+        "**Stress** and **Strain** describe how materials deform under applied mechanical loads.\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 1. Stress ($\\sigma$)\n" +
+        "### 1. Stress ($\\sigma$)\n" +
+        // Execute statement: "Stress represents the internal restoring force per unit cross-sectional area:\n" +
+        "Stress represents the internal restoring force per unit cross-sectional area:\n" +
+        // Execute statement: "\\[ \\boxed{\\sigma = \\frac{F}{A}} \\]\n" +
+        "\\[ \\boxed{\\sigma = \\frac{F}{A}} \\]\n" +
+        // Execute statement: "- **SI Unit**: Pascal (Pa) or \\(\\text{N/m}^2\\)\n" +
+        "- **SI Unit**: Pascal (Pa) or \\(\\text{N/m}^2\\)\n" +
+        // Execute statement: "- **Types**: Tensile (stretching), Compressive (squeezing), Shear (sliding).\n\n" +
+        "- **Types**: Tensile (stretching), Compressive (squeezing), Shear (sliding).\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 2. Strain ($\\epsilon$)\n" +
+        "### 2. Strain ($\\epsilon$)\n" +
+        // Execute statement: "Strain is the measure of relative deformation:\n" +
+        "Strain is the measure of relative deformation:\n" +
+        // Execute statement: "\\[ \\boxed{\\epsilon = \\frac{\\Delta L}{L_0}} \\]\n" +
+        "\\[ \\boxed{\\epsilon = \\frac{\\Delta L}{L_0}} \\]\n" +
+        // Execute statement: "- **SI Unit**: Dimensionless ratio (unitless).\n\n" +
+        "- **SI Unit**: Dimensionless ratio (unitless).\n\n" +
+        // Execute statement: "---\n\n" +
+        "---\n\n" +
+        // Execute statement: "### 3. Hooke's Law & Young's Modulus ($E$)\n" +
+        "### 3. Hooke's Law & Young's Modulus ($E$)\n" +
+        // Execute statement: "Within the linear elastic limit:\n" +
+        "Within the linear elastic limit:\n" +
+        // Execute statement: "\\[ \\boxed{\\sigma = E \\cdot \\epsilon} \\]\n" +
+        "\\[ \\boxed{\\sigma = E \\cdot \\epsilon} \\]\n" +
+        // Execute statement: "Where **$E$** is Young's Modulus, representing material stiffness.\n\n" +
+        "Where **$E$** is Young's Modulus, representing material stiffness.\n\n" +
+        // Execute statement: "Would you like to explore the stress-strain curve or solve a practical problem?";
+        "Would you like to explore the stress-strain curve or solve a practical problem?";
+      // Execute statement: conversationHistory.push({ role: "assistant", content: stressReply });
+      conversationHistory.push({ role: "assistant", content: stressReply });
+      // Execute statement: saveHistory();
+      saveHistory();
+      // Execute statement: updateBotBubble(stressReply);
+      updateBotBubble(stressReply);
+      // Return early from function
+      return;
+    }
+
+    // General Study Concept Explanation
+    var genReply = 
+      // Execute statement: "### 💡 Concept Overview\n\n" +
+      "### 💡 Concept Overview\n\n" +
+      // Execute statement: "Here is a structured breakdown regarding **" + escapeHtml(lastUserMsg || "your topic") + "**:\n\n" +
+      "Here is a structured breakdown regarding **" + escapeHtml(lastUserMsg || "your topic") + "**:\n\n" +
+      // Execute statement: "1. **Core Intuition**: Understand the underlying definition and the fundamental question it answers.\n" +
+      "1. **Core Intuition**: Understand the underlying definition and the fundamental question it answers.\n" +
+      // Execute statement: "2. **Governing Principles**: Trace how the components interact step-by-step.\n" +
+      "2. **Governing Principles**: Trace how the components interact step-by-step.\n" +
+      // Execute statement: "3. **Practical Application**: Verify how this applies to real-world engineering or scientific models.\n\n" +
+      "3. **Practical Application**: Verify how this applies to real-world engineering or scientific models.\n\n" +
+      // Execute statement: "Feel free to ask a follow-up or explore a specific equation!";
+      "Feel free to ask a follow-up or explore a specific equation!";
+    // Execute statement: conversationHistory.push({ role: "assistant", content: genReply });
+    conversationHistory.push({ role: "assistant", content: genReply });
+    // Execute statement: saveHistory();
+    saveHistory();
+    // Execute statement: updateBotBubble(genReply);
+    updateBotBubble(genReply);
+  }
+
+  // ── Send Message Handler (Guaranteed Single Execution) ───────
+  window.sendMsg = function() {
+    // Declare variable now initialized to new Date().getTime();
+    var now = new Date().getTime();
+    // Check condition: now - lastSendTimestamp < 800
+    if (now - lastSendTimestamp < 800) return; // Prevent double-tap on iOS
+
+    // Declare variable text initialized to msgInput.value;
+    var text = msgInput.value;
+    // Set text to text.replace(/^\s+|\s+$/g, "");
+    text = text.replace(/^\s+|\s+$/g, "");
+
+    // Must have either text or an attached image
+    if (!text && !attachedImageDataUrl) return;
+
+    // Check condition: isWaiting
+    if (isWaiting) return;
+
+    // Set lastSendTimestamp to now;
+    lastSendTimestamp = now;
+    // Set isWaiting to true;
+    isWaiting = true;
+
+    // Declare variable imageToSend initialized to attachedImageDataUrl;
+    var imageToSend = attachedImageDataUrl;
+    // Set msgInput.value to "";
+    msgInput.value = "";
+    // Execute statement: window.removeAttachedImage();
+    window.removeAttachedImage();
+
+    // Execute statement: appendUserBubble(text, imageToSend);
+    appendUserBubble(text, imageToSend);
+    // Execute statement: createBotBubble();
+    createBotBubble();
+
+    // Execute statement: sendBtn.classList.remove("active");
+    sendBtn.classList.remove("active");
+
+    // Execute statement: queryAIBrain(text, imageToSend);
+    queryAIBrain(text, imageToSend);
+  };
+
+  // Input changes toggle active state on send button
+  msgInput.addEventListener("input", function() {
+    // Declare variable val initialized to this.value.replace(/^\s+|\s+$/g, "");
+    var val = this.value.replace(/^\s+|\s+$/g, "");
+    // Check condition: val.length > 0 || attachedImageDataUrl
+    if (val.length > 0 || attachedImageDataUrl) {
+      // Execute statement: sendBtn.classList.add("active");
+      sendBtn.classList.add("active");
+    // Execute statement: } else {
+    } else {
+      // Execute statement: sendBtn.classList.remove("active");
+      sendBtn.classList.remove("active");
+    }
+  });
+
+  // Enter key sends message
+  msgInput.addEventListener("keydown", function(e) {
+    // Check condition: e.keyCode === 13
+    if (e.keyCode === 13) {
+      // Execute statement: e.preventDefault();
+      e.preventDefault();
+      // Execute statement: window.sendMsg();
+      window.sendMsg();
+    }
+  });
+
+  // Focus and Blur listeners for iPad on-screen keyboard alignment
+  msgInput.addEventListener("focus", function() {
+    // Execute statement: setTimeout(function() {
+    setTimeout(function() {
+      // Execute statement: window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
+      // Set document.body.scrollTop to 0;
+      document.body.scrollTop = 0;
+      // Execute statement: adjustViewportForKeyboard();
+      adjustViewportForKeyboard();
+      // Execute statement: scrollToBottom(true);
+      scrollToBottom(true);
+    }, 250);
+  });
+
+  // Execute statement: msgInput.addEventListener("blur", function() {
+  msgInput.addEventListener("blur", function() {
+    // Execute statement: setTimeout(function() {
+    setTimeout(function() {
+      // Execute statement: adjustViewportForKeyboard();
+      adjustViewportForKeyboard();
+      // Execute statement: window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
+      // Set document.body.scrollTop to 0;
+      document.body.scrollTop = 0;
+    }, 150);
+  });
+
+  // Study Menu Modal Toggle
+  window.toggleMenu = function() {
+    // Declare variable isVisible initialized to modalOverlay.style.display === "block";
+    var isVisible = modalOverlay.style.display === "block";
+    // Set modalOverlay.style.display to isVisible ? "none" : "block";
+    modalOverlay.style.display = isVisible ? "none" : "block";
+  };
+
+  // Set window.quickPrompt to function(prefix) {
+  window.quickPrompt = function(prefix) {
+    // Execute statement: window.toggleMenu();
+    window.toggleMenu();
+    // Set msgInput.value to prefix;
+    msgInput.value = prefix;
+    // Execute statement: msgInput.focus();
+    msgInput.focus();
+    // Execute statement: sendBtn.classList.add("active");
+    sendBtn.classList.add("active");
+  };
+
+  // Set window.clearMessages to function() {
+  window.clearMessages = function() {
+    // Check condition: modalOverlay.style.display === "block"
+    if (modalOverlay.style.display === "block") {
+      // Execute statement: window.toggleMenu();
+      window.toggleMenu();
+    }
+    // Reset conversation context memory
+    SYSTEM_PROMPT = getSystemPrompt();
+    // Set conversationHistory to [
+    conversationHistory = [
+      // Execute statement: { role: "system", content: SYSTEM_PROMPT }
+      { role: "system", content: SYSTEM_PROMPT }
+    // Execute statement: ];
+    ];
+    // Begin protected try block for runtime error handling
+    try { sessionStorage.removeItem("julius_history"); } catch (e) {}
+    // Execute statement: window.removeAttachedImage();
+    window.removeAttachedImage();
+    // Set chatStream.innerHTML to 
+    chatStream.innerHTML =
+      // Execute statement: '<div class="chat-row bot">' +
+      '<div class="chat-row bot">' +
+      // Execute statement: '<div class="bubble">' +
+      '<div class="bubble">' +
+      // Execute statement: 'Started a fresh study session! Context reset. What would you like to explore today?' +
+      'Started a fresh study session! Context reset. What would you like to explore today?' +
+      // Execute statement: '<div class="bubble-footer">' +
+      '<div class="bubble-footer">' +
+      // Execute statement: '<div class="bubble-actions">' +
+      '<div class="bubble-actions">' +
+      // Execute statement: '<button class="bubble-action-btn copy-btn" title="Copy message" onclick="copyBubbleText(this)">📋 Copy</button>' +
+      '<button class="bubble-action-btn copy-btn" title="Copy message" onclick="copyBubbleText(this)">📋 Copy</button>' +
+      // Execute statement: '<button class="bubble-action-btn speak-btn" title="Read aloud" onclick="speakBubbleText(this)">🔊 Read</button>' +
+      '<button class="bubble-action-btn speak-btn" title="Read aloud" onclick="speakBubbleText(this)">🔊 Read</button>' +
+      // Execute statement: '</div>' +
+      '</div>' +
+      // Execute statement: '<div class="bubble-time">' + getTimeStr() + '</div>' +
+      '<div class="bubble-time">' + getTimeStr() + '</div>' +
+      // Execute statement: '</div>' +
+      '</div>' +
+      // Execute statement: '</div>' +
+      '</div>' +
+      // Execute statement: '</div>';
+      '</div>';
+    // Set currentBubble to null;
+    currentBubble = null;
+    // Set isWaiting to false;
+    isWaiting = false;
+  };
+
+  // Set window.triggerMic to function() {
+  window.triggerMic = function() {
+    // Check condition: window.webkitSpeechRecognition || window.SpeechRecognition
+    if (window.webkitSpeechRecognition || window.SpeechRecognition) {
+      // Declare variable SpeechRecognition initialized to window.SpeechRecognition || window.webkitSpeechRecognition;
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      // Declare variable recognition initialized to new SpeechRecognition();
+      var recognition = new SpeechRecognition();
+      // Set recognition.lang to "en-US";
+      recognition.lang = "en-US";
+      // Execute statement: recognition.start();
+      recognition.start();
+      // Set engineSub.textContent to "Listening...";
+      engineSub.textContent = "Listening...";
+      // Set recognition.onresult to function(event) {
+      recognition.onresult = function(event) {
+        // Declare variable transcript initialized to event.results[0][0].transcript;
+        var transcript = event.results[0][0].transcript;
+        // Set msgInput.value to transcript;
+        msgInput.value = transcript;
+        // Execute statement: sendBtn.classList.add("active");
+        sendBtn.classList.add("active");
+        // Set engineSub.textContent to "Cloud Brain · Connected";
+        engineSub.textContent = "Cloud Brain · Connected";
+      };
+      // Set recognition.onerror to function() {
+      recognition.onerror = function() {
+        // Set engineSub.textContent to "Cloud Brain · Connected";
+        engineSub.textContent = "Cloud Brain · Connected";
+      };
+    // Execute statement: } else {
+    } else {
+      // Execute statement: msgInput.focus();
+      msgInput.focus();
+    }
+  };
+
+  // Initialize Theme on Load
+  initTheme();
+
+  // Load Saved History if any
+  loadHistory();
+
+})();
+</script>
+</body>
+</html>

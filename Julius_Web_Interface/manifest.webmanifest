@@ -1,0 +1,19 @@
+{
+  "name": "Julius Universal Agent Workspace",
+  "short_name": "Julius",
+  "description": "Autonomous web reasoning, coding, and multi-device agent interface.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#121214",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./fonts/Julius-Bold.woff2",
+      "sizes": "192x192",
+      "type": "font/woff2"
+    }
+  ],
+  "categories": ["productivity", "developer tools", "utilities"]
+}
+

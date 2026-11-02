@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Julius Agent
+Comment=Autonomous Web Agent (Julius)
+Exec=julius-gui
+Icon=julius
+Terminal=false
+Type=Application
+Categories=Development;Utility;
+StartupNotify=true

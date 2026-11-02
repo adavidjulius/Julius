@@ -1,0 +1,160 @@
+# ── Environment & Secret Credentials ─────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+credentials.json
+token.json
+*.credentials.json
+
+# ── Video & Heavy Media Files ────────────────────────────────────────────────
+julius_launch_video/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.flv
+*.wmv
+*.wav
+*.mp3
+materials/received_media/
+
+# ── Python & Environments ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.venv/
+venv/
+env/
+ENV/
+tts-env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── Node & JavaScript ───────────────────────────────────────────────────────
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Build Artifacts & Distributions ──────────────────────────────────────────
+dist/
+build/
+rpm_build/
+*.rpm
+*.dmg
+*.msi
+*.egg-info/
+target/
+**/target/
+*.tar.gz
+
+# ── Swift / Apple / SPM Build Artifacts ──────────────────────────────────────
+.build/
+**/.build/
+*.app/
+**/*.app/
+*.dSYM/
+**/*.dSYM/
+DerivedData/
+**/DerivedData/
+*.ipa
+*.xcarchive
+Julius_iOS/.build/
+Julius_iOS/Julius.app/
+Julius_iOS/claude sample images/
+**/claude sample images/
+
+# ── IDEs & Operating System Artifacts ────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+Thumbs.db
+ehthumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.bak
+
+# ── Databases & SQLite Runtime Files ─────────────────────────────────────────
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+.julius/*.db
+.julius/*.db*
+.julius/ledger.db
+.julius/memory.db
+.julius/pkb.db
+.julius/rag.db
+whatsapp.db*
+
+# ── Browser Profiles & Sessions ──────────────────────────────────────────────
+whatsapp_profile/
+.julius/whatsapp_profile/
+*.julius_wa_lock
+.julius_wa_session.json
+chrome_profile/
+**/chrome_profile/
+webkit_profile/
+
+# ── Julius Runtime State & Local Cache ───────────────────────────────────────
+.julius/settings.local.json
+.julius/sessions/
+.julius/temp_cmd.sh
+.julius/browser_task.json
+.julius/session_metadata.json
+.juliusship/
+.port_sessions/
+.julius/*.jsonl
+.julius/*.lock
+.julius/*.txt
+.omx/
+.julius-agents/
+.agents/teamwork/
+.kimi_daily_usage.json
+JuliusData/
+workspaces/
+dustbin/
+scratch/
+scraper_out/
+logs/
+log/
+*.log
+
+# ── Large OS Firmware Dumps & APK Binaries ───────────────────────────────────
+Julius OS/firmware/
+Julius OS/apps/
+Julius OS/tools/*.apk
+Julius OS/tools/*.dex
+Julius OS/log/
+
+# ── Local Test Scratch Artifacts ─────────────────────────────────────────────
+audit_report.json
+camera_capture.jpg
+current_state.png
+test_katex.html
+cad_output/*.dwg
+cad_output/*.dxf
+files_left_*.txt
+Julius_Test/*.zip
+Julius_Test/jetbrains_mono/
+Julius_Test/nvidia_job_result.txt
+Julius_Test/brand_book_challenge/
+Julius_Test/adversarial_challenge_results.json
+Julius_Test/ext-apps/
+Julius_Test/*.png
+Julius_Test/*_dom.json
+mcp_config.json
+.agents/mcp_config.json

@@ -1,0 +1,13 @@
+# Auto detect text files and perform LF normalization on POSIX, CRLF on Windows scripts
+* text=auto
+
+# Unix shell scripts must always have LF line endings
+*.sh text eol=lf
+
+# Windows PowerShell and batch scripts must have CRLF line endings
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Python source files prefer LF
+*.py text eol=lf

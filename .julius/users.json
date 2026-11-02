@@ -1,0 +1,29 @@
+{
+  "admin@example.com": {
+    "name": "Admin User",
+    "provider": "apple",
+    "password_hash": "SSO_ACCOUNT",
+    "created_at": "2026-07-11 15:25:53"
+  },
+  "developer@example.com": {
+    "name": "Developer",
+    "provider": "google",
+    "password_hash": "SSO_ACCOUNT",
+    "created_at": "2026-07-11 21:14:12"
+  },
+  "test@example.com": {
+    "name": "Test User",
+    "password_hash": "008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601",
+    "created_at": "2026-07-12 14:44:58"
+  },
+  "guest@example.com": {
+    "name": "Guest",
+    "password_hash": "008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601",
+    "created_at": "2026-07-14 20:09:20"
+  },
+  "tester@example.com": {
+    "name": "Test Tester",
+    "password_hash": "a109e36947ad56de1dca1cc49f0ef8ac9ad9a7b1aa0df41fb3c4cb73c1ff01ea",
+    "created_at": "2026-07-15 10:33:41"
+  }
+}

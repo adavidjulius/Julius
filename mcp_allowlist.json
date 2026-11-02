@@ -1,0 +1,146 @@
+{
+  "$schema": "https://julius.ai/schemas/mcp_allowlist.json",
+  "description": "MCP tool auto-approval allowlist. Tools matching these patterns are auto-approved without interactive prompts. Supports glob wildcards (* and ?).",
+  "allowlist": [
+    {
+      "pattern": "read_file",
+      "server_pattern": "filesystem",
+      "description": "Reading files is always safe — auto-approve filesystem reads"
+    },
+    {
+      "pattern": "read_text_file",
+      "server_pattern": "filesystem",
+      "description": "Reading text files is always safe"
+    },
+    {
+      "pattern": "list_directory",
+      "server_pattern": "filesystem",
+      "description": "Listing directories is read-only and safe"
+    },
+    {
+      "pattern": "directory_tree",
+      "server_pattern": "filesystem",
+      "description": "Directory tree listing is read-only"
+    },
+    {
+      "pattern": "get_file_info",
+      "server_pattern": "filesystem",
+      "description": "File metadata reads are safe"
+    },
+    {
+      "pattern": "search_files",
+      "server_pattern": "filesystem",
+      "description": "File search is read-only"
+    },
+    {
+      "pattern": "list_allowed_directories",
+      "server_pattern": "filesystem",
+      "description": "Listing allowed directories is safe"
+    },
+    {
+      "pattern": "read_query",
+      "server_pattern": "sqlite",
+      "description": "SQLite SELECT queries are read-only — auto-approve"
+    },
+    {
+      "pattern": "list_tables",
+      "server_pattern": "sqlite",
+      "description": "Listing SQLite tables is read-only"
+    },
+    {
+      "pattern": "describe_table",
+      "server_pattern": "sqlite",
+      "description": "Describing SQLite tables is read-only"
+    },
+    {
+      "pattern": "search_nodes",
+      "server_pattern": "memory",
+      "description": "Searching knowledge graph is read-only"
+    },
+    {
+      "pattern": "open_nodes",
+      "server_pattern": "memory",
+      "description": "Opening knowledge graph nodes is read-only"
+    },
+    {
+      "pattern": "read_graph",
+      "server_pattern": "memory",
+      "description": "Reading knowledge graph is read-only"
+    },
+    {
+      "pattern": "git_log",
+      "server_pattern": "git",
+      "description": "Git log is read-only"
+    },
+    {
+      "pattern": "git_status",
+      "server_pattern": "git",
+      "description": "Git status is read-only"
+    },
+    {
+      "pattern": "git_diff*",
+      "server_pattern": "git",
+      "description": "Git diff operations are read-only"
+    },
+    {
+      "pattern": "git_show",
+      "server_pattern": "git",
+      "description": "Git show is read-only"
+    },
+    {
+      "pattern": "git_branch",
+      "server_pattern": "git",
+      "description": "Listing git branches is read-only"
+    },
+    {
+      "pattern": "fetch",
+      "server_pattern": "fetch",
+      "description": "HTTP fetch is read-only"
+    },
+    {
+      "pattern": "search_repositories",
+      "server_pattern": "github",
+      "description": "GitHub repository search is read-only"
+    },
+    {
+      "pattern": "get_file_contents",
+      "server_pattern": "github",
+      "description": "Reading GitHub file contents is read-only"
+    },
+    {
+      "pattern": "search_code",
+      "server_pattern": "github",
+      "description": "GitHub code search is read-only"
+    },
+    {
+      "pattern": "search_issues",
+      "server_pattern": "github",
+      "description": "GitHub issue search is read-only"
+    },
+    {
+      "pattern": "search_users",
+      "server_pattern": "github",
+      "description": "GitHub user search is read-only"
+    },
+    {
+      "pattern": "get_issue",
+      "server_pattern": "github",
+      "description": "Reading GitHub issues is read-only"
+    },
+    {
+      "pattern": "get_pull_request",
+      "server_pattern": "github",
+      "description": "Reading GitHub PRs is read-only"
+    },
+    {
+      "pattern": "list_*",
+      "server_pattern": "github",
+      "description": "GitHub list operations are read-only"
+    },
+    {
+      "pattern": "capcut_*",
+      "server_pattern": "capcut",
+      "description": "CapCut Desktop video editing actions"
+    }
+  ]
+}

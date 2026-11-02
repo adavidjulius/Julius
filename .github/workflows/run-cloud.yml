@@ -1,0 +1,161 @@
+name: Run Julius in Cloud (Web UI)
+
+on:
+  workflow_dispatch:
+    inputs:
+      duration_hours:
+        description: 'Duration to keep Julius running in the cloud (hours, up to 6)'
+        required: false
+        default: '6'
+      admin_password:
+        description: 'Password for david julius login'
+        required: false
+        default: 'david'
+
+jobs:
+  run-julius:
+    name: Run Julius Cloud Instance & Public Tunnel
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq curl jq
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-linux.txt pyyaml httpx cryptography spotipy google-api-python-client mutagen
+          python -m playwright install --with-deps chromium || true
+
+      - name: Install Cloudflare Tunnel (cloudflared)
+        run: |
+          curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+          chmod +x cloudflared
+          sudo mv cloudflared /usr/local/bin/cloudflared
+          cloudflared --version
+
+      - name: Configure Julius Environment
+        run: |
+          cat << 'EOF' > .env
+          JULIUS_HOST=0.0.0.0
+          JULIUS_WS_PORT=8080
+          JULIUS_HEADLESS=true
+          JULIUS_VOICE_ENABLED=false
+          JULIUS_ADMIN_USERNAME=david julius
+          JULIUS_ADMIN_EMAIL=david@julius.ai
+          JULIUS_ADMIN_PASSWORD=${{ github.event.inputs.admin_password || 'david' }}
+          EOF
+
+      - name: Start Julius Agent Server
+        run: |
+          python3 julius_gui.py --host 0.0.0.0 --port 8080 > julius.log 2>&1 &
+          echo $! > julius.pid
+
+          echo "Waiting for Julius Web UI to initialize on port 8080..."
+          for i in $(seq 1 45); do
+            if curl -s -f http://127.0.0.1:8080/ > /dev/null 2>&1 || curl -s -f http://127.0.0.1:8080/login > /dev/null 2>&1; then
+              echo "✅ Julius Web UI is up and running on port 8080!"
+              break
+            fi
+            if ! kill -0 $(cat julius.pid) 2>/dev/null; then
+              echo "❌ Julius server process terminated unexpectedly!"
+              cat julius.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Launch Cloudflare Quick Tunnel & Publish URL
+        id: tunnel
+        run: |
+          echo "Starting Cloudflare Quick Tunnel..."
+          cloudflared tunnel --url http://127.0.0.1:8080 --no-autoupdate > cloudflared.log 2>&1 &
+          echo $! > cloudflared.pid
+
+          echo "Waiting for Cloudflare Tunnel URL..."
+          TUNNEL_URL=""
+          for i in $(seq 1 60); do
+            TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' cloudflared.log | head -n 1 || true)
+            if [ -n "$TUNNEL_URL" ]; then
+              echo "✅ Cloudflare Tunnel is established: $TUNNEL_URL"
+              break
+            fi
+            sleep 1
+          done
+
+          if [ -z "$TUNNEL_URL" ]; then
+            echo "❌ Failed to obtain Cloudflare Tunnel URL"
+            cat cloudflared.log
+            exit 1
+          fi
+
+          echo "url=$TUNNEL_URL" >> $GITHUB_OUTPUT
+          echo "$TUNNEL_URL" > live_cloud_url.txt
+
+          echo "=========================================================================="
+          echo "🚀 JULIUS AGENT IS RUNNING LIVE IN THE CLOUD!"
+          echo "🌐 ACCESS URL : $TUNNEL_URL"
+          echo "👤 USERNAME   : david julius"
+          echo "🔑 PASSWORD   : ${{ github.event.inputs.admin_password || 'david' }}"
+          echo "=========================================================================="
+
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          # 🚀 Julius Agent is Running Live in the Cloud!
+
+          Your Julius agent is actively running in the cloud. You do **not** need to install anything on your Mac — just open the link below in your browser:
+
+          ### 🔗 [👉 Open Julius Agent Web UI 👈]($TUNNEL_URL)
+
+          | Detail | Value |
+          |---|---|
+          | **Live URL** | [\`$TUNNEL_URL\`]($TUNNEL_URL) |
+          | **Username** | \`david julius\` |
+          | **Password** | \`${{ github.event.inputs.admin_password || 'david' }}\` |
+          | **Status** | 🟢 Online (Cloud Hosted) |
+
+          *Access is available from your Mac or any device.*
+          EOF
+
+      - name: Upload Live URL Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: julius-live-cloud-url
+          path: live_cloud_url.txt
+          retention-days: 1
+
+      - name: Keep Julius Alive in Cloud
+        run: |
+          DURATION_HOURS=${{ github.event.inputs.duration_hours || '6' }}
+          DURATION_SECS=$((DURATION_HOURS * 3600))
+          echo "Keeping Julius server alive in the cloud for $DURATION_HOURS hours ($DURATION_SECS seconds)..."
+          
+          ELAPSED=0
+          while [ $ELAPSED -lt $DURATION_SECS ]; do
+            if ! kill -0 $(cat julius.pid) 2>/dev/null; then
+              echo "❌ Julius server process stopped!"
+              cat julius.log
+              exit 1
+            fi
+            if ! kill -0 $(cat cloudflared.pid) 2>/dev/null; then
+              echo "❌ Cloudflare tunnel process stopped!"
+              cat cloudflared.log
+              exit 1
+            fi
+            sleep 15
+            ELAPSED=$((ELAPSED + 15))
+          done
+          echo "Cloud execution duration complete."

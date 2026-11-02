@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "julius"
+version = "2.0.0"
+description = "Autonomous, local-first engineering pair-programming system"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "David Julius", email = "david@julius.ai" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Code Generators",
+]
+
+dependencies = [
+    "aiohttp>=3.9.0",
+    "cryptography>=42.0.0",
+    "fastapi>=0.110.0",
+    "filelock>=3.13.0",
+    "jsonschema>=4.20.0",
+    "keyring>=24.0.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.0",
+    "rich>=13.7.0",
+    "textual>=0.50.0",
+    "uvicorn>=0.28.0",
+]
+
+[project.scripts]
+julius = "src.main:cli_entrypoint"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q --ignore=src/browser/tests --ignore=tests/whatsapp"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I"]
+ignore = ["E501", "B008", "E722"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+

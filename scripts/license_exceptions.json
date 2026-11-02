@@ -1,0 +1,53 @@
+{
+  "exceptions": {
+    "gallery_dl": {
+      "license": "GPL-2.0-only",
+      "status": "reviewed",
+      "reason": "Standalone CLI subtool executed strictly out-of-process via subprocess CLI invocation, no library linking.",
+      "approved_until": "2027-12-31"
+    },
+    "pynput": {
+      "license": "LGPLv3",
+      "status": "reviewed",
+      "reason": "Dynamically linked system input listener, LGPL section 4 library compliance satisfied.",
+      "approved_until": "2027-12-31"
+    },
+    "mouseinfo": {
+      "license": "GPLv3+",
+      "status": "reviewed",
+      "reason": "Platform desktop cursor position query tool, invoked via independent subprocess abstraction.",
+      "approved_until": "2027-12-31"
+    },
+    "pymsgbox": {
+      "license": "BSD-3-Clause",
+      "status": "reviewed",
+      "reason": "BSD-3-Clause licensed modal dialog helper with upstream GPL classifier metadata mismatch.",
+      "approved_until": "2027-12-31"
+    },
+    "pyqt6-qt6": {
+      "license": "LGPLv3",
+      "status": "reviewed",
+      "reason": "Binary Qt runtime shared libraries used dynamically for desktop UI capabilities.",
+      "approved_until": "2027-12-31"
+    },
+    "python-xlib": {
+      "license": "LGPLv2+",
+      "status": "reviewed",
+      "reason": "Platform X11 dynamic windowing protocol library for Linux GUI automation fallback.",
+      "approved_until": "2027-12-31"
+    },
+    "python3-xlib": {
+      "license": "LGPLv2+",
+      "status": "reviewed",
+      "reason": "Platform X11 dynamic windowing protocol library for Linux GUI automation fallback.",
+      "approved_until": "2027-12-31"
+    },
+    "python_xlib": {
+      "license": "LGPLv2+",
+      "status": "reviewed",
+      "reason": "Platform X11 dynamic windowing protocol library for Linux GUI automation fallback.",
+      "approved_until": "2027-12-31"
+    }
+  }
+}
+

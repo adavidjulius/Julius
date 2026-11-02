@@ -1,0 +1,3710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Julius</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/logo-badge-dark.svg" />
+  <meta name="description" content="Julius - Autonomous Cognitive Companion." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Google Fonts: Bebas Neue (headings) + Playfair Display (thinking) + JetBrains Mono (code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css">
+
+  <!-- Base layout -->
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #root {
+      height: 100%;
+    }
+  </style>
+
+  <!-- App JS + CSS (built bundle) -->
+  <script type="module" crossorigin src="/assets/index-DvVhnTG0.js"></script>
+  <script src="/assets/widget-runtime.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CuCOA579.css">
+
+
+  <!-- Font Definitions — Self-hosted, no Google Fonts dependency -->
+
+  <style id="julius-font-faces">
+    @font-face {
+      font-family: 'Julius';
+      src: url('/assets/Julius-Regular.woff2') format('woff2'),
+           url('/assets/Julius-Regular.woff') format('woff'),
+           url('/assets/Julius-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Julius';
+      src: url('/assets/Julius-Bold.woff2') format('woff2'),
+           url('/assets/Julius-Bold.woff') format('woff'),
+           url('/assets/Julius-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Atkinson Hyperlegible';
+      src: url('/fonts/AtkinsonHyperlegible-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Atkinson Hyperlegible';
+      src: url('/fonts/AtkinsonHyperlegible-Italic.ttf') format('truetype');
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Atkinson Hyperlegible';
+      src: url('/fonts/AtkinsonHyperlegible-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Atkinson Hyperlegible';
+      src: url('/fonts/AtkinsonHyperlegible-BoldItalic.ttf') format('truetype');
+      font-weight: 700;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Bookerly';
+      src: url('/fonts/Bookerly.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Bookerly';
+      src: url('/fonts/Bookerly Italic.ttf') format('truetype');
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    @font-face {
+      font-family: 'Bookerly';
+      src: url('/fonts/Bookerly Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'AnekTamil';
+      src: url('/fonts/AnekTamil-Variable.ttf') format('truetype');
+      font-weight: 100 800;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0B80-0BFF, U+200C-200D, U+25CC, U+FEFF;
+    }
+
+    @font-face {
+      font-family: 'AnekTamil';
+      src: url('/fonts/AnekTamil-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0B80-0BFF, U+200C-200D, U+25CC, U+FEFF;
+    }
+
+    @font-face {
+      font-family: 'AnekTamil';
+      src: url('/fonts/AnekTamil-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0B80-0BFF, U+200C-200D, U+25CC, U+FEFF;
+    }
+  </style>
+
+  <!-- Font & Design Token Override — Julius as primary, tokens & cursor standards -->
+  <style id="julius-font-override">
+    :root {
+      /* Brand Identity (Brand Book v3.1.0 §9.2) */
+      --julius-green-electric: #7ED321;
+      --julius-green-deep: #006A25;
+      --julius-green-dim: rgba(0, 106, 37, 0.15);
+      --julius-green-glow: rgba(126, 211, 33, 0.35);
+      --julius-slate-badge: #0F172A;
+
+      /* Imperial Heritage */
+      --julius-gold: #C8B896;
+      --julius-crimson: #731A1A;
+      --julius-obsidian: #1A1A1A;
+
+      /* Surfaces (Obsidian canvas #121214) */
+      --bg: #121214;
+      --surface: #1C1C1E;
+      --raised: #2C2C2E;
+      --text: #F5F5F7;
+      --text-dim: #86868B;
+      --text-faint: #48484A;
+      --accent: #C8B896;
+      --border-idle: #3E3E42;
+      --border-focused: #C8B896;
+      --scrim: rgba(0, 0, 0, 0.65);
+
+      /* Semantic Telemetry */
+      --success: #30D158;
+      --warning: #FFD60A;
+      --error: #FF453A;
+      --info: #0A84FF;
+
+      /* Squircle Radii Scale */
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+      --radius-pill: 9999px;
+
+      /* Typography */
+      --font-primary: 'Julius', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-thinking: 'Playfair Display', Georgia, serif;
+      --font-display: 'Bebas Neue', 'Arial Black', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --font-tamil: 'AnekTamil', 'Noto Sans Tamil', sans-serif;
+      --font-document: 'Bookerly', Georgia, serif;
+
+      /* Motion */
+      --duration-enter: 220ms;
+      --duration-settle: 160ms;
+      --duration-fade: 120ms;
+      --duration-breathe: 1400ms;
+    }
+
+    /* Workspace Cursor Enforcement per AGENTS.md */
+    *, html, body, #root, .app-container, div, span, p, h1, h2, h3, header, main, section, nav, aside {
+      cursor: default !important;
+    }
+
+    input, textarea, [contenteditable="true"], [contenteditable="true"] * {
+      cursor: text !important;
+    }
+
+    button, a, [role="button"], .cursor-pointer, select, summary {
+      cursor: pointer !important;
+    }
+
+    html,
+    body,
+    #root {
+      font-family: var(--font-primary) !important;
+      font-size: 17px;
+      letter-spacing: 0.015em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    *:not(h1):not(h2):not(h3):not(.header-text):not(.app-title) :not(code):not(pre):not(kbd):not(samp) :not(.font-mono):not([class*="mono"]):not(.julius-mono) :not(.hljs):not([class*="hljs-"]) :not(.julius-thinking-text):not(.julius-thinking-text *) :not(.julius-timeline-thought):not(.julius-timeline-thought *) :not(.julius-timeline-content):not(.julius-timeline-content *) :not(.julius-step-title):not(.julius-step-thought-label) {
+      font-family: var(--font-primary) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    .header-text,
+    .app-title,
+    [class*="text-h1"],
+    [class*="text-h2"],
+    [class*="text-h3"] {
+      font-family: var(--font-display) !important;
+      letter-spacing: 1.2px !important;
+      text-transform: uppercase !important;
+    }
+
+    code,
+    pre,
+    kbd,
+    samp,
+    .font-mono,
+    [class*="mono"],
+    .julius-mono,
+    .hljs,
+    [class*="hljs-"] {
+      font-family: var(--font-mono) !important;
+    }
+
+    pre *,
+    pre code *,
+    code *,
+    .hljs *,
+    [class*="hljs-"] {
+      font-family: var(--font-mono) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       JULIUS THINKING BLOCK — v3 (Julius-native design language)
+       Accent: neon-green  #8FE000
+       Font-display: Bebas Neue
+       Font-body: Atkinson Hyperlegible
+       Collapse: grid-template-rows 0fr → 1fr (Claude technique)
+    ═══════════════════════════════════════════════════════════ */
+
+    /* ─── Julius design tokens for thinking block ─── */
+    :root {
+      --lt-green:      rgba(255,255,255,0.85);
+      --lt-green-dim:  transparent;
+      --lt-green-glow: transparent;
+      --lt-bg-pill:    transparent;
+      --lt-bg-body:    transparent;
+      --lt-border:     transparent;
+      --lt-border-act: transparent;
+      --lt-text-dim:   rgba(255,255,255,0.45);
+      --lt-text-mid:   rgba(255,255,255,0.7);
+      --lt-text-hi:    rgba(255,255,255,0.92);
+      --lt-radius:     0px;
+    }
+    html:not(.dark) {
+      --lt-green:    rgba(0,0,0,0.8);
+      --lt-bg-pill:  transparent;
+      --lt-bg-body:  transparent;
+      --lt-border:   transparent;
+      --lt-border-act: transparent;
+      --lt-text-dim: rgba(0,0,0,0.45);
+      --lt-text-mid: rgba(0,0,0,0.65);
+      --lt-text-hi:  rgba(0,0,0,0.88);
+    }
+
+    /* ─── Outer wrapper ─── */
+    .julius-timeline-container {
+      position: relative;
+      margin: 10px 0 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Remove the old vertical line */
+    .julius-timeline-container::before { display: none; }
+
+    /* ─── Master toggle (collapse all) ─── */
+    .julius-timeline-master-toggle-btn {
+      display: none; /* hidden — we use the pill header instead */
+    }
+
+    /* ─── NEW: thinking pill header ─── */
+    .lt-pill-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 6px 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      cursor: pointer;
+      user-select: none;
+      width: 100% !important;
+      max-width: 100%;
+      min-width: 0;
+      color: var(--lt-text-hi) !important;
+      transition: color 0.18s ease;
+      position: relative;
+    }
+    .lt-pill-header:hover {
+      color: var(--lt-text-mid) !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    html:not(.dark) .lt-pill-header:hover {
+      background: transparent !important;
+      border: none !important;
+    }
+    .lt-pill-header.active {
+      color: var(--lt-text-hi) !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    .lt-pill-header .lt-icon-wrap {
+      display: none !important;
+    }
+    .lt-pill-header .lt-step-badge {
+      display: none !important;
+    }
+
+    /* V-logo icon container */
+    .lt-icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .lt-icon-wrap svg {
+      fill: var(--lt-green);
+      filter: drop-shadow(0 0 4px var(--lt-green-glow));
+      transition: transform 0.4s cubic-bezier(0.25,0.9,0.3,1);
+    }
+    /* Spinner animation for active step */
+    @keyframes lt-spin {
+      to { transform: rotate(360deg); }
+    }
+    .lt-pill-header.active .lt-icon-wrap svg.lt-spinner {
+      animation: lt-spin 0.9s linear infinite;
+    }
+    /* Glow pulse for active */
+    @keyframes lt-glow-pulse {
+      0%,100% { filter: drop-shadow(0 0 3px var(--lt-green-glow)); }
+      50%      { filter: drop-shadow(0 0 8px var(--lt-green-glow)); }
+    }
+    .lt-pill-header.active .lt-icon-wrap svg:not(.lt-spinner) {
+      animation: lt-glow-pulse 2s ease-in-out infinite;
+    }
+
+    /* Summary text */
+    .lt-summary-text {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--font-primary) !important;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.15s ease;
+    }
+
+    /* Step count badge */
+    .lt-step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 99px;
+      background: rgba(143,224,0,0.15);
+      border: 1px solid rgba(143,224,0,0.25);
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: var(--font-primary) !important;
+      color: var(--lt-green);
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .lt-pill-header:not(.active) .lt-step-badge {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.12);
+      color: var(--lt-text-dim);
+    }
+    html:not(.dark) .lt-pill-header:not(.active) .lt-step-badge {
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.12);
+      color: var(--lt-text-dim);
+    }
+
+    /* Chevron */
+    .lt-chevron {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      opacity: 0.55 !important;
+      transform: rotate(-90deg);
+      transition: opacity 0.18s ease, transform 0.28s cubic-bezier(0.25,0.9,0.3,1);
+      color: var(--lt-text-dim);
+    }
+    .lt-pill-header:hover .lt-chevron { opacity: 0.8 !important; }
+    .lt-pill-header[aria-expanded="true"] .lt-chevron {
+      opacity: 0.8 !important;
+      transform: rotate(0deg);
+    }
+
+    /* ─── Collapsible body ─── */
+    .lt-body-grid {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.32s cubic-bezier(0.25,0.9,0.3,1);
+      margin-left: 0;
+    }
+    .lt-body-grid.open {
+      grid-template-rows: 1fr;
+    }
+    .lt-body-inner {
+      overflow: hidden;
+      min-width: 0;
+    }
+    .lt-body-content {
+      padding: 4px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    /* ─── Individual step rows ─── */
+    .julius-timeline-row {
+      position: relative;
+      width: calc(100% - 16px) !important;
+      box-sizing: border-box;
+      border-radius: 0 !important;
+      overflow: hidden;
+      margin-left: 16px !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Step header */
+    .julius-timeline-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px;
+      padding: 6px 0 !important;
+      cursor: pointer;
+      user-select: none;
+      color: var(--lt-text-mid) !important;
+      transition: color 0.15s ease;
+      font-size: 13px;
+      font-family: var(--font-primary) !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      width: 100% !important;
+    }
+    .julius-timeline-header:hover {
+      color: var(--lt-text-hi) !important;
+      background: transparent !important;
+    }
+    html:not(.dark) .julius-timeline-header:hover {
+      background: transparent !important;
+    }
+    .julius-timeline-row.active .julius-timeline-header {
+      color: var(--lt-text-hi) !important;
+    }
+
+    /* Step icon box */
+    .julius-timeline-icon-box {
+      display: none !important;
+    }
+
+    /* Step spin */
+    @keyframes lt-step-spin { to { transform: rotate(360deg); } }
+    .julius-timeline-row.active .julius-timeline-icon-box svg {
+      animation: lt-step-spin 0.9s linear infinite;
+      color: var(--lt-green);
+    }
+
+    /* Step title */
+    .julius-step-title {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--font-primary) !important;
+      font-size: 13px !important;
+      font-style: normal !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+      color: inherit !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Step chevron */
+    .julius-timeline-chevron {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      opacity: 0.55 !important;
+      transition: transform 0.22s ease;
+      color: var(--lt-text-dim);
+    }
+    .julius-timeline-header:hover .julius-timeline-chevron { opacity: 0.8 !important; }
+    .julius-timeline-chevron.expanded { transform: rotate(90deg); }
+
+    /* Step body — also uses grid trick */
+    .julius-timeline-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.28s cubic-bezier(0.25,0.9,0.3,1);
+      overflow: hidden;
+    }
+    .julius-timeline-body.expanded {
+      grid-template-rows: 1fr;
+    }
+    .julius-timeline-body-inner {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Step body content */
+    .julius-timeline-content,
+    .julius-timeline-content p,
+    .julius-timeline-content span,
+    .julius-timeline-content li,
+    .julius-step-thought-label,
+    .julius-step-thought-content,
+    .julius-step-thought-content p,
+    .julius-step-thought-content li {
+      font-family: var(--font-thinking) !important;
+      font-style: normal !important;
+      font-weight: 400 !important;
+      font-size: 14px !important;
+      line-height: 1.7 !important;
+      color: var(--lt-text-mid) !important;
+    }
+    html:not(.dark) .julius-timeline-content,
+    html:not(.dark) .julius-timeline-content p,
+    html:not(.dark) .julius-timeline-content span,
+    html:not(.dark) .julius-timeline-content li {
+      color: rgba(0,0,0,0.6) !important;
+    }
+
+    .julius-timeline-content-inner {
+      padding: 4px 0 8px 16px !important;
+      border-left: none !important;
+      margin-left: 0 !important;
+      margin-bottom: 4px;
+    }
+    html:not(.dark) .julius-timeline-content-inner {
+      border-left: none !important;
+    }
+
+    .julius-step-thought-label {
+      font-weight: 500 !important;
+      font-size: 11px !important;
+      color: var(--lt-text-dim) !important;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+      margin-bottom: 3px;
+    }
+
+    /* Action blocks */
+    .julius-step-action-status,
+    .julius-step-action-result-label,
+    .julius-step-live-indicator span {
+      font-family: var(--font-primary) !important;
+      font-size: 11.5px !important;
+      color: var(--lt-text-dim) !important;
+    }
+    html:not(.dark) .julius-step-action-status,
+    html:not(.dark) .julius-step-action-result-label {
+      color: rgba(0,0,0,0.42) !important;
+    }
+
+    .julius-timeline-action-block {
+      background: rgba(0,0,0,0.18) !important;
+      border: 1px solid rgba(255,255,255,0.06) !important;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-top: 5px;
+      font-family: var(--font-mono) !important;
+      font-size: 12px !important;
+      color: rgba(255,255,255,0.55);
+      overflow-x: auto;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    html:not(.dark) .julius-timeline-action-block {
+      background: rgba(0,0,0,0.03) !important;
+      border-color: rgba(0,0,0,0.06) !important;
+      color: rgba(0,0,0,0.55);
+    }
+
+    .julius-timeline-action-label {
+      color: var(--lt-text-dim);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-family: var(--font-primary) !important;
+    }
+
+    /* Live indicator */
+    .julius-step-live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 0;
+      background: transparent !important;
+      border: none !important;
+      width: fit-content;
+    }
+    .julius-step-live-indicator span {
+      color: var(--lt-text-dim) !important;
+      font-weight: 500 !important;
+    }
+
+    /* ─── Affordance button (View Steps) ─── */
+    .julius-timeline-affordance {
+      margin: 6px 0 10px 0;
+      display: flex;
+      align-items: center;
+    }
+    .julius-timeline-affordance-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--lt-text-mid) !important;
+      cursor: pointer;
+      transition: color 0.15s ease;
+      font-family: var(--font-primary) !important;
+      box-shadow: none !important;
+    }
+    .julius-timeline-affordance-btn:hover {
+      color: var(--lt-text-hi) !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    html:not(.dark) .julius-timeline-affordance-btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--lt-text-mid) !important;
+    }
+    html:not(.dark) .julius-timeline-affordance-btn:hover {
+      color: var(--lt-text-hi) !important;
+      background: transparent !important;
+      border: none !important;
+    }
+
+    /* ─── Done badge ─── */
+    .lt-done-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--lt-text-dim);
+      padding: 2px 8px 2px 5px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      font-family: var(--font-primary) !important;
+    }
+    .lt-done-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lt-green);
+      box-shadow: 0 0 6px var(--lt-green-glow);
+      flex-shrink: 0;
+    }
+    html:not(.dark) .lt-done-badge {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.09);
+    }
+
+    /* ─── Level-3 Details & Summaries (ThinkingPanel) ─── */
+    .lt-details-list {
+      margin-top: 4px;
+      margin-bottom: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .lt-detail-row {
+      font-family: var(--font-primary) !important;
+      font-size: 12px;
+      color: var(--lt-text-mid) !important;
+    }
+    .lt-detail-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 2px 0;
+    }
+    .lt-detail-bullet {
+      color: var(--lt-text-dim);
+      font-size: 10px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .lt-detail-text {
+      line-height: 1.4;
+    }
+    .lt-step-summary-collapsed {
+      font-family: var(--font-primary) !important;
+      font-size: 12px;
+      color: var(--lt-text-dim) !important;
+      margin-left: 32px;
+      padding-bottom: 6px;
+    }
+    .lt-step-summary-done {
+      font-family: var(--font-primary) !important;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--lt-text-mid) !important;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lt-done-check {
+      color: var(--lt-green);
+      font-weight: bold;
+    }
+
+    /* ─── Hidden state ─── */
+    .julius-timeline-container.julius-hidden { display: none !important; }
+    .julius-hidden-card { display: none !important; }
+
+    /* ─── Keyframe: fade+slide in ─── */
+    @keyframes lt-fadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .julius-timeline-container { animation: lt-fadeIn 0.25s ease both; }
+
+    /* ─── Tamil / language support ─── */
+    [lang="ta"], [lang^="ta-"], .julius-tamil, .tamil {
+      font-family: var(--font-tamil) !important;
+      line-height: 1.8 !important;
+      letter-spacing: 0.02em !important;
+    }
+    @media print {
+      body, p, li, td, th {
+        font-family: var(--font-document) !important;
+        font-size: 11pt !important;
+        line-height: 1.8 !important;
+      }
+    }
+    .julius-pdf-preview, .julius-document {
+      font-family: var(--font-document) !important;
+      font-size: 15px !important;
+      line-height: 1.85 !important;
+    }
+
+    .julius-timeline-container::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 10px;
+      bottom: 10px;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.12);
+      z-index: 1;
+    }
+
+    .julius-timeline-master-toggle-btn {
+      position: absolute;
+      right: 4px;
+      top: 0px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .julius-timeline-master-toggle-btn:hover {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    html:not(.dark) .julius-timeline-master-toggle-btn {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    html:not(.dark) .julius-timeline-master-toggle-btn:hover {
+      color: #000000;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .julius-timeline-container.julius-hidden {
+      display: none !important;
+    }
+
+
+    .julius-timeline-chevron-bulk {
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .julius-timeline-chevron-bulk.collapsed {
+      transform: rotate(180deg);
+    }
+
+    .julius-timeline-row {
+      position: relative;
+      padding-left: 32px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .julius-timeline-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      color: #9ca3af;
+      transition: color 0.15s ease;
+      font-size: 13.5px;
+      font-family: var(--font-primary) !important;
+      padding: 2px 0;
+    }
+
+    .julius-timeline-header:hover {
+      color: #ffffff;
+    }
+
+    .julius-timeline-icon-box {
+      position: absolute;
+      left: 7px;
+      top: 1px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e1e1e;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      z-index: 2;
+      color: #9ca3af;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .julius-timeline-row.active .julius-timeline-icon-box {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      animation: julius-pulse-icon 1.8s infinite ease-in-out;
+    }
+
+    @keyframes julius-pulse-icon {
+
+      0%,
+      100% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .julius-timeline-arrow {
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+      fill: currentColor;
+      opacity: 0.6;
+    }
+
+    .julius-timeline-chevron {
+      transition: transform 0.2s ease;
+    }
+
+    .julius-timeline-chevron.expanded {
+      transform: rotate(90deg);
+    }
+
+    .julius-timeline-body {
+      overflow: hidden;
+      transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .julius-timeline-body.expanded {
+      opacity: 1;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .julius-timeline-content,
+    .julius-timeline-content p,
+    .julius-timeline-content span,
+    .julius-timeline-content li,
+    .julius-step-thought-label,
+    .julius-step-thought-content,
+    .julius-step-thought-content p,
+    .julius-step-thought-content li {
+      font-family: var(--font-thinking) !important;
+      font-style: normal !important;
+      font-weight: 400 !important;
+      font-size: 14px !important;
+      line-height: 1.7 !important;
+      color: rgba(255,255,255,0.75) !important;
+    }
+
+    /* Step title uses the primary UI font, not the serif thinking font */
+    .julius-step-title {
+      font-family: var(--font-primary) !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+      color: inherit !important;
+    }
+
+    .julius-step-thought-label {
+      font-weight: 500 !important;
+      font-size: 13px !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      margin-top: 6px;
+      margin-bottom: 2px;
+    }
+
+    html:not(.dark) .julius-timeline-content,
+    html:not(.dark) .julius-timeline-content p,
+    html:not(.dark) .julius-timeline-content span,
+    html:not(.dark) .julius-timeline-content li,
+    html:not(.dark) .julius-step-thought-label,
+    html:not(.dark) .julius-step-thought-content,
+    html:not(.dark) .julius-step-thought-content p,
+    html:not(.dark) .julius-step-thought-content li {
+      color: rgba(0,0,0,0.65) !important;
+    }
+
+    .julius-step-action-status,
+    .julius-step-action-result-label,
+    .julius-step-live-indicator span {
+      font-family: var(--font-primary) !important;
+      font-size: 12px !important;
+      color: #7a7fa8 !important;
+    }
+
+    html:not(.dark) .julius-step-action-status,
+    html:not(.dark) .julius-step-action-result-label,
+    html:not(.dark) .julius-step-live-indicator span {
+      color: #6b7280 !important;
+    }
+
+    .julius-timeline-content pre,
+    .julius-timeline-content code,
+    .julius-timeline-content pre *,
+    .julius-timeline-content code * {
+      font-family: var(--font-mono) !important;
+    }
+
+    .julius-timeline-action-block {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 6px;
+      font-family: var(--font-mono) !important;
+      font-size: 13px !important;
+      color: #e5e7eb;
+    }
+
+    .julius-timeline-action-label {
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    [lang="ta"],
+    [lang^="ta-"],
+    .julius-tamil,
+    .tamil {
+      font-family: var(--font-tamil) !important;
+      line-height: 1.8 !important;
+      letter-spacing: 0.02em !important;
+    }
+
+    @media print {
+
+      body,
+      p,
+      li,
+      td,
+      th {
+        font-family: var(--font-document) !important;
+        font-size: 11pt !important;
+        line-height: 1.8 !important;
+      }
+    }
+
+    .julius-pdf-preview,
+    .julius-document {
+      font-family: var(--font-document) !important;
+      font-size: 15px !important;
+      line-height: 1.85 !important;
+    }
+  </style>
+
+  <!-- Premium Dark Mode Background & Quiet Inline Status Rows Override -->
+  <style>
+    :root,
+    .dark,
+    html.dark {
+      --background: 60 2% 12% !important;
+      --card: 60 2% 12% !important;
+      --popover: 60 2% 12% !important;
+      --muted: 60 2% 15% !important;
+      --border: 60 2% 20% !important;
+    }
+
+    :root:not(.dark) {
+      --background: 0 0% 97% !important;
+      --card: 0 0% 97% !important;
+      --popover: 0 0% 97% !important;
+      --muted: 0 0% 95% !important;
+      --border: 0 0% 90% !important;
+    }
+
+    html.dark,
+    .dark body,
+    .dark #root,
+    .dark .flex.h-screen.w-screen,
+    .dark aside,
+    .dark sidebar,
+    .dark .sidebar,
+    .dark main,
+    .dark .flex-1.flex.flex-col.overflow-hidden.relative.z-10,
+    .dark [class*="bg-"]:not(textarea):not(input):not(select):not([role="textbox"]):not([class*="composer"]):not([class*="input"]):not([class*="button"]):not([class*="btn"]):not([class*="active"]):not([class*="accent"]):not([class*="primary"]):not([class*="success"]):not([class*="error"]):not([class*="warning"]) {
+      background-color: #1F1F1E !important;
+      background: #1F1F1E !important;
+    }
+
+    html:not(.dark),
+    html:not(.dark) body,
+    html:not(.dark) #root,
+    html:not(.dark) .flex.h-screen.w-screen,
+    html:not(.dark) aside,
+    html:not(.dark) sidebar,
+    html:not(.dark) .sidebar,
+    html:not(.dark) main,
+    html:not(.dark) .flex-1.flex.flex-col.overflow-hidden.relative.z-10,
+    html:not(.dark) [class*="bg-"]:not(textarea):not(input):not(select):not([role="textbox"]):not([class*="composer"]):not([class*="input"]):not([class*="button"]):not([class*="btn"]):not([class*="active"]):not([class*="accent"]):not([class*="primary"]):not([class*="success"]):not([class*="warning"]) {
+      background-color: #F8F8F6 !important;
+      background: #F8F8F6 !important;
+    }
+
+    .dark .chat-message div[class*="border"][class*="bg-"][class*="rounded"],
+    .light .chat-message div[class*="border"][class*="bg-"][class*="rounded"] {
+      background-color: transparent !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 8px 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] [class*="px-"],
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] [class*="py-"],
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] [class*="p-"] {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] div[class*="border-t"],
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] div[class*="border-b"],
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] div[class*="border-l"],
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] div[class*="border-r"] {
+      border: none !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] span,
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] p,
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] div {
+      color: #8b929a !important;
+      font-style: italic !important;
+      font-size: 13.5px !important;
+      font-family: inherit !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] svg {
+      color: #8b929a !important;
+      fill: currentColor !important;
+      opacity: 0.8 !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] button,
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] [role="button"] {
+      color: #565f69 !important;
+      font-size: 12px !important;
+      font-style: normal !important;
+      text-decoration: underline !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 2px 4px !important;
+    }
+
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] pre,
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] code,
+    .chat-message div[class*="border"][class*="bg-"][class*="rounded"] pre * {
+      font-style: normal !important;
+      color: inherit !important;
+    }
+
+    .julius-thinking-block-container {
+      font-family: var(--font-primary) !important;
+    }
+    .julius-thinking-header-btn {
+      font-family: inherit !important;
+      outline: none !important;
+      user-select: none !important;
+    }
+  </style>
+
+  <!-- Polished Markdown Body Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    id="hljs-theme-dark" disabled>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    id="hljs-theme-light">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') {
+      hljs.configure({ ignoreUnescapedHTML: true });
+    }
+  </script>
+
+  <style id="julius-markdown-polish">
+    .markdown-body {
+      font-size: 17px !important;
+      line-height: 1.75 !important;
+      color: inherit !important;
+      word-break: break-word !important;
+    }
+
+    .markdown-body p {
+      margin-top: 0 !important;
+      margin-bottom: 0.85rem !important;
+      font-size: 17px !important;
+      line-height: 1.75 !important;
+    }
+
+    .markdown-body p:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4 {
+      font-family: var(--font-primary) !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+      font-weight: 700 !important;
+      margin-top: 1.4rem !important;
+      margin-bottom: 0.5rem !important;
+      line-height: 1.35 !important;
+    }
+
+    .markdown-body h1 {
+      font-size: 1.5rem !important;
+    }
+
+    .markdown-body h2 {
+      font-size: 1.25rem !important;
+    }
+
+    .markdown-body h3 {
+      font-size: 1.1rem !important;
+    }
+
+    .markdown-body h4 {
+      font-size: 1rem !important;
+    }
+
+    .markdown-body strong {
+      font-weight: 700 !important;
+    }
+
+    .markdown-body em {
+      font-style: italic !important;
+    }
+
+    .markdown-body ul,
+    .markdown-body ol {
+      margin-top: 0.3rem !important;
+      margin-bottom: 0.85rem !important;
+      padding-left: 1.6rem !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.3rem !important;
+    }
+
+    .markdown-body ul {
+      list-style-type: disc !important;
+    }
+
+    .markdown-body ol {
+      list-style-type: decimal !important;
+    }
+
+    .markdown-body li {
+      font-size: 14.5px !important;
+      line-height: 1.7 !important;
+      padding-left: 0.2rem !important;
+      display: list-item !important;
+    }
+
+    .markdown-body ul ul,
+    .markdown-body ol ul {
+      list-style-type: circle !important;
+      margin-top: 0.25rem !important;
+      margin-bottom: 0.25rem !important;
+      padding-left: 1.4rem !important;
+    }
+
+    .markdown-body ul ul ul,
+    .markdown-body ol ol ul {
+      list-style-type: square !important;
+    }
+
+    .markdown-body ol ol {
+      list-style-type: lower-alpha !important;
+      margin-top: 0.25rem !important;
+      margin-bottom: 0.25rem !important;
+      padding-left: 1.4rem !important;
+    }
+
+    .markdown-body li>p {
+      margin-bottom: 0.2rem !important;
+    }
+
+    .markdown-body blockquote {
+      border-left: 3px solid #4A6CF7 !important;
+      margin: 0.8rem 0 !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 0 6px 6px 0 !important;
+      background: rgba(74, 108, 247, 0.06) !important;
+      color: inherit !important;
+      font-style: italic !important;
+    }
+
+    .markdown-body code:not(pre code) {
+      font-family: "JetBrains Mono", "Fira Code", monospace !important;
+      font-size: 12.5px !important;
+      font-weight: 500 !important;
+      padding: 0.15rem 0.45rem !important;
+      border-radius: 5px !important;
+      background: rgba(99, 150, 255, 0.12) !important;
+      color: #7ca9ff !important;
+      border: 1px solid rgba(99, 150, 255, 0.18) !important;
+    }
+
+    .dark .markdown-body code:not(pre code) {
+      background: rgba(99, 150, 255, 0.15) !important;
+      color: #8cb8ff !important;
+      border-color: rgba(99, 150, 255, 0.22) !important;
+    }
+
+    .markdown-body pre {
+      margin: 0.85rem 0 !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(0, 0, 0, 0.10) !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+      position: relative !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    .dark .markdown-body pre {
+      border-color: rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .markdown-body pre>code {
+      display: block !important;
+      font-family: "JetBrains Mono", "Fira Code", monospace !important;
+      font-size: 12.5px !important;
+      line-height: 1.65 !important;
+      padding: 1rem 1.1rem !important;
+      overflow-x: auto !important;
+      white-space: pre !important;
+      background: #f6f8fa !important;
+      border: none !important;
+      border-radius: 0 !important;
+      color: #24292e !important;
+    }
+
+    .dark .markdown-body pre>code {
+      background: #0d1117 !important;
+      color: #c9d1d9 !important;
+    }
+
+    .julius-code-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0.45rem 0.9rem !important;
+      background: #eaeef2 !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      font-family: "JetBrains Mono", monospace !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.05em !important;
+      text-transform: uppercase !important;
+      color: #586069 !important;
+      user-select: none !important;
+    }
+
+    .dark .julius-code-header {
+      background: #161b22 !important;
+      border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+      color: #8b949e !important;
+    }
+
+    .julius-code-copy-btn {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      padding: 3px 9px !important;
+      border-radius: 5px !important;
+      border: 1px solid rgba(0, 0, 0, 0.15) !important;
+      background: transparent !important;
+      font-size: 10.5px !important;
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.18s ease !important;
+      color: inherit !important;
+      letter-spacing: 0.03em !important;
+    }
+
+    .julius-code-copy-btn:hover {
+      background: rgba(74, 108, 247, 0.12) !important;
+      border-color: rgba(74, 108, 247, 0.3) !important;
+      color: #4A6CF7 !important;
+    }
+
+    .julius-code-copy-btn.copied {
+      background: rgba(72, 199, 142, 0.12) !important;
+      border-color: rgba(72, 199, 142, 0.3) !important;
+      color: #48c78e !important;
+    }
+
+    .markdown-body hr {
+      border: none !important;
+      border-top: 1px solid rgba(0, 0, 0, 0.10) !important;
+      margin: 1.2rem 0 !important;
+    }
+
+    .dark .markdown-body hr {
+      border-top-color: rgba(255, 255, 255, 0.10) !important;
+    }
+
+    .markdown-body table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin: 0.85rem 0 !important;
+      font-size: 13.5px !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(0, 0, 0, 0.10) !important;
+    }
+
+    .dark .markdown-body table {
+      border-color: rgba(255, 255, 255, 0.10) !important;
+    }
+
+    .markdown-body th {
+      background: rgba(74, 108, 247, 0.08) !important;
+      font-weight: 600 !important;
+      padding: 0.5rem 0.85rem !important;
+      text-align: left !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.10) !important;
+    }
+
+    .dark .markdown-body th {
+      background: rgba(74, 108, 247, 0.12) !important;
+      border-bottom-color: rgba(255, 255, 255, 0.10) !important;
+    }
+
+    .markdown-body td {
+      padding: 0.45rem 0.85rem !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .dark .markdown-body td {
+      border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .markdown-body tr:last-child td {
+      border-bottom: none !important;
+    }
+
+    .markdown-body a {
+      color: #4A6CF7 !important;
+      text-decoration: underline !important;
+      text-underline-offset: 2px !important;
+      text-decoration-color: rgba(74, 108, 247, 0.35) !important;
+      transition: text-decoration-color 0.15s ease !important;
+    }
+
+    .markdown-body a:hover {
+      text-decoration-color: #4A6CF7 !important;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script>
+    (function () {
+      window.juliusQueueModeActive = false;
+
+      const originalSend = WebSocket.prototype.send;
+      WebSocket.prototype.send = function (data) {
+        if (typeof data === "string") {
+          try {
+            const payload = JSON.parse(data);
+            if ((payload.type === "start_task" || payload.type === "follow_up") && window.juliusQueueModeActive) {
+              payload.queue = true;
+              console.log("[JuliusQueue] Injected queue: true into task payload:", payload);
+            }
+            data = JSON.stringify(payload);
+          } catch (e) { }
+        }
+        return originalSend.apply(this, arguments);
+      };
+
+      function injectQueueButton() {
+        const containers = document.querySelectorAll("div.flex.items-center.gap-1");
+
+        containers.forEach(container => {
+          if (container.querySelector(".julius-queue-btn")) {
+            return;
+          }
+
+          const btn = document.createElement("button");
+          btn.className = "julius-queue-btn flex items-center justify-center w-8 h-8 rounded-lg transition-colors cursor-pointer";
+          btn.style.position = "relative";
+          btn.setAttribute("type", "button");
+
+          updateButtonState(btn);
+
+          btn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <circle cx="3" cy="6" r="1.5" fill="currentColor"></circle>
+              <circle cx="3" cy="12" r="1.5" fill="currentColor"></circle>
+              <circle cx="3" cy="18" r="1.5" fill="currentColor"></circle>
+            </svg>
+          `;
+
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.juliusQueueModeActive = !window.juliusQueueModeActive;
+            console.log("[JuliusQueue] Queue mode toggled to:", window.juliusQueueModeActive);
+            document.querySelectorAll(".julius-queue-btn").forEach(updateButtonState);
+          });
+
+          container.appendChild(btn);
+        });
+      }
+
+      function updateButtonState(btn) {
+        if (window.juliusQueueModeActive) {
+          btn.style.color = "#4A6CF7";
+          btn.style.backgroundColor = "rgba(74, 108, 247, 0.12)";
+          btn.title = "Queue Task: ON (Tasks will run sequentially in a queue)";
+        } else {
+          btn.style.color = "rgba(156, 163, 175, 0.85)";
+          btn.style.backgroundColor = "transparent";
+          btn.title = "Queue Task: OFF (Tasks will start immediately, cancelling any active task)";
+        }
+      }
+
+      setInterval(injectQueueButton, 400);
+    })();
+  </script>
+
+  <!-- Highlight.js Dark Mode Auto-Sync -->
+  <script>
+    (function () {
+      function syncHljsThemeNow() {
+        var isDark = document.documentElement.classList.contains('dark');
+        var d = document.getElementById('hljs-theme-dark');
+        var l = document.getElementById('hljs-theme-light');
+        if (d) d.disabled = !isDark;
+        if (l) l.disabled = isDark;
+      }
+      syncHljsThemeNow();
+      new MutationObserver(syncHljsThemeNow).observe(
+        document.documentElement,
+        { attributes: true, attributeFilter: ['class'] }
+      );
+    })();
+  </script>
+
+  <!-- Highlight.js + Code Copy Button Enhancer -->
+  <script>
+    (function () {
+      function detectLang(codeEl) {
+        const cls = (codeEl.className || '');
+        const m = cls.match(/language-([a-zA-Z0-9_+-]+)/);
+        return m ? m[1].toLowerCase() : 'code';
+      }
+
+      function langLabel(lang) {
+        const labels = {
+          js: 'JavaScript', javascript: 'JavaScript', ts: 'TypeScript', typescript: 'TypeScript',
+          python: 'Python', py: 'Python', bash: 'Shell', sh: 'Shell', zsh: 'Shell',
+          json: 'JSON', yaml: 'YAML', yml: 'YAML', html: 'HTML', css: 'CSS',
+          cpp: 'C++', c: 'C', java: 'Java', rust: 'Rust', go: 'Go',
+          ruby: 'Ruby', php: 'PHP', swift: 'Swift', kotlin: 'Kotlin',
+          sql: 'SQL', md: 'Markdown', markdown: 'Markdown', xml: 'XML',
+          dockerfile: 'Dockerfile', toml: 'TOML', ini: 'Config',
+          code: 'Code', text: 'Text', plaintext: 'Plain Text',
+        };
+        return labels[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
+      }
+
+      const COPY_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      const CHECK_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      function enhancePre(pre) {
+        if (pre.dataset.juliusEnhanced) return;
+        pre.dataset.juliusEnhanced = '1';
+
+        const codeEl = pre.querySelector('code');
+        if (!codeEl) return;
+
+        const reactWrapper = pre.closest('[class*="code-block"]');
+        if (reactWrapper) {
+          if (typeof hljs !== 'undefined' && !codeEl.dataset.highlighted) {
+            hljs.highlightElement(codeEl);
+          }
+          const lang = detectLang(codeEl);
+          const label = langLabel(lang);
+          const labelSpan = reactWrapper.querySelector('span[class*="mono"], span[class*="uppercase"], span[class*="tracking"]');
+          if (labelSpan && labelSpan.textContent.trim().toUpperCase() === 'COMMAND / SCRIPT') {
+            labelSpan.textContent = label.toUpperCase();
+          }
+          return;
+        }
+
+        if (typeof hljs !== 'undefined' && !codeEl.dataset.highlighted) {
+          hljs.highlightElement(codeEl);
+        }
+
+        const lang = detectLang(codeEl);
+        const label = langLabel(lang);
+
+        const header = document.createElement('div');
+        header.className = 'julius-code-header';
+
+        const langSpan = document.createElement('span');
+        langSpan.textContent = label;
+        header.appendChild(langSpan);
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'julius-code-copy-btn';
+        copyBtn.innerHTML = COPY_ICON + '<span>Copy</span>';
+        copyBtn.title = 'Copy code';
+        copyBtn.addEventListener('click', function () {
+          const text = codeEl.innerText || codeEl.textContent || '';
+          navigator.clipboard.writeText(text).then(function () {
+            copyBtn.innerHTML = CHECK_ICON + '<span>Copied!</span>';
+            copyBtn.classList.add('copied');
+            setTimeout(function () {
+              copyBtn.innerHTML = COPY_ICON + '<span>Copy</span>';
+              copyBtn.classList.remove('copied');
+            }, 2000);
+          }).catch(function () {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            copyBtn.innerHTML = CHECK_ICON + '<span>Copied!</span>';
+            copyBtn.classList.add('copied');
+            setTimeout(function () {
+              copyBtn.innerHTML = COPY_ICON + '<span>Copy</span>';
+              copyBtn.classList.remove('copied');
+            }, 2000);
+          });
+        });
+        header.appendChild(copyBtn);
+
+        pre.insertBefore(header, pre.firstChild);
+      }
+
+      function scanAndEnhance() {
+        const pres = document.querySelectorAll('.markdown-body pre');
+        pres.forEach(enhancePre);
+      }
+
+      const observer = new MutationObserver(function (mutations) {
+        let shouldScan = false;
+        for (const m of mutations) {
+          if (m.type === 'childList' && m.addedNodes.length) {
+            shouldScan = true;
+            break;
+          }
+        }
+        if (shouldScan) {
+          scanAndEnhance();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        scanAndEnhance();
+      });
+
+      setInterval(scanAndEnhance, 800);
+    })();
+  </script>
+
+  <!-- Task Header Short Title Injector + Claude-style Timeline UI -->
+  <script>
+    (function () {
+      // ── Diagnostics ─────────────────────────────────────────────────
+      // Set to false once everything is confirmed working, to quiet the
+      // console. While debugging "nothing is happening", keep this true
+      // and check the browser console (Cmd+Option+J) for [Julius] logs.
+      const JULIUS_DEBUG = true;
+      function juliusLog(...args) { if (JULIUS_DEBUG) console.log('[Julius]', ...args); }
+      function juliusWarn(...args) { console.warn('[Julius]', ...args); }
+      function juliusErr(...args) { console.error('[Julius]', ...args); }
+
+      // Wrap any function so one selector mismatch / runtime error can
+      // never silently kill the rest of the script.
+      function safe(fn, label) {
+        return function (...args) {
+          try {
+            return fn.apply(this, args);
+          } catch (e) {
+            juliusErr(`Error in ${label || fn.name || 'anonymous'}:`, e);
+          }
+        };
+      }
+
+      juliusLog('Timeline script loaded and executing. If you never see a "WS message" or "wrapper found" log below after sending a message, the WebSocket hook or DOM selectors are not matching your app — screenshot the console and send it back.');
+
+      let _shortTitle = null;
+      let _headerEl = null;
+
+      function makeShortTitle(text) {
+        if (!text) return '';
+        const cleaned = text.replace(/\s+/g, ' ').trim();
+        const words = cleaned.split(' ');
+        if (words.length <= 8 && cleaned.length <= 64) return cleaned;
+        let short = words.slice(0, 8).join(' ').replace(/[,.;:!?]+$/, '');
+        return short + '…';
+      }
+
+      function findHeaderP() {
+        const candidates = document.querySelectorAll(
+          'div.flex-1.flex.justify-center.items-center p.truncate, ' +
+          'div[class*="justify-center"] p[class*="font-medium"]'
+        );
+        for (const p of candidates) {
+          const parent = p.closest('[class*="h-14"], [class*="border-b"]');
+          if (parent) return p;
+        }
+        const allTruncate = document.querySelectorAll('p.truncate');
+        for (const p of allTruncate) {
+          const text = (p.textContent || '').trim();
+          if (text.length > 40) return p;
+        }
+        return null;
+      }
+
+      function applyShortTitle() {
+        const header = findHeaderP();
+        if (!header) return;
+
+        const currentText = (header.textContent || '').trim();
+        if (!currentText) return;
+
+        const displayTitle = _shortTitle || makeShortTitle(currentText);
+        if (!displayTitle) return;
+
+        if (currentText !== displayTitle) {
+          header.textContent = displayTitle;
+          header.title = currentText;
+          _headerEl = header;
+        }
+
+        applyShortTitleToHistory();
+      }
+
+      function applyShortTitleToHistory() {
+        if (!_shortTitle) return;
+
+        const sidebar = document.querySelector('aside, sidebar, .sidebar');
+        if (!sidebar) return;
+
+        const chatItems = sidebar.querySelectorAll('a, button, [role="button"], div.cursor-pointer, .chat-item');
+        const header = findHeaderP();
+        if (!header) return;
+        const fullTaskText = header.title || header.textContent;
+        if (!fullTaskText) return;
+
+        for (const item of chatItems) {
+          if (item.querySelector('svg') && !item.classList.contains('chat-item')) {
+            if (item.textContent.trim().length < 2) continue;
+          }
+
+          const itemText = item.textContent.trim();
+          if (!itemText) continue;
+
+          if (fullTaskText.startsWith(itemText) || itemText.startsWith(fullTaskText.substring(0, 12))) {
+            let textNode = null;
+            const walk = document.createTreeWalker(item, NodeFilter.SHOW_TEXT);
+            let n;
+            while (n = walk.nextNode()) {
+              if (n.textContent.trim() === itemText) {
+                textNode = n;
+                break;
+              }
+            }
+            if (textNode) {
+              if (textNode.textContent.trim() !== _shortTitle) {
+                textNode.textContent = _shortTitle;
+                console.log("[JuliusHistory] Updated sidebar text node to:", _shortTitle);
+              }
+            } else {
+              const textEl = item.querySelector('span, p, div') || item;
+              if (textEl.textContent.trim() !== _shortTitle) {
+                textEl.textContent = _shortTitle;
+                console.log("[JuliusHistory] Updated sidebar element text to:", _shortTitle);
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // ── Claude-style Timeline UI State & Logic ──
+      let currentStepNum = 0;
+      let stepStartTimes = {};
+      let stepActions = {};
+      let currentTimelineContainer = null;
+      let activeTaskSteps = [];
+      let activeTaskFinished = false;
+
+      const REASONING_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
+      const BASH_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`;
+      const FILE_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
+      const CHECKMARK_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><polyline points="20 6 9 17 4 12"/></svg>`;
+      const SPINNER_ICON = `<svg class="animate-spin" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline-block; vertical-align:middle; color: #3b82f6; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.1)"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor"></path></svg>`;
+
+      const DOUBLE_CHEVRON_SVG = `
+        <svg class="julius-timeline-chevron-bulk" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="7 13 12 18 17 13"></polyline>
+          <polyline points="7 6 12 11 17 6"></polyline>
+        </svg>
+      `;
+
+      function extractThought(text) {
+        if (!text) return '';
+
+        let cleanText = text.trim();
+        if (cleanText.startsWith('```')) {
+          const firstLineBreak = cleanText.indexOf('\n');
+          if (firstLineBreak !== -1) {
+            cleanText = cleanText.substring(firstLineBreak + 1);
+          }
+        }
+        if (cleanText.endsWith('```')) {
+          cleanText = cleanText.substring(0, cleanText.length - 3);
+        }
+        cleanText = cleanText.trim();
+
+        try {
+          const parsed = JSON.parse(cleanText);
+          if (parsed && typeof parsed.thought === 'string') {
+            return parsed.thought;
+          }
+        } catch (e) { }
+
+        const thoughtMatch = cleanText.match(/"thought"\s*:\s*"(.*)/);
+        if (thoughtMatch) {
+          let content = thoughtMatch[1];
+          let parsedContent = '';
+          let isEscaped = false;
+          for (let i = 0; i < content.length; i++) {
+            const char = content[i];
+            if (isEscaped) {
+              if (char === 'n') parsedContent += '\n';
+              else if (char === 't') parsedContent += '\t';
+              else parsedContent += char;
+              isEscaped = false;
+            } else if (char === '\\') {
+              isEscaped = true;
+            } else if (char === '"') {
+              break;
+            } else {
+              parsedContent += char;
+            }
+          }
+          return parsedContent;
+        }
+
+        return '';
+      }
+
+      // Try several increasingly-loose strategies to find the "row" that
+      // wraps one chat message (avatar + content), since exact Tailwind
+      // class strings can differ by build/version and a single fixed
+      // selector is fragile.
+      function findAllMessageRows() {
+        const strategies = [
+          '.flex.gap-3.items-start',
+          '[class*="gap-3"][class*="items-start"]',
+          '[class*="flex"][class*="gap-"]:has(img)',
+        ];
+        for (const sel of strategies) {
+          try {
+            const found = Array.from(document.querySelectorAll(sel));
+            if (found.length > 0) return found;
+          } catch (e) { /* :has() may be unsupported in some engines */ }
+        }
+        return [];
+      }
+
+      // Find the Julius avatar image regardless of exact filename/query params.
+      function isAssistantRow(row) {
+        const img = row.querySelector('img');
+        if (img && img.src && /favicon/i.test(img.src)) return true;
+        // Fallback: rows containing the inline SVG "V" logo mark, or a
+        // known assistant-only marker class, count as assistant rows too.
+        if (row.querySelector('svg[class*="julius"], [data-role="assistant"]')) return true;
+        return false;
+      }
+
+      // Find the actual content container to render into, inside a row.
+      function findContentTarget(row) {
+        const candidates = [
+          row.querySelector('.flex-1'),
+          row.querySelector('[class*="flex-1"]'),
+          row.children[1], // second child after the avatar, common pattern
+          row,
+        ];
+        return candidates.find(el => el) || row;
+      }
+
+      function getActiveAssistantWrapper() {
+        const allMessages = findAllMessageRows();
+        if (allMessages.length === 0) {
+          juliusWarn('getActiveAssistantWrapper: no message rows found with any selector strategy. The chat DOM structure does not match what this script expects — inspect a message element and update the selectors.');
+          return null;
+        }
+
+        const userMessages = allMessages.filter(msg => !isAssistantRow(msg));
+        const assistantMessages = allMessages.filter(isAssistantRow);
+
+        if (userMessages.length === 0) {
+          const last = assistantMessages[assistantMessages.length - 1];
+          if (!last) {
+            juliusWarn('getActiveAssistantWrapper: found message rows but none matched as assistant rows. Check isAssistantRow() selectors against your actual avatar markup.');
+            return null;
+          }
+          return findContentTarget(last);
+        }
+
+        const latestUserMessage = userMessages[userMessages.length - 1];
+        const nextAssistantMessages = assistantMessages.filter(msg =>
+          (latestUserMessage.compareDocumentPosition(msg) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+        );
+
+        if (nextAssistantMessages.length > 0) {
+          return findContentTarget(nextAssistantMessages[nextAssistantMessages.length - 1]);
+        }
+
+        juliusWarn('getActiveAssistantWrapper: found the latest user message but no assistant response after it yet (expected if the agent hasn\'t replied yet).');
+        return null;
+      }
+
+      function cleanOrphanedTimelineContainers() {
+        const wrapper = getActiveAssistantWrapper();
+        if (!wrapper) return;
+        const target = wrapper.querySelector('.group.w-full') || wrapper;
+
+        document.querySelectorAll('.julius-timeline-container').forEach(c => {
+          if (c.parentNode !== target) {
+            c.remove();
+          }
+        });
+        document.querySelectorAll('.julius-timeline-affordance').forEach(a => {
+          if (a.parentNode !== target) {
+            a.remove();
+          }
+        });
+      }
+
+      function formatMarkdown(text) {
+        if (!text) return '';
+
+        let html = text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function (match, lang, code) {
+          return `<pre class="julius-mono" style="margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow-x: auto;"><code style="font-family: var(--font-mono) !important; color: #a1a1a1;">${code.trim()}</code></pre>`;
+        });
+
+        html = html.replace(/`([^`]+)`/g, '<code style="font-family: var(--font-mono) !important; background: rgba(255,255,255,0.08); padding: 2px 4px; border-radius: 3px;">$1</code>');
+
+        let lines = html.split('\n');
+        let inList = false;
+        let result = [];
+
+        for (let line of lines) {
+          let trimmed = line.trim();
+          if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            if (!inList) {
+              result.push('<ul style="margin: 8px 0; padding-left: 20px; list-style-type: disc;">');
+              inList = true;
+            }
+            result.push(`<li style="font-family: var(--font-thinking) !important; margin: 4px 0;">${trimmed.substring(2)}</li>`);
+          } else {
+            if (inList) {
+              result.push('</ul>');
+              inList = false;
+            }
+            if (trimmed) {
+              result.push(`<p style="font-family: var(--font-thinking) !important; margin: 8px 0;">${line}</p>`);
+            } else {
+              result.push('<div style="height: 8px;"></div>');
+            }
+          }
+        }
+        if (inList) {
+          result.push('</ul>');
+        }
+
+        return result.join('\n');
+      }
+
+      function handleStepStart(stepNum) {
+        // Bug fix: a brand-new task doesn't always arrive as a "start_task"
+        // websocket send — typing a fresh, unrelated instruction into an
+        // existing conversation goes out as "follow_up", which never reset
+        // activeTaskSteps. That let a previous (finished) task's steps sit
+        // in memory and bleed into the next task's timeline. The reliable,
+        // protocol-agnostic signal that a new task has begun is: we're
+        // being told step 1 is starting, and the last task we were tracking
+        // had already finished. Reset in that case, regardless of how the
+        // frontend labeled the outgoing message.
+        if (stepNum === 1 && activeTaskFinished) {
+          activeTaskSteps = [];
+          activeTaskFinished = false;
+          currentTimelineContainer = null;
+        }
+
+        currentStepNum = stepNum;
+        activeTaskSteps.forEach(s => {
+          s.active = false;
+        });
+
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) {
+          step = {
+            step: stepNum,
+            title: `Analyzing next actions`,
+            thought: "",
+            actions: [],
+            // ThinkingPanel fields: summary shown collapsed, details shown expanded
+            summary: '',
+            details: [],
+            expandedDetails: new Set(),
+            active: true,
+            expanded: true
+          };
+          activeTaskSteps.push(step);
+        } else {
+          step.active = true;
+          step.expanded = true;
+        }
+
+        renderActiveTaskTimeline();
+      }
+
+      function handleThought(stepNum, text) {
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) {
+          step = {
+            step: stepNum,
+            title: `Thinking`,
+            thought: text,
+            actions: [],
+            summary: '',
+            details: [],
+            expandedDetails: new Set(),
+            active: true,
+            expanded: true
+          };
+          activeTaskSteps.push(step);
+        } else {
+          step.thought = text;
+        }
+        renderActiveTaskTimeline();
+      }
+
+      // ── ThinkingPanel.tsx Pattern: add a Level-3 detail item to a step ──
+      function handleStepDetail(stepNum, detail) {
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) {
+          step = {
+            step: stepNum,
+            title: `Executing action`,
+            thought: '',
+            actions: [],
+            summary: '',
+            details: [],
+            expandedDetails: new Set(),
+            active: true,
+            expanded: true
+          };
+          activeTaskSteps.push(step);
+        }
+        // detail: { id, content } as per ThinkingPanel interface
+        const existing = step.details.find(d => d.id === detail.id);
+        if (existing) {
+          existing.content = detail.content;
+        } else {
+          step.details.push({ id: detail.id, content: detail.content });
+        }
+        renderActiveTaskTimeline();
+      }
+
+      // ── ThinkingPanel.tsx Pattern: set/update step summary ──
+      function handleStepSummary(stepNum, summary) {
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) return;
+        step.summary = summary;
+        renderActiveTaskTimeline();
+      }
+
+      function handleAction(stepNum, actionName, actionArgs) {
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) {
+          step = {
+            step: stepNum,
+            title: `Executing action`,
+            thought: "",
+            actions: [],
+            summary: '',
+            details: [],
+            expandedDetails: new Set(),
+            active: true,
+            expanded: true
+          };
+          activeTaskSteps.push(step);
+        }
+
+        let act = step.actions.find(a => a.name === actionName);
+        if (!act) {
+          act = {
+            name: actionName,
+            args: actionArgs,
+            result: null,
+            success: true
+          };
+          step.actions.push(act);
+        } else {
+          act.args = actionArgs;
+        }
+
+        let summaryText = "Executing action";
+        if (actionName === 'run_bash' && actionArgs && actionArgs.command) {
+          const cmd = actionArgs.command.trim().split('\n')[0];
+          summaryText = `bash: ${cmd}`;
+        } else if (actionArgs && actionArgs.path) {
+          const file = actionArgs.path.split('/').pop();
+          summaryText = `${actionName}: ${file}`;
+        } else {
+          summaryText = `Executing ${actionName}`;
+        }
+        step.title = summaryText;
+
+        // Auto-populate ThinkingPanel-style detail from action
+        const detailId = `action-${actionName}-${step.details.length}`;
+        const detailContent = actionArgs && actionArgs.path
+          ? `${actionName.replace(/_/g,' ')}: ${actionArgs.path.split('/').pop()}`
+          : actionArgs && actionArgs.command
+            ? `$ ${String(actionArgs.command).trim().split('\n')[0]}`
+            : `${actionName.replace(/_/g,' ')}`;
+        handleStepDetail(stepNum, { id: detailId, content: detailContent });
+
+        renderActiveTaskTimeline();
+      }
+
+      function handleActionResult(stepNum, actionName, success, output) {
+        let step = activeTaskSteps.find(s => s.step === stepNum);
+        if (!step) return;
+
+        let act;
+        if (actionName) {
+          act = step.actions.find(a => a.name === actionName);
+        }
+        if (!act && step.actions.length > 0) {
+          act = step.actions[step.actions.length - 1];
+        }
+
+        if (act) {
+          act.success = success;
+          act.result = output;
+        }
+
+        renderActiveTaskTimeline();
+      }
+
+      function handleTaskFinished() {
+        activeTaskFinished = true;
+        activeTaskSteps.forEach(s => {
+          s.active = false;
+          s.expanded = false;
+        });
+
+        renderActiveTaskTimeline();
+      }
+
+      // ── Canonical Julius Crest logo SVG (used as thinking icon) ──
+      const JULIUS_V_SVG = `<svg viewBox="0 0 512 512" width="14" height="14" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill="#7ED321" d="M 400.67 96.49 c -6.84 0.53 -15.69 2.00 -20.62 3.38 -2.09 0.62 -4.53 1.24 -5.38 1.47 -1.56 0.31 -4.27 1.29 -6.98 2.49 -0.80 0.36 -2.22 0.93 -3.16 1.24 -3.20 1.16 -13.60 6.80 -18.53 10.04 -12.84 8.58 -26.22 21.47 -37.47 36.13 -5.29 6.93 -13.42 19.16 -17.07 25.64 -0.49 0.84 -2.27 3.96 -3.91 6.89 -2.67 4.71 -9.87 19.11 -12.00 24.00 -0.44 0.98 -1.51 3.38 -2.44 5.33 -2.76 5.96 -10.67 26.22 -13.38 34.31 -1.38 4.22 -2.71 7.56 -2.84 7.47 -0.18 -0.13 -0.44 -3.96 -0.58 -8.53 -0.31 -8.80 -1.33 -22.27 -2.09 -27.47 -0.22 -1.73 -0.62 -4.62 -0.89 -6.44 -0.76 -5.87 -3.20 -18.09 -4.22 -21.33 -0.36 -1.11 -1.29 -4.09 -2.04 -6.67 -1.29 -4.27 -2.36 -7.33 -4.36 -12.22 -1.87 -4.71 -7.87 -16.00 -10.44 -19.78 -8.13 -11.82 -19.33 -22.18 -30.04 -27.73 -1.82 -0.98 -4.00 -2.13 -4.80 -2.58 -0.76 -0.44 -3.29 -1.47 -5.56 -2.31 -12.00 -4.44 -19.38 -5.96 -34.98 -7.16 -7.51 -0.58 -10.44 -0.62 -16.67 -0.22 -12.44 0.80 -24.62 2.40 -34.00 4.44 -1.11 0.22 -4.00 0.84 -6.44 1.38 -7.11 1.51 -13.56 3.24 -28.00 7.56 -5.64 1.69 -6.89 2.18 -6.89 2.71 0.00 0.22 0.36 0.53 0.76 0.67 0.44 0.18 2.09 1.02 3.69 1.96 1.60 0.89 4.31 2.36 6.00 3.29 8.13 4.40 27.91 18.62 36.00 25.96 16.09 14.53 31.38 31.29 42.58 46.62 7.42 10.22 18.71 26.89 19.38 28.71 0.09 0.27 0.93 1.60 1.82 2.93 1.47 2.13 7.11 11.91 7.11 12.22 0.00 0.09 0.93 1.69 2.04 3.60 3.73 6.31 14.58 27.60 18.18 35.73 0.93 2.09 2.18 4.89 2.76 6.22 0.62 1.33 2.09 4.62 3.29 7.33 1.20 2.67 2.40 5.24 2.62 5.64 0.27 0.44 0.44 0.98 0.44 1.24 0.00 0.27 0.36 1.29 0.84 2.36 0.44 1.02 1.29 2.98 1.82 4.31 2.00 4.98 4.09 10.04 4.67 11.33 0.62 1.51 1.33 3.38 4.93 13.11 6.80 18.62 16.00 46.36 19.33 58.44 0.27 0.98 0.67 2.27 0.84 2.89 0.18 0.62 0.58 1.91 0.84 2.89 0.27 0.98 0.98 3.38 1.60 5.33 0.58 1.96 1.38 4.67 1.73 6.00 0.36 1.33 0.98 3.56 1.38 4.89 0.36 1.33 0.89 3.24 1.07 4.22 0.49 2.09 2.76 10.84 3.82 14.67 0.44 1.47 0.93 3.33 1.11 4.13 0.71 3.02 1.29 2.49 2.40 -2.13 0.40 -1.82 1.16 -4.93 1.60 -6.89 0.44 -1.96 1.60 -6.67 2.49 -10.44 1.56 -6.71 3.69 -14.98 5.51 -21.78 4.44 -16.40 6.18 -22.84 7.11 -26.00 0.40 -1.33 0.93 -3.29 1.73 -6.13 0.22 -0.76 0.93 -3.11 1.60 -5.20 0.67 -2.09 2.04 -6.67 3.11 -10.22 2.49 -8.36 11.11 -34.22 13.82 -41.33 3.87 -10.40 4.22 -11.33 4.93 -13.33 0.84 -2.53 2.71 -7.38 3.47 -9.11 0.31 -0.76 2.18 -5.24 4.13 -10.00 4.53 -11.11 6.84 -16.40 10.98 -25.11 1.24 -2.71 2.89 -6.18 3.60 -7.78 4.13 -9.16 16.76 -32.71 21.33 -39.91 0.84 -1.29 1.51 -2.40 1.51 -2.49 0.00 -1.07 15.91 -24.89 21.24 -31.91 16.98 -22.18 30.00 -35.78 48.53 -50.84 4.93 -4.00 16.67 -12.18 20.67 -14.40 6.84 -3.78 12.67 -7.24 12.67 -7.51 0.00 -0.18 -0.84 -0.53 -1.87 -0.80 -1.07 -0.27 -3.42 -0.89 -5.24 -1.38 -12.09 -3.29 -28.49 -4.93 -40.22 -4.04 Z"/></svg>`;
+      const JULIUS_SPINNER_SVG = `<svg class="lt-spinner" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.1)"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>`;
+      const STEP_BASH_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`;
+      const STEP_FILE_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+      const STEP_BRAIN_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>`;
+      const STEP_DONE_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+      const CHEVRON_RIGHT_SVG = `<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg>`;
+      const CHEVRON_DOWN_SVG = `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>`;
+
+      function renderActiveTaskTimeline() {
+        try {
+          const wrapper = getActiveAssistantWrapper();
+          if (!wrapper) { juliusWarn('renderActiveTaskTimeline: no wrapper, skipping render for now.'); return; }
+          juliusLog('renderActiveTaskTimeline: rendering', activeTaskSteps.length, 'step(s) into wrapper', wrapper);
+
+          const target = wrapper.querySelector('.group.w-full') || wrapper;
+          const beforeElement = target.querySelector('.markdown-body');
+
+          // ── Build or reuse the outer container ──
+          let container = target.querySelector('.julius-timeline-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.className = 'julius-timeline-container';
+            if (beforeElement) {
+              target.insertBefore(container, beforeElement);
+            } else {
+              target.appendChild(container);
+            }
+          }
+          currentTimelineContainer = container;
+
+          // ── Determine overall active status & step count ──
+          const totalSteps = activeTaskSteps.length;
+          const isAnyActive = activeTaskSteps.some(s => s.active);
+          const activeStep = activeTaskSteps.find(s => s.active);
+          const summaryLabel = isAnyActive
+            ? (activeStep ? activeStep.title : 'Thinking…')
+            : `${totalSteps} step${totalSteps !== 1 ? 's' : ''} completed`;
+
+          // ── Build or update the pill header ──
+          let pillHeader = container.querySelector('.lt-pill-header');
+          if (!pillHeader) {
+            pillHeader = document.createElement('div');
+            pillHeader.className = 'lt-pill-header';
+            pillHeader.setAttribute('role', 'button');
+            pillHeader.setAttribute('tabindex', '0');
+            pillHeader.setAttribute('aria-expanded', 'false');
+            pillHeader.setAttribute('aria-controls', 'lt-body-' + container.dataset.uid);
+            container.insertBefore(pillHeader, container.firstChild);
+          }
+          if (!container.dataset.uid) {
+            container.dataset.uid = Math.random().toString(36).slice(2);
+          }
+
+          if (isAnyActive) {
+            pillHeader.classList.add('active');
+          } else {
+            pillHeader.classList.remove('active');
+          }
+
+          pillHeader.innerHTML = `
+            <span class="lt-icon-wrap">${isAnyActive ? JULIUS_SPINNER_SVG : JULIUS_V_SVG}</span>
+            <span class="lt-summary-text">${summaryLabel}</span>
+            <span class="lt-step-badge">${totalSteps}</span>
+            <span class="lt-chevron">${CHEVRON_DOWN_SVG}</span>
+          `;
+
+          // ── Build or reuse the grid body ──
+          let bodyGrid = container.querySelector('.lt-body-grid');
+          if (!bodyGrid) {
+            bodyGrid = document.createElement('div');
+            bodyGrid.className = 'lt-body-grid';
+            bodyGrid.id = 'lt-body-' + container.dataset.uid;
+            const bodyInner = document.createElement('div');
+            bodyInner.className = 'lt-body-inner';
+            const bodyContent = document.createElement('div');
+            bodyContent.className = 'lt-body-content';
+            bodyInner.appendChild(bodyContent);
+            bodyGrid.appendChild(bodyInner);
+            container.appendChild(bodyGrid);
+          }
+          const bodyContent = bodyGrid.querySelector('.lt-body-content');
+
+          // ── Sync expanded state ──
+          const isExpanded = pillHeader.getAttribute('aria-expanded') === 'true';
+          if (isAnyActive && !isExpanded) {
+            // Auto-expand when agent is actively thinking
+            pillHeader.setAttribute('aria-expanded', 'true');
+            bodyGrid.classList.add('open');
+          }
+
+          // ── Render individual step rows inside body ──
+          const existingRows = Array.from(bodyContent.querySelectorAll('.julius-timeline-row'));
+
+          activeTaskSteps.forEach((step) => {
+            let row = bodyContent.querySelector(`.julius-timeline-row[data-step="${step.step}"]`);
+            if (!row) {
+              row = document.createElement('div');
+              row.className = 'julius-timeline-row';
+              row.setAttribute('data-step', step.step);
+              bodyContent.appendChild(row);
+            }
+            if (step.active) row.classList.add('active');
+            else row.classList.remove('active');
+
+            // Pick step icon
+            let stepIcon;
+            if (step.active) {
+              stepIcon = `<svg class="lt-spinner" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.1)"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>`;
+            } else {
+              const hasBash = step.actions.some(a => a.name === 'run_bash');
+              const hasFile = step.actions.some(a => ['write_file','edit_file','replace_file_content','multi_replace_file_content','read_file','view_file','write_to_file'].includes(a.name));
+              stepIcon = hasBash ? STEP_BASH_SVG : hasFile ? STEP_FILE_SVG : step.thought ? STEP_BRAIN_SVG : STEP_DONE_SVG;
+            }
+
+            // ── Level-3 Details (ThinkingPanel.tsx style) ──
+            const detailsHtml = step.details && step.details.length > 0 ? step.details.map((detail, idx) => {
+              const isDetailExpanded = step.expandedDetails && step.expandedDetails.has(detail.id);
+              return `
+                <div class="lt-detail-row" data-detail-id="${detail.id}">
+                  <div class="lt-detail-header">
+                    <span class="lt-detail-bullet">▸</span>
+                    <span class="lt-detail-text">${detail.content}</span>
+                  </div>
+                </div>
+              `;
+            }).join('') : '';
+
+            // ── Summary + actions (classic style) ──
+            const actionsHtml = step.actions.map(act => `
+              <div class="julius-step-action-line" style="margin-top:5px;">
+                <div class="julius-step-action-status">↳ ${act.name.replace(/_/g,' ')}</div>
+                ${act.args ? `<pre class="julius-timeline-action-block">${typeof act.args === 'object' ? JSON.stringify(act.args, null, 2) : String(act.args)}</pre>` : ''}
+                ${act.result ? `
+                  <div class="julius-step-action-result-label">Output · ${act.success !== false ? 'OK' : 'Error'}</div>
+                  <pre class="julius-timeline-action-block" style="color: ${act.success !== false ? 'rgba(255,255,255,0.5)' : 'rgba(248,113,113,0.8)'};">${String(act.result).trim().slice(0, 800)}</pre>
+                ` : ''}
+              </div>
+            `).join('');
+
+            const chevronClass = step.expanded ? 'julius-timeline-chevron expanded' : 'julius-timeline-chevron';
+            const bodyClass    = step.expanded ? 'julius-timeline-body expanded'    : 'julius-timeline-body';
+
+            // Collapsed preview: show step.summary if available, else nothing
+            const collapsedSummaryHtml = (!step.expanded && step.summary)
+              ? `<div class="lt-step-summary-collapsed">${step.summary}</div>`
+              : '';
+
+            // Done badge: show ✓ summary when not active and summary is set
+            const doneSummaryHtml = (!step.active && !step.expanded && step.summary)
+              ? '' // shown via collapsedSummaryHtml
+              : (step.summary && !step.active && step.expanded)
+                ? `<div class="lt-step-summary-done"><span class="lt-done-check">✓</span> ${step.summary}</div>`
+                : '';
+
+            row.innerHTML = `
+              <div class="julius-timeline-header">
+                <span class="julius-timeline-icon-box">${stepIcon}</span>
+                <span class="julius-step-title">${step.title}</span>
+                ${(step.thought || step.actions.length > 0 || (step.details && step.details.length > 0)) ? `<span class="${chevronClass}">${CHEVRON_RIGHT_SVG}</span>` : ''}
+              </div>
+              ${collapsedSummaryHtml}
+              <div class="${bodyClass}">
+                <div class="julius-timeline-body-inner">
+                  <div class="julius-timeline-content-inner">
+                    ${step.thought ? `<div class="julius-timeline-content">${formatMarkdown(step.thought)}</div>` : ''}
+                    ${detailsHtml ? `<div class="lt-details-list">${detailsHtml}</div>` : ''}
+                    <div class="julius-timeline-actions-list">${actionsHtml}</div>
+                    ${doneSummaryHtml}
+                    ${step.active ? `
+                      <div class="julius-step-live-indicator">
+                        <svg class="lt-spinner" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.1)"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                        <span>Working…</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          // Remove stale rows
+          existingRows.forEach(row => {
+            const sn = parseInt(row.getAttribute('data-step'));
+            if (!activeTaskSteps.some(s => s.step === sn)) row.remove();
+          });
+
+          // ── When task finishes: hide container, show affordance ──
+          if (activeTaskFinished) {
+            if (container && container.dataset.finished !== 'true') {
+              container.dataset.finished = 'true';
+              container.classList.add('julius-hidden');
+            }
+            const isCurrentlyVisible = container && !container.classList.contains('julius-hidden');
+
+            let affordance = target.querySelector('.julius-timeline-affordance');
+            if (!affordance) {
+              affordance = document.createElement('div');
+              affordance.className = 'julius-timeline-affordance';
+              target.insertBefore(affordance, container);
+            }
+            // always re-render affordance to update chevron direction
+            const _isVis = container && !container.classList.contains('julius-hidden');
+            affordance.innerHTML = `
+              <button class="julius-timeline-affordance-btn">
+                <span class="julius-timeline-affordance-text">${isCurrentlyVisible ? 'Hide steps' : `View steps (${totalSteps})`}</span>
+                <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.6"><polyline points="${isCurrentlyVisible ? '4 10 8 6 12 10' : '4 6 8 10 12 6'}"/></svg>
+              </button>
+            `;
+            affordance.style.display = 'flex';
+          } else {
+            if (container) {
+              delete container.dataset.finished;
+            }
+            container.classList.remove('julius-hidden');
+            const affordance = target.querySelector('.julius-timeline-affordance');
+            if (affordance) affordance.remove();
+          }
+        } catch (e) {
+          juliusErr('renderActiveTaskTimeline threw:', e);
+        }
+      }
+
+      // ── Toggle an individual step row open/closed ──
+      window.toggleJuliusStep = function (stepNum) {
+        const step = activeTaskSteps.find(s => s.step === stepNum);
+        if (step) {
+          step.expanded = !step.expanded;
+          renderActiveTaskTimeline();
+        }
+      };
+
+      // ── Toggle the whole pill body open/closed ──
+      window.toggleJuliusPill = function (pillHeader) {
+        const bodyGrid = pillHeader.closest('.julius-timeline-container').querySelector('.lt-body-grid');
+        if (!bodyGrid) return;
+        const isOpen = pillHeader.getAttribute('aria-expanded') === 'true';
+        pillHeader.setAttribute('aria-expanded', String(!isOpen));
+        bodyGrid.classList.toggle('open', !isOpen);
+      };
+
+      // ── Toggle affordance (View Steps / Hide Steps) ──
+      window.toggleTimelineVisibility = function (btn) {
+        const parent = btn.closest('.julius-timeline-affordance').parentNode;
+        const container = parent.querySelector('.julius-timeline-container');
+        const textSpan = btn.querySelector('.julius-timeline-affordance-text');
+        if (!container || !textSpan) return;
+        const isHidden = container.classList.contains('julius-hidden');
+        if (isHidden) {
+          container.classList.remove('julius-hidden');
+          textSpan.textContent = `Hide Steps`;
+          // Auto-expand the completed pill when clicking 'View Steps'
+          const pillHeader = container.querySelector('.lt-pill-header');
+          const bodyGrid = container.querySelector('.lt-body-grid');
+          if (pillHeader && bodyGrid) {
+            pillHeader.setAttribute('aria-expanded', 'true');
+            bodyGrid.classList.add('open');
+          }
+        } else {
+          container.classList.add('julius-hidden');
+          textSpan.textContent = `View Steps (${activeTaskSteps.length})`;
+        }
+      };
+
+      function hideNativeStatusCards() {
+        const elements = document.querySelectorAll('div, p, span');
+        elements.forEach(el => {
+          if (el.classList.contains('julius-timeline-container') || el.closest('.julius-timeline-container')) {
+            return;
+          }
+          if (el.classList.contains('julius-timeline-affordance') || el.closest('.julius-timeline-affordance')) {
+            return;
+          }
+          const text = el.textContent.trim();
+          const isStatus = text === 'Thinking...' ||
+            text === 'Executing next actions...' ||
+            text === 'Analyzing next actions...' ||
+            text === 'Analyzing next actions' ||
+            text === 'Reasoning complete' ||
+            text.startsWith('↳ Step') ||
+            text.startsWith('Running command') ||
+            /^Thought (for )?\d+/.test(text) ||
+            /^Step \d+/.test(text);
+
+          if (isStatus) {
+            const messageBlock = el.closest('.flex.gap-3.items-start');
+            if (messageBlock) {
+              if (messageBlock.querySelector('.julius-timeline-container') || messageBlock.querySelector('.julius-timeline-affordance')) {
+                el.style.setProperty('display', 'none', 'important');
+              } else {
+                messageBlock.style.setProperty('display', 'none', 'important');
+                messageBlock.classList.add('julius-hidden-card');
+              }
+            } else {
+              el.style.setProperty('display', 'none', 'important');
+              el.classList.add('julius-hidden-card');
+            }
+          }
+        });
+      }
+
+      const _origWS = window.WebSocket;
+      juliusLog('Hooking window.WebSocket. If your app already opened its socket before this script ran, this hook will miss it — reload the page after confirming this file is actually the one being served.');
+      window.WebSocket = function (...args) {
+        juliusLog('New WebSocket created ->', args[0]);
+        const ws = new _origWS(...args);
+        const _origAddListener = ws.addEventListener.bind(ws);
+
+        _origAddListener('message', function (event) {
+          try {
+            const data = JSON.parse(event.data);
+            if (JULIUS_DEBUG) juliusLog('WS message received, type =', data.type, data);
+
+            if (data.type === 'task_title' && data.title) {
+              _shortTitle = data.title;
+              setTimeout(applyShortTitle, 50);
+              setTimeout(applyShortTitle, 250);
+              setTimeout(applyShortTitle, 600);
+            }
+
+            if (data.type === 'step_start' && data.step) {
+              handleStepStart(data.step);
+            }
+            else if (data.type === 'stream' && data.text) {
+              const thoughtText = extractThought(data.text);
+              if (thoughtText) {
+                let step = activeTaskSteps.find(s => s.step === currentStepNum);
+                const prevThought = step ? step.thought : "";
+                handleThought(currentStepNum, prevThought + thoughtText);
+              }
+            }
+            else if (data.type === 'thought' && data.text) {
+              handleThought(currentStepNum, data.text);
+            }
+            else if (data.type === 'action' && data.name) {
+              handleAction(currentStepNum, data.name, data.args);
+            }
+            else if (data.type === 'result') {
+              handleActionResult(currentStepNum, data.name, data.success, data.output);
+            }
+            else if (data.type === 'done' || data.type === 'error') {
+              handleTaskFinished();
+            }
+            else if (data.type === 'agent.permission_required') {
+              if (typeof window.showJuliusPermissionModal === 'function') {
+                window.showJuliusPermissionModal(data);
+              }
+            }
+            else if (data.type === 'audio.interrupted') {
+              if (typeof window.handleJuliusAudioInterrupted === 'function') {
+                window.handleJuliusAudioInterrupted(data);
+              }
+            }
+            else if (data.type === 'mtk.status_response' || data.type === 'mtk.hotplug' || data.type === 'mtk.handshake_result') {
+              if (typeof window.handleMtkStatusUpdate === 'function') {
+                window.handleMtkStatusUpdate(data);
+              }
+            }
+          } catch (e) {
+            juliusErr('Failed to handle WS message:', e, 'raw data was:', event.data);
+          }
+        });
+
+        window._juliusActiveWS = ws;
+        return ws;
+      };
+      Object.assign(window.WebSocket, _origWS);
+      window.WebSocket.prototype = _origWS.prototype;
+
+      const _origSend = _origWS.prototype.send;
+      _origWS.prototype.send = function (data) {
+        try {
+          const payload = JSON.parse(data);
+          if (payload.type === 'start_task' && payload.task) {
+            _shortTitle = makeShortTitle(payload.task);
+            setTimeout(applyShortTitle, 80);
+            setTimeout(applyShortTitle, 350);
+            setTimeout(applyShortTitle, 800);
+
+            currentStepNum = 0;
+            stepStartTimes = {};
+            stepActions = {};
+            currentTimelineContainer = null;
+            activeTaskSteps = [];
+            activeTaskFinished = false;
+          }
+        } catch (e) { }
+        return _origSend.apply(this, arguments);
+      };
+
+      document.addEventListener('click', function (e) {
+        // Click on pill header → toggle whole body
+        const pillHeader = e.target.closest('.lt-pill-header');
+        if (pillHeader) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.toggleJuliusPill(pillHeader);
+          return;
+        }
+
+        // Click on a step header → toggle that step's body
+        const stepHeader = e.target.closest('.julius-timeline-header');
+        if (stepHeader) {
+          e.preventDefault();
+          e.stopPropagation();
+          const row = stepHeader.closest('.julius-timeline-row');
+          if (row) {
+            const sn = parseInt(row.getAttribute('data-step'));
+            if (sn) window.toggleJuliusStep(sn);
+          }
+          return;
+        }
+
+        // Click on a Level-3 detail row → toggle detail expand (ThinkingPanel pattern)
+        const detailHeader = e.target.closest('.lt-detail-header');
+        if (detailHeader) {
+          e.preventDefault();
+          e.stopPropagation();
+          const detailRow = detailHeader.closest('.lt-detail-row');
+          const stepRow = detailHeader.closest('.julius-timeline-row');
+          if (detailRow && stepRow) {
+            const sn = parseInt(stepRow.getAttribute('data-step'));
+            const detailId = detailRow.getAttribute('data-detail-id');
+            const step = activeTaskSteps.find(s => s.step === sn);
+            if (step && detailId) {
+              if (!step.expandedDetails) step.expandedDetails = new Set();
+              if (step.expandedDetails.has(detailId)) {
+                step.expandedDetails.delete(detailId);
+              } else {
+                step.expandedDetails.add(detailId);
+              }
+              renderActiveTaskTimeline();
+            }
+          }
+          return;
+        }
+
+        // Click on affordance button → toggle visibility
+        const affordanceBtn = e.target.closest('.julius-timeline-affordance-btn');
+        if (affordanceBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.toggleTimelineVisibility(affordanceBtn);
+          return;
+        }
+      }, true);
+
+      let _rerenderScheduled = false;
+      function scheduleTimelineRerenderIfNeeded() {
+        if (activeTaskSteps.length === 0) return;
+        if (_rerenderScheduled) return;
+        _rerenderScheduled = true;
+        requestAnimationFrame(function () {
+          _rerenderScheduled = false;
+          const wrapper = getActiveAssistantWrapper();
+          const target = wrapper ? (wrapper.querySelector('.group.w-full') || wrapper) : null;
+          if (!target) return;
+
+          const stillHasContainer = target.querySelector('.julius-timeline-container');
+          const stillHasAffordance = target.querySelector('.julius-timeline-affordance');
+
+          let needsRerender = false;
+          if (activeTaskFinished) {
+            if (!stillHasAffordance) {
+              needsRerender = true;
+            }
+          } else {
+            if (!stillHasContainer) {
+              needsRerender = true;
+            }
+          }
+
+          if (needsRerender) {
+            juliusLog('Self-heal: timeline elements were missing — reinserting/re-rendering.');
+            renderActiveTaskTimeline();
+          }
+        });
+      }
+
+      const periodicTick = safe(function () {
+        applyShortTitle();
+        hideNativeStatusCards();
+        cleanOrphanedTimelineContainers();
+        scheduleTimelineRerenderIfNeeded();
+      }, 'periodicTick');
+
+      const headerObserver = new MutationObserver(safe(function (mutations) {
+        applyShortTitle();
+        hideNativeStatusCards();
+        cleanOrphanedTimelineContainers();
+        // This is the critical addition: react to the SAME mutation event
+        // that React just used to wipe our container, and re-insert it
+        // immediately rather than waiting for the next WS message.
+        scheduleTimelineRerenderIfNeeded();
+      }, 'headerObserver'));
+      headerObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+      setInterval(periodicTick, 500);
+
+      document.addEventListener('DOMContentLoaded', safe(function () {
+        const styleEl = document.getElementById('julius-markdown-polish');
+        if (!styleEl) {
+          juliusWarn('markdown-polish styles not found — re-injecting');
+        }
+        document.body.style.opacity = '0.999';
+        requestAnimationFrame(function () {
+          document.body.style.opacity = '';
+        });
+        applyShortTitle();
+        hideNativeStatusCards();
+        cleanOrphanedTimelineContainers();
+        juliusLog('DOMContentLoaded fired, initial pass complete. Script is alive.');
+      }, 'DOMContentLoaded handler'));
+
+      // Run once immediately too, in case DOMContentLoaded already fired
+      // before this script executed (e.g. script injected late).
+      if (document.readyState !== 'loading') {
+        periodicTick();
+        juliusLog('Document was already loaded when script ran — ran initial tick immediately.');
+      }
+
+      // Expose a test namespace on window for Playwright/App Tester verification
+      window.JuliusTimelineSim = {
+        handleStepStart: handleStepStart,
+        handleThought: handleThought,
+        handleAction: handleAction,
+        handleActionResult: handleActionResult,
+        handleTaskFinished: handleTaskFinished,
+        // ThinkingPanel.tsx pattern: stream detail items and step summaries
+        handleStepDetail: handleStepDetail,
+        handleStepSummary: handleStepSummary,
+        renderActiveTaskTimeline: renderActiveTaskTimeline,
+        getActiveAssistantWrapper: getActiveAssistantWrapper,
+        getSteps: () => activeTaskSteps,
+        isFinished: () => activeTaskFinished
+      };
+
+    })();
+  </script>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Julius Build — Prompt-to-App Generation Panel
+     Self-contained: no framework dependencies, injected as overlay.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<style>
+  /* ── Julius Build trigger button ── */
+  #julius-build-trigger {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    z-index: 9000;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 18px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: -0.01em;
+  }
+  #julius-build-trigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(99,102,241,0.5);
+  }
+  #julius-build-trigger svg { flex-shrink: 0; }
+
+  /* ── Overlay backdrop ── */
+  #julius-build-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    animation: lb-fadeIn 0.2s ease;
+  }
+  #julius-build-overlay.open { display: flex; }
+  @keyframes lb-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── Panel ── */
+  #julius-build-panel {
+    background: #0f0f1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    width: 90vw;
+    max-width: 780px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+    animation: lb-slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  @keyframes lb-slideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── Header ── */
+  .lb-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .lb-header-left { display: flex; align-items: center; gap: 14px; }
+  .lb-logo {
+    width: 40px; height: 40px;
+    background: #0F172A;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .lb-title {
+    font-size: 1.1rem; font-weight: 700;
+    color: #fff; letter-spacing: -0.02em;
+  }
+  .lb-subtitle { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .lb-close {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; line-height: 1; transition: all 0.15s;
+  }
+  .lb-close:hover { background: rgba(239,68,68,0.15); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+  /* ── Tabs ── */
+  .lb-tabs {
+    display: flex; gap: 4px;
+    padding: 0 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .lb-tab {
+    padding: 12px 16px; font-size: 0.82rem; font-weight: 600;
+    color: rgba(255,255,255,0.45); cursor: pointer; border: none;
+    background: transparent; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: all 0.15s; letter-spacing: -0.01em;
+  }
+  .lb-tab.active { color: #6366f1; border-bottom-color: #6366f1; }
+  .lb-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+  /* ── Content area ── */
+  .lb-content { flex: 1; overflow-y: auto; padding: 28px; min-height: 0; }
+  .lb-tab-pane { display: none; }
+  .lb-tab-pane.active { display: block; }
+
+  /* ── Build form ── */
+  .lb-prompt-label {
+    font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.6);
+    margin-bottom: 10px; letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  #lb-prompt-input {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+    color: #fff; font-family: inherit; font-size: 0.95rem;
+    padding: 16px 18px; resize: vertical; min-height: 90px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+  }
+  #lb-prompt-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+  }
+  #lb-prompt-input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .lb-options-row {
+    display: flex; gap: 12px; align-items: center;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .lb-overwrite-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: rgba(255,255,255,0.5); cursor: pointer;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 8px 14px;
+  }
+  .lb-overwrite-label input { accent-color: #6366f1; }
+
+  #lb-build-btn {
+    flex: 1; min-width: 140px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff; border: none; border-radius: 12px;
+    padding: 12px 24px; font-family: inherit; font-size: 0.9rem;
+    font-weight: 700; cursor: pointer; letter-spacing: -0.01em;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+    transition: all 0.2s; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+  }
+  #lb-build-btn:hover:not(:disabled) {
+    transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.45);
+  }
+  #lb-build-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── Progress feed ── */
+  #lb-progress-section { margin-top: 24px; display: none; }
+  #lb-progress-section.show { display: block; }
+  .lb-progress-title {
+    font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.4);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+  }
+  .lb-progress-feed {
+    background: #08080f; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 16px; max-height: 220px;
+    overflow-y: auto; font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 0.78rem;
+  }
+  .lb-log-line { padding: 2px 0; display: flex; gap: 12px; color: rgba(255,255,255,0.6); }
+  .lb-log-stage {
+    color: #6366f1; font-weight: 600; width: 90px;
+    flex-shrink: 0; overflow: hidden; text-overflow: ellipsis;
+  }
+  .lb-log-line.error .lb-log-stage { color: #ef4444; }
+  .lb-log-line.done .lb-log-stage { color: #22c55e; }
+
+  /* ── Spec card ── */
+  #lb-spec-section { margin-top: 24px; display: none; }
+  #lb-spec-section.show { display: block; }
+  .lb-spec-card {
+    background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 16px; padding: 20px;
+  }
+  .lb-spec-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .lb-spec-badge {
+    font-size: 0.7rem; font-weight: 700; background: rgba(99,102,241,0.3);
+    color: #a5b4fc; border-radius: 6px; padding: 3px 8px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .lb-spec-name { font-size: 1rem; font-weight: 700; color: #fff; }
+  .lb-spec-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .lb-spec-item {}
+  .lb-spec-label {
+    font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .lb-spec-value { font-size: 0.85rem; color: rgba(255,255,255,0.8); }
+  .lb-spec-features { grid-column: 1 / -1; }
+  .lb-spec-tag {
+    display: inline-block; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
+    font-size: 0.75rem; padding: 3px 9px; margin: 3px 4px 3px 0;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ── Result card ── */
+  #lb-result-section { margin-top: 24px; display: none; }
+  #lb-result-section.show { display: block; }
+  .lb-result-card {
+    border-radius: 16px; padding: 20px; border: 1px solid;
+  }
+  .lb-result-card.verified_working {
+    background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25);
+  }
+  .lb-result-card.partially_verified {
+    background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.25);
+  }
+  .lb-result-card.unverified {
+    background: rgba(156,163,175,0.08); border-color: rgba(156,163,175,0.2);
+  }
+  .lb-result-card.failed {
+    background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25);
+  }
+
+  .lb-status-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+  }
+  .lb-status-badge {
+    font-size: 0.72rem; font-weight: 800; padding: 5px 12px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .verified_working .lb-status-badge { background: rgba(34,197,94,0.2); color: #4ade80; }
+  .partially_verified .lb-status-badge { background: rgba(234,179,8,0.2); color: #fbbf24; }
+  .unverified .lb-status-badge { background: rgba(156,163,175,0.15); color: #9ca3af; }
+  .failed .lb-status-badge { background: rgba(239,68,68,0.2); color: #f87171; }
+
+  .lb-status-title { font-size: 0.95rem; font-weight: 700; color: #fff; }
+
+  .lb-evidence-section { margin-top: 14px; }
+  .lb-evidence-label {
+    font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .lb-feature-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.82rem;
+  }
+  .lb-feature-row:last-child { border-bottom: none; }
+  .lb-feature-check { font-size: 1rem; flex-shrink: 0; width: 20px; }
+  .lb-feature-name { color: rgba(255,255,255,0.8); flex: 1; }
+  .lb-feature-result { color: rgba(255,255,255,0.45); font-size: 0.77rem; }
+
+  .lb-screenshot-thumb {
+    width: 100%; max-height: 200px; object-fit: cover;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 14px; cursor: zoom-in;
+  }
+  .lb-open-app-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 14px; padding: 10px 18px;
+    background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 10px; color: #a5b4fc; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: all 0.15s;
+  }
+  .lb-open-app-btn:hover { background: rgba(99,102,241,0.3); }
+
+  .lb-install-output {
+    background: #05050c; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 12px; font-family: monospace;
+    font-size: 0.75rem; color: rgba(255,255,255,0.5);
+    max-height: 120px; overflow-y: auto; margin-top: 10px;
+    white-space: pre-wrap; word-break: break-all;
+  }
+
+  /* ── History tab ── */
+  .lb-history-empty {
+    text-align: center; padding: 60px 0;
+    color: rgba(255,255,255,0.3); font-size: 0.9rem;
+  }
+  .lb-history-empty .lb-empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+  .lb-gen-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 12px;
+    transition: background 0.15s; cursor: default;
+  }
+  .lb-gen-card:hover { background: rgba(255,255,255,0.05); }
+  .lb-gen-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .lb-gen-name { font-size: 0.92rem; font-weight: 700; color: #fff; }
+  .lb-gen-ts { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+  .lb-gen-desc {
+    font-size: 0.8rem; color: rgba(255,255,255,0.45);
+    margin-bottom: 12px; overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .lb-gen-footer { display: flex; align-items: center; gap: 10px; }
+  .lb-gen-stack {
+    font-size: 0.7rem; font-weight: 600;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; padding: 3px 8px; color: rgba(255,255,255,0.5);
+  }
+  /* Verification status badges on history cards — UNMISSABLE distinction */
+  .lb-vstatus {
+    font-size: 0.7rem; font-weight: 800;
+    border-radius: 6px; padding: 3px 10px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .lb-vstatus.verified_working { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .lb-vstatus.partially_verified { background: rgba(234,179,8,0.15); color: #fbbf24; }
+  .lb-vstatus.unverified { background: rgba(156,163,175,0.1); color: #9ca3af; }
+  .lb-vstatus.failed { background: rgba(239,68,68,0.15); color: #f87171; }
+
+  @media (max-width: 600px) {
+    #julius-build-panel { width: 100vw; max-width: 100vw; border-radius: 20px 20px 0 0; }
+    #julius-build-overlay { align-items: flex-end; }
+    .lb-spec-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- Trigger button -->
+<button id="julius-build-trigger" title="Open Julius Build — Prompt to App">
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+  Build
+</button>
+
+<!-- Panel overlay -->
+<div id="julius-build-overlay" role="dialog" aria-modal="true" aria-label="Julius Build">
+  <div id="julius-build-panel">
+    <!-- Header -->
+    <div class="lb-header">
+      <div class="lb-header-left">
+        <div class="lb-logo"><img src="/logo-badge-dark.svg" width="36" height="36" alt="Julius"></div>
+        <div>
+          <div class="lb-title">Julius Build</div>
+          <div class="lb-subtitle">Prompt → Working App · Verified generation</div>
+        </div>
+      </div>
+      <button class="lb-close" id="lb-close-btn" title="Close">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-tab="build">Build</button>
+      <button class="lb-tab" data-tab="history">History</button>
+    </div>
+
+    <!-- Content -->
+    <div class="lb-content">
+
+      <!-- Build tab -->
+      <div class="lb-tab-pane active" id="lb-pane-build">
+        <div class="lb-prompt-label">Describe your app</div>
+        <textarea
+          id="lb-prompt-input"
+          placeholder="e.g. A to-do list app where I can add, complete, and delete tasks. Persist items in localStorage."
+          rows="4"
+        ></textarea>
+
+        <div class="lb-options-row">
+          <label class="lb-overwrite-label">
+            <input type="checkbox" id="lb-overwrite" />
+            Overwrite existing
+          </label>
+          <button id="lb-build-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Generate App
+          </button>
+        </div>
+
+        <!-- Progress feed -->
+        <div id="lb-progress-section">
+          <div class="lb-progress-title">Pipeline progress</div>
+          <div class="lb-progress-feed" id="lb-progress-feed"></div>
+        </div>
+
+        <!-- Spec preview -->
+        <div id="lb-spec-section">
+          <div class="lb-spec-card" id="lb-spec-card"></div>
+        </div>
+
+        <!-- Result -->
+        <div id="lb-result-section">
+          <div id="lb-result-card"></div>
+        </div>
+      </div>
+
+      <!-- History tab -->
+      <div class="lb-tab-pane" id="lb-pane-history">
+        <div id="lb-history-content">
+          <div class="lb-history-empty">
+            <div class="lb-empty-icon">🏗️</div>
+            Loading history...
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  let _currentJobId = null;
+  let _pollInterval = null;
+  let _currentRecord = null;
+
+  // ── DOM refs ─────────────────────────────────────────────────────────────────
+  const overlay    = document.getElementById('julius-build-overlay');
+  const trigger    = document.getElementById('julius-build-trigger');
+  const closeBtn   = document.getElementById('lb-close-btn');
+  const buildBtn   = document.getElementById('lb-build-btn');
+  const promptInput = document.getElementById('lb-prompt-input');
+  const overwriteChk = document.getElementById('lb-overwrite');
+  const progressSection = document.getElementById('lb-progress-section');
+  const progressFeed = document.getElementById('lb-progress-feed');
+  const specSection  = document.getElementById('lb-spec-section');
+  const resultSection = document.getElementById('lb-result-section');
+
+  // ── Open / Close ─────────────────────────────────────────────────────────────
+  trigger.addEventListener('click', () => {
+    overlay.classList.add('open');
+    promptInput.focus();
+  });
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  function close() {
+    overlay.classList.remove('open');
+  }
+
+  // ── Tabs ──────────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.lb-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.lb-tab-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const pane = document.getElementById('lb-pane-' + tab.dataset.tab);
+      if (pane) pane.classList.add('active');
+      if (tab.dataset.tab === 'history') loadHistory();
+    });
+  });
+
+  // ── Build ─────────────────────────────────────────────────────────────────────
+  buildBtn.addEventListener('click', startBuild);
+
+  async function startBuild() {
+    const prompt = promptInput.value.trim();
+    if (!prompt) { promptInput.focus(); return; }
+
+    // Reset UI
+    resetBuildUI();
+    buildBtn.disabled = true;
+    buildBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:lb-spin 1s linear infinite">
+        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+      </svg>
+      Building...`;
+
+    progressSection.classList.add('show');
+    addLog('pipeline', 'Starting Julius Build pipeline...');
+
+    try {
+      const resp = await fetch('/api/build', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, overwrite: overwriteChk.checked })
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error || 'Failed to start build');
+      _currentJobId = data.job_id;
+      addLog('pipeline', `Job started: ${data.job_id.slice(0, 8)}`);
+      startPolling(_currentJobId);
+    } catch (err) {
+      addLog('error', 'Failed: ' + err.message);
+      resetBuildButton();
+    }
+  }
+
+  function startPolling(jobId) {
+    if (_pollInterval) clearInterval(_pollInterval);
+    let lastProgressCount = 0;
+    _pollInterval = setInterval(async () => {
+      try {
+        const resp = await fetch(`/api/build/${jobId}/status`);
+        const data = await resp.json();
+        if (!resp.ok) return;
+
+        // Append new progress lines
+        const newLines = (data.progress || []).slice(lastProgressCount);
+        newLines.forEach(p => addLog(p.stage, p.message));
+        lastProgressCount = (data.progress || []).length;
+
+        // Show spec when available
+        if (data.spec && data.spec.title) {
+          showSpec(data.spec);
+        }
+
+        if (data.status === 'done') {
+          clearInterval(_pollInterval);
+          _pollInterval = null;
+          if (data.record) {
+            _currentRecord = data.record;
+            showResult(data.record, jobId);
+          }
+          resetBuildButton();
+        } else if (data.status === 'error') {
+          clearInterval(_pollInterval);
+          _pollInterval = null;
+          addLog('error', data.error || 'Unknown error');
+          resetBuildButton();
+        }
+      } catch (e) {
+        // Network glitch — keep polling
+      }
+    }, 800);
+  }
+
+  function addLog(stage, message) {
+    const line = document.createElement('div');
+    const isError = stage === 'error';
+    const isDone = stage === 'done';
+    line.className = `lb-log-line${isError ? ' error' : ''}${isDone ? ' done' : ''}`;
+    line.innerHTML = `<span class="lb-log-stage">${escHtml(stage)}</span><span>${escHtml(message)}</span>`;
+    progressFeed.appendChild(line);
+    progressFeed.scrollTop = progressFeed.scrollHeight;
+  }
+
+  // ── Spec preview ──────────────────────────────────────────────────────────────
+  function showSpec(spec) {
+    specSection.classList.add('show');
+    const card = document.getElementById('lb-spec-card');
+    const featureTags = (spec.features || []).map(f =>
+      `<span class="lb-spec-tag">${escHtml(f)}</span>`
+    ).join('');
+    const assumption = spec.clarification_assumption
+      ? `<div class="lb-spec-item lb-spec-features">
+           <div class="lb-spec-label">Assumption</div>
+           <div class="lb-spec-value" style="color:rgba(251,191,36,0.9)">${escHtml(spec.clarification_assumption)}</div>
+         </div>` : '';
+    const incomplete = (spec.incomplete_items || []).length
+      ? `<div class="lb-spec-item lb-spec-features">
+           <div class="lb-spec-label" style="color:#f87171">⚠ Incomplete Items</div>
+           <div class="lb-spec-value" style="color:rgba(248,113,113,0.9)">${(spec.incomplete_items||[]).map(i=>`• ${escHtml(i)}`).join('<br>')}</div>
+         </div>` : '';
+    card.innerHTML = `
+      <div class="lb-spec-header">
+        <span class="lb-spec-badge">Spec</span>
+        <span class="lb-spec-name">${escHtml(spec.title || spec.name)}</span>
+      </div>
+      <div class="lb-spec-grid">
+        <div class="lb-spec-item">
+          <div class="lb-spec-label">Stack</div>
+          <div class="lb-spec-value">${escHtml(spec.stack)}</div>
+        </div>
+        <div class="lb-spec-item">
+          <div class="lb-spec-label">Data layer</div>
+          <div class="lb-spec-value">${escHtml(spec.data_layer || 'none')}</div>
+        </div>
+        <div class="lb-spec-item lb-spec-features">
+          <div class="lb-spec-label">Features</div>
+          <div style="margin-top:4px">${featureTags || '<span class="lb-spec-tag">–</span>'}</div>
+        </div>
+        ${assumption}
+        ${incomplete}
+      </div>`;
+  }
+
+  // ── Result card ───────────────────────────────────────────────────────────────
+  function showResult(record, jobId) {
+    resultSection.classList.add('show');
+    const card = document.getElementById('lb-result-card');
+    const vs = record.verification_status || 'unverified';
+
+    const statusLabels = {
+      verified_working: '✅ Verified Working',
+      partially_verified: '⚠️ Partially Verified',
+      unverified: '🔘 Unverified',
+      failed: '❌ Failed',
+    };
+
+    const features = (record.feature_results || []).map(r => `
+      <div class="lb-feature-row">
+        <span class="lb-feature-check">${r.verified ? '✅' : '❌'}</span>
+        <div style="flex:1">
+          <div class="lb-feature-name">${escHtml(r.feature)}</div>
+          <div class="lb-feature-result">${escHtml(r.observed_result)}</div>
+        </div>
+      </div>`).join('');
+
+    const screenshotSection = record.screenshot_path
+      ? `<div class="lb-evidence-section">
+           <div class="lb-evidence-label">Screenshot</div>
+           <img class="lb-screenshot-thumb" src="/api/build/${jobId}/screenshot" alt="App screenshot" />
+         </div>` : '';
+
+    const openLink = record.port_used && (vs === 'verified_working' || vs === 'partially_verified')
+      ? `<a class="lb-open-app-btn" href="http://localhost:${record.port_used}" target="_blank" rel="noopener">
+           🚀 Open App (port ${record.port_used})
+         </a>` : '';
+
+    const installSnippet = record.install_output
+      ? `<div class="lb-evidence-section">
+           <div class="lb-evidence-label">Install output</div>
+           <div class="lb-install-output">${escHtml(record.install_output.slice(-800))}</div>
+         </div>` : '';
+
+    const incomplete = (record.incomplete_items || []).length
+      ? `<div class="lb-evidence-section">
+           <div class="lb-evidence-label" style="color:#f87171">⚠ NOT Implemented</div>
+           ${(record.incomplete_items || []).map(i => `<div class="lb-feature-row"><span class="lb-feature-check">⚠️</span><div class="lb-feature-name" style="color:rgba(248,113,113,0.85)">${escHtml(i)}</div></div>`).join('')}
+         </div>` : '';
+
+    card.className = `lb-result-card ${vs}`;
+    card.innerHTML = `
+      <div class="lb-status-header">
+        <span class="lb-status-badge">${statusLabels[vs] || vs}</span>
+        <span class="lb-status-title">${escHtml((record.spec || {}).title || 'Generated App')}</span>
+      </div>
+      ${openLink}
+      ${screenshotSection}
+      ${features ? `<div class="lb-evidence-section">
+        <div class="lb-evidence-label">Feature verification — real Playwright interactions</div>
+        ${features}
+      </div>` : ''}
+      ${incomplete}
+      ${installSnippet}
+    `;
+  }
+
+  // ── History ───────────────────────────────────────────────────────────────────
+  async function loadHistory() {
+    const container = document.getElementById('lb-history-content');
+    try {
+      const resp = await fetch('/api/build/history');
+      const data = await resp.json();
+      const generations = data.generations || [];
+      if (!generations.length) {
+        container.innerHTML = `<div class="lb-history-empty">
+          <div class="lb-empty-icon">🏗️</div>
+          <div>No apps generated yet. Use the Build tab to create your first app.</div>
+        </div>`;
+        return;
+      }
+      container.innerHTML = generations.map(g => {
+        const vs = g.verification_status || 'unverified';
+        const vsLabels = {
+          verified_working: 'Verified Working',
+          partially_verified: 'Partially Verified',
+          unverified: 'Unverified',
+          failed: 'Failed',
+        };
+        const ts = g.timestamp ? new Date(g.timestamp).toLocaleString() : '';
+        const features = (g.feature_results || []);
+        const verified = features.filter(f => f.verified).length;
+        return `<div class="lb-gen-card">
+          <div class="lb-gen-header">
+            <span class="lb-gen-name">${escHtml(g.title || g.name)}</span>
+            <span class="lb-gen-ts">${escHtml(ts)}</span>
+          </div>
+          <div class="lb-gen-desc">${escHtml(g.description || '')}</div>
+          <div class="lb-gen-footer">
+            <span class="lb-gen-stack">${escHtml(g.stack)}</span>
+            <span class="lb-vstatus ${vs}">${vsLabels[vs] || vs}</span>
+            ${features.length ? `<span style="font-size:0.72rem;color:rgba(255,255,255,0.35)">${verified}/${features.length} features verified</span>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      container.innerHTML = `<div class="lb-history-empty">Failed to load history: ${escHtml(e.message)}</div>`;
+    }
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function resetBuildUI() {
+    progressFeed.innerHTML = '';
+    progressSection.classList.remove('show');
+    specSection.classList.remove('show');
+    resultSection.classList.remove('show');
+    _currentJobId = null;
+    _currentRecord = null;
+    if (_pollInterval) { clearInterval(_pollInterval); _pollInterval = null; }
+  }
+
+  function resetBuildButton() {
+    buildBtn.disabled = false;
+    buildBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Generate App`;
+  }
+
+  // ── Spinner keyframe ──────────────────────────────────────────────────────────
+  const style = document.createElement('style');
+  style.textContent = '@keyframes lb-spin { to { transform: rotate(360deg); } }';
+  document.head.appendChild(style);
+
+})();
+</script>
+
+<a href="/browser-portal" target="_blank" id="julius-portal-btn" style="position:fixed; bottom:18px; right:18px; z-index:99999; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; padding:10px 16px; border-radius:24px; font-size:13px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:8px; box-shadow:0 6px 20px rgba(2, 132, 199, 0.4); font-family:-apple-system, BlinkMacSystemFont, sans-serif; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+  Browser Login Portal
+</a>
+
+<!-- Role-Aware Multi-User Session Bar -->
+<div id="julius-user-bar" style="position:fixed; top:12px; right:16px; z-index:99999; display:flex; align-items:center; gap:10px; background:rgba(15,23,42,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); padding:6px 14px; border-radius:30px; font-family:-apple-system, BlinkMacSystemFont, sans-serif; font-size:12px; color:#f1f5f9; box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+  <span id="julius-user-role-badge" style="background:rgba(99,102,241,0.22); color:#a5b4fc; border:1px solid rgba(99,102,241,0.4); padding:2px 8px; border-radius:12px; font-weight:600; text-transform:uppercase; font-size:10px; letter-spacing:0.4px;">User</span>
+  <span id="julius-user-name" style="font-weight:600; color:#ffffff;">Account</span>
+  <a id="julius-admin-link" href="/admin" style="display:none; color:#c084fc; text-decoration:none; font-weight:600; padding:2px 8px; border-radius:8px; background:rgba(192,132,252,0.16); border:1px solid rgba(192,132,252,0.35); font-size:11px;">⚙️ Admin</a>
+  <button onclick="handleJuliusSignOut()" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; padding:2px 6px; border-radius:6px; transition:color 0.2s;" onmouseover="this.style.color='#fca5a5'" onmouseout="this.style.color='#94a3b8'">
+    Sign Out
+  </button>
+</div>
+<script>
+  async function handleJuliusSignOut() {
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+    } catch (e) {}
+    window.location.href = '/login';
+  }
+
+  (async function initUserSession() {
+    try {
+      const res = await fetch('/api/session');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated) {
+          const nameEl = document.getElementById('julius-user-name');
+          if (nameEl) nameEl.textContent = data.username || 'User';
+
+          const roleBadge = document.getElementById('julius-user-role-badge');
+          if (roleBadge) {
+            roleBadge.textContent = data.role || 'user';
+            if (data.role === 'admin' || data.role === 'super_admin' || data.role === 'owner') {
+              roleBadge.style.background = 'rgba(239,68,68,0.2)';
+              roleBadge.style.color = '#fca5a5';
+              roleBadge.style.borderColor = 'rgba(239,68,68,0.4)';
+              const adminLink = document.getElementById('julius-admin-link');
+              if (adminLink) adminLink.style.display = 'inline-block';
+            } else if (data.role === 'developer' || data.role === 'power_user') {
+              roleBadge.style.background = 'rgba(234,179,8,0.2)';
+              roleBadge.style.color = '#fde047';
+              roleBadge.style.borderColor = 'rgba(234,179,8,0.4)';
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<!-- Phase 1.1: Interactive Permission Gate Modal -->
+<div id="julius-permission-modal" style="display:none; position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; font-family:-apple-system, BlinkMacSystemFont, sans-serif;">
+  <div style="background:#13151b; border:1px solid rgba(255,255,255,0.12); border-radius:16px; width:90%; max-width:540px; padding:24px; box-shadow:0 24px 60px rgba(0,0,0,0.7); color:#f8fafc;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">🛡️</span>
+        <span style="font-weight:700; font-size:16px; color:#ffffff;">Permission Required</span>
+      </div>
+      <span id="perm-danger-badge" style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:6px; background:rgba(234,179,8,0.2); color:#fde047; border:1px solid rgba(234,179,8,0.4); text-transform:uppercase;">MEDIUM</span>
+    </div>
+    <p id="perm-description" style="font-size:13px; color:#94a3b8; margin-bottom:12px;">The agent requested authorization to execute an action:</p>
+    <div style="background:#090a0f; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:20px; max-height:220px; overflow-y:auto;">
+      <pre id="perm-payload" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:#a5b4fc; white-space:pre-wrap; word-break:break-all; margin:0;"></pre>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button onclick="resolveJuliusPermission('reject')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; padding:8px 14px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">Reject / Stop</button>
+      <button onclick="resolveJuliusPermission('approve_session')" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#e2e8f0; padding:8px 14px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">Approve Session</button>
+      <button onclick="resolveJuliusPermission('approve_once')" style="background:#006A25; border:1px solid rgba(0,106,37,0.5); color:#ffffff; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer; box-shadow:0 0 12px rgba(0,106,37,0.4);">Approve Once</button>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 3.2: MediaTek Hardware Forensics Floating Trigger & Modal -->
+<button id="julius-mtk-trigger" onclick="toggleMtkModal()" style="position:fixed; bottom:24px; right:24px; z-index:99990; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); color:#f8fafc; border-radius:30px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 8px 24px rgba(0,0,0,0.5); backdrop-filter:blur(12px);">
+  <span id="mtk-status-indicator" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#94a3b8;"></span>
+  <span>MTK Forensics</span>
+</button>
+
+<div id="julius-mtk-modal" style="display:none; position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; font-family:-apple-system, BlinkMacSystemFont, sans-serif;">
+  <div style="background:#111827; border:1px solid rgba(255,255,255,0.12); border-radius:16px; width:90%; max-width:620px; padding:24px; box-shadow:0 24px 60px rgba(0,0,0,0.7); color:#f8fafc;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">📱</span>
+        <span style="font-weight:700; font-size:16px; color:#ffffff;">MediaTek Forensics Copilot (Oppo A16 / MT6765)</span>
+      </div>
+      <button onclick="toggleMtkModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:18px;">
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px;">
+        <div style="font-size:11px; color:#94a3b8;">Target Device</div>
+        <div style="font-weight:600; font-size:13px; color:#f1f5f9; margin-top:2px;">Oppo A16 (CPH2269)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px;">
+        <div style="font-size:11px; color:#94a3b8;">USB VID Filter</div>
+        <div style="font-weight:600; font-size:13px; font-family:monospace; color:#818cf8; margin-top:2px;">0x0E8D (MTK)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px;">
+        <div style="font-size:11px; color:#94a3b8;">Current State</div>
+        <div id="mtk-current-mode" style="font-weight:600; font-size:13px; color:#fde047; margin-top:2px;">Listening...</div>
+      </div>
+    </div>
+    <div style="background:#030712; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:18px; height:160px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size:11px; color:#cbd5e1;" id="mtk-log-feed">
+      [0.000s] MTK Forensics Listener initialized. Ready to catch Preloader/BROM hotplug window.
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <button onclick="refreshMtkStatus()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; padding:8px 14px; border-radius:8px; font-size:12px; cursor:pointer;">🔄 Poll Status</button>
+      <button onclick="triggerMtkHandshake()" style="background:#4f46e5; border:none; color:#ffffff; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">⚡ Force Handshake</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let _pendingPermCallId = null;
+
+  window.showJuliusPermissionModal = function(data) {
+    _pendingPermCallId = data.call_id;
+    const modal = document.getElementById('julius-permission-modal');
+    const badge = document.getElementById('perm-danger-badge');
+    const desc = document.getElementById('perm-description');
+    const payload = document.getElementById('perm-payload');
+
+    if (badge) {
+      badge.textContent = data.danger_level || 'MEDIUM';
+      if (data.danger_level === 'CRITICAL' || data.danger_level === 'HIGH') {
+        badge.style.background = 'rgba(239,68,68,0.2)';
+        badge.style.color = '#fca5a5';
+        badge.style.borderColor = 'rgba(239,68,68,0.4)';
+      } else if (data.danger_level === 'LOW') {
+        badge.style.background = 'rgba(34,197,94,0.2)';
+        badge.style.color = '#86efac';
+        badge.style.borderColor = 'rgba(34,197,94,0.4)';
+      } else {
+        badge.style.background = 'rgba(234,179,8,0.2)';
+        badge.style.color = '#fde047';
+        badge.style.borderColor = 'rgba(234,179,8,0.4)';
+      }
+    }
+
+    if (desc) desc.textContent = data.description || 'Permission required for agent action:';
+    if (payload) payload.textContent = data.payload || '';
+
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  };
+
+  window.resolveJuliusPermission = function(decision) {
+    const modal = document.getElementById('julius-permission-modal');
+    if (modal) modal.style.display = 'none';
+
+    if (_pendingPermCallId && window._juliusActiveWS && window._juliusActiveWS.readyState === 1) {
+      window._juliusActiveWS.send(JSON.stringify({
+        type: 'permission_response',
+        call_id: _pendingPermCallId,
+        response: decision
+      }));
+      console.log('[PermissionGate] Sent decision:', decision, 'for call:', _pendingPermCallId);
+    }
+    _pendingPermCallId = null;
+  };
+
+  window.handleJuliusAudioInterrupted = function(data) {
+    console.log('[Barge-In] Audio interrupted event received:', data);
+    // Halt all audio elements playing in page
+    document.querySelectorAll('audio').forEach(a => {
+      try { a.pause(); a.currentTime = 0; } catch (e) {}
+    });
+  };
+
+  function toggleMtkModal() {
+    const modal = document.getElementById('julius-mtk-modal');
+    if (modal) {
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+      if (modal.style.display === 'flex') {
+        refreshMtkStatus();
+      }
+    }
+  }
+
+  async function refreshMtkStatus() {
+    try {
+      const resp = await fetch('/api/mtk/status');
+      if (resp.ok) {
+        const data = await resp.json();
+        updateMtkUI(data.status || {});
+      }
+    } catch (e) {}
+  }
+
+  async function triggerMtkHandshake() {
+    try {
+      const log = document.getElementById('mtk-log-feed');
+      if (log) log.innerHTML += `<br>[⚡] Triggering instant BROM handshake...`;
+      const resp = await fetch('/api/mtk/handshake', { method: 'POST' });
+      const res = await resp.json();
+      if (log) log.innerHTML += `<br>[✓] Handshake response: ${JSON.stringify(res)}`;
+      refreshMtkStatus();
+    } catch (e) {
+      const log = document.getElementById('mtk-log-feed');
+      if (log) log.innerHTML += `<br>[✕] Handshake error: ${e}`;
+    }
+  }
+
+  function updateMtkUI(status) {
+    const ind = document.getElementById('mtk-status-indicator');
+    const mode = document.getElementById('mtk-current-mode');
+    if (mode) mode.textContent = status.mode || 'Listening (ioreg)';
+    if (ind) {
+      ind.style.background = status.connected ? '#22c55e' : (status.running ? '#eab308' : '#94a3b8');
+    }
+  }
+
+  window.handleMtkStatusUpdate = function(data) {
+    updateMtkUI(data.status || {});
+    const log = document.getElementById('mtk-log-feed');
+    if (log && data.message) {
+      log.innerHTML += `<br>[${new Date().toLocaleTimeString()}] ${data.message}`;
+      log.scrollTop = log.scrollHeight;
+    }
+  };
+</script>
+
+</body>
+
+</html>

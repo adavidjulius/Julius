@@ -1,0 +1,443 @@
+
+/* Styles for selector: @font-face */
+@font-face {
+  /* Set font-family to 'Julius' */
+  font-family: 'Julius';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 400 */
+  font-weight: 400;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('./fonts/Julius-Regular.woff2') format('woff2'), */
+  src: url('./fonts/Julius-Regular.woff2') format('woff2'),
+       /* CSS rule: url('./fonts/Julius-Regular.woff') format('woff'); */
+       url('./fonts/Julius-Regular.woff') format('woff');
+}
+/* Styles for selector: @font-face */
+@font-face {
+  /* Set font-family to 'Julius' */
+  font-family: 'Julius';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('./fonts/Julius-Bold.woff2') format('woff2'), */
+  src: url('./fonts/Julius-Bold.woff2') format('woff2'),
+       /* CSS rule: url('./fonts/Julius-Bold.woff') format('woff'); */
+       url('./fonts/Julius-Bold.woff') format('woff');
+}
+/* Styles for selector: @font-face */
+@font-face {
+  /* Set font-family to 'JetBrains Mono' */
+  font-family: 'JetBrains Mono';
+  /* Set font-style to normal */
+  font-style: normal;
+  /* Set font-weight to 400 */
+  font-weight: 400;
+  /* Set font-display to swap */
+  font-display: swap;
+  /* Set src to url('./fonts/JetBrainsMono-Regular.woff2') format('woff2') */
+  src: url('./fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+
+/* Styles for selector: :root */
+:root {
+  /* Set --bg to #0a0a0f */
+  --bg: #0a0a0f;
+  /* Set --surface to rgba(255,255,255,0.05) */
+  --surface: rgba(255,255,255,0.05);
+  /* Set --surface-hover to rgba(255,255,255,0.08) */
+  --surface-hover: rgba(255,255,255,0.08);
+  /* Set --border to rgba(255,255,255,0.1) */
+  --border: rgba(255,255,255,0.1);
+  /* Set --text to #f0f0f5 */
+  --text: #f0f0f5;
+  /* Set --text-muted to rgba(255,255,255,0.5) */
+  --text-muted: rgba(255,255,255,0.5);
+  /* Set --accent to #6366f1 */
+  --accent: #6366f1;
+  /* Set --accent-glow to rgba(99,102,241,0.3) */
+  --accent-glow: rgba(99,102,241,0.3);
+  /* Set --success to #22c55e */
+  --success: #22c55e;
+  /* Set --danger to #ef4444 */
+  --danger: #ef4444;
+  /* Set --radius to 16px */
+  --radius: 16px;
+  /* Set --font to 'Julius', -apple-system, BlinkMacSystemFont, sans-serif */
+  --font: 'Julius', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Set --font-mono to 'JetBrains Mono', monospace */
+  --font-mono: 'JetBrains Mono', monospace;
+}
+/* Styles for selector: code, pre */
+code, pre {
+  /* Set font-family to var(--font-mono) */
+  font-family: var(--font-mono);
+}
+
+/* Set *, * to :before, *::after { box-sizing: border-box; margin: 0; padding: 0; } */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Styles for selector: body */
+body {
+  /* Set font-family to var(--font) */
+  font-family: var(--font);
+  /* Set background to var(--bg) */
+  background: var(--bg);
+  /* Set color to var(--text) */
+  color: var(--text);
+  /* Set min-height to 100vh */
+  min-height: 100vh;
+  /* Set display to flex */
+  display: flex;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set padding to 40px 16px */
+  padding: 40px 16px;
+  /* Set background-image to radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.12) 0%, transparent 60%), */
+  background-image: radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.12) 0%, transparent 60%),
+                    /* CSS rule: radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.08) 0%, transparent 60%); */
+                    radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.08) 0%, transparent 60%);
+}
+
+/* Styles for selector: #app */
+#app {
+  /* Set width to 100% */
+  width: 100%;
+  /* Set max-width to 640px */
+  max-width: 640px;
+}
+
+/* Styles for selector: h1 */
+h1 {
+  /* Set font-size to 2rem */
+  font-size: 2rem;
+  /* Set font-weight to 700 */
+  font-weight: 700;
+  /* Set letter-spacing to -0.03em */
+  letter-spacing: -0.03em;
+  /* Set margin-bottom to 8px */
+  margin-bottom: 8px;
+  /* Set background to linear-gradient(135deg, #fff 40%, #a5b4fc) */
+  background: linear-gradient(135deg, #fff 40%, #a5b4fc);
+  /* Set -webkit-background-clip to text */
+  -webkit-background-clip: text;
+  /* Set -webkit-text-fill-color to transparent */
+  -webkit-text-fill-color: transparent;
+  /* Set background-clip to text */
+  background-clip: text;
+}
+
+/* Styles for selector: .subtitle */
+.subtitle {
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set font-size to 0.9rem */
+  font-size: 0.9rem;
+  /* Set margin-bottom to 32px */
+  margin-bottom: 32px;
+}
+
+/* Styles for selector: .input-row */
+.input-row {
+  /* Set display to flex */
+  display: flex;
+  /* Set gap to 10px */
+  gap: 10px;
+  /* Set margin-bottom to 24px */
+  margin-bottom: 24px;
+}
+
+/* Styles for selector: #todo-input */
+#todo-input {
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set background to var(--surface) */
+  background: var(--surface);
+  /* Set border to 1px solid var(--border) */
+  border: 1px solid var(--border);
+  /* Set border-radius to var(--radius) */
+  border-radius: var(--radius);
+  /* Set color to var(--text) */
+  color: var(--text);
+  /* Set font-family to var(--font) */
+  font-family: var(--font);
+  /* Set font-size to 0.95rem */
+  font-size: 0.95rem;
+  /* Set padding to 14px 18px */
+  padding: 14px 18px;
+  /* Set outline to none */
+  outline: none;
+  /* Set transition to border-color 0.2s, box-shadow 0.2s */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Styles for selector: #todo-input:focus */
+#todo-input:focus {
+  /* Set border-color to var(--accent) */
+  border-color: var(--accent);
+  /* Set box-shadow to 0 0 0 3px var(--accent-glow) */
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Set #todo-input to :placeholder { color: var(--text-muted); } */
+#todo-input::placeholder { color: var(--text-muted); }
+
+/* Styles for selector: button */
+button {
+  /* Set font-family to var(--font) */
+  font-family: var(--font);
+  /* Set font-weight to 600 */
+  font-weight: 600;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set border to none */
+  border: none;
+  /* Set border-radius to var(--radius) */
+  border-radius: var(--radius);
+  /* Set transition to all 0.18s */
+  transition: all 0.18s;
+}
+
+/* Styles for selector: #add-btn */
+#add-btn {
+  /* Set background to var(--accent) */
+  background: var(--accent);
+  /* Set color to #fff */
+  color: #fff;
+  /* Set font-size to 0.95rem */
+  font-size: 0.95rem;
+  /* Set padding to 14px 22px */
+  padding: 14px 22px;
+  /* Set box-shadow to 0 4px 16px var(--accent-glow) */
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+/* Set #add-btn to hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); } */
+#add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+/* Set #add-btn to active { transform: translateY(0); } */
+#add-btn:active { transform: translateY(0); }
+
+/* Styles for selector: .stats-row */
+.stats-row {
+  /* Set display to flex */
+  display: flex;
+  /* Set gap to 12px */
+  gap: 12px;
+  /* Set margin-bottom to 16px */
+  margin-bottom: 16px;
+  /* Set font-size to 0.82rem */
+  font-size: 0.82rem;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+}
+
+/* Styles for selector: .stat */
+.stat {
+  /* Set background to var(--surface) */
+  background: var(--surface);
+  /* Set border to 1px solid var(--border) */
+  border: 1px solid var(--border);
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set padding to 6px 12px */
+  padding: 6px 12px;
+}
+
+/* Set .stat span { color to var(--text); font-weight: 600; } */
+.stat span { color: var(--text); font-weight: 600; }
+
+/* Styles for selector: .filters */
+.filters {
+  /* Set display to flex */
+  display: flex;
+  /* Set gap to 8px */
+  gap: 8px;
+  /* Set margin-bottom to 20px */
+  margin-bottom: 20px;
+}
+
+/* Styles for selector: .filter-btn */
+.filter-btn {
+  /* Set background to var(--surface) */
+  background: var(--surface);
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set border to 1px solid var(--border) */
+  border: 1px solid var(--border);
+  /* Set font-size to 0.82rem */
+  font-size: 0.82rem;
+  /* Set padding to 6px 14px */
+  padding: 6px 14px;
+  /* Set border-radius to 20px */
+  border-radius: 20px;
+}
+/* Styles for selector: .filter-btn.active */
+.filter-btn.active {
+  /* Set background to var(--accent) */
+  background: var(--accent);
+  /* Set color to #fff */
+  color: #fff;
+  /* Set border-color to var(--accent) */
+  border-color: var(--accent);
+}
+
+/* Styles for selector: .todo-list */
+.todo-list {
+  /* Set display to flex */
+  display: flex;
+  /* Set flex-direction to column */
+  flex-direction: column;
+  /* Set gap to 10px */
+  gap: 10px;
+}
+
+/* Styles for selector: .todo-item */
+.todo-item {
+  /* Set display to flex */
+  display: flex;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set gap to 14px */
+  gap: 14px;
+  /* Set background to var(--surface) */
+  background: var(--surface);
+  /* Set border to 1px solid var(--border) */
+  border: 1px solid var(--border);
+  /* Set border-radius to var(--radius) */
+  border-radius: var(--radius);
+  /* Set padding to 16px 18px */
+  padding: 16px 18px;
+  /* Set transition to background 0.18s, transform 0.18s */
+  transition: background 0.18s, transform 0.18s;
+  /* Set animation to slideIn 0.2s ease-out */
+  animation: slideIn 0.2s ease-out;
+}
+
+/* Styles for selector: @keyframes slideIn */
+@keyframes slideIn {
+  /* Set from { opacity to 0; transform: translateY(-8px); } */
+  from { opacity: 0; transform: translateY(-8px); }
+  /* Set to   { opacity to 1; transform: translateY(0); } */
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Set .todo-item to hover { background: var(--surface-hover); transform: translateX(2px); } */
+.todo-item:hover { background: var(--surface-hover); transform: translateX(2px); }
+
+/* Styles for selector: .todo-check */
+.todo-check {
+  /* Set width to 22px */
+  width: 22px;
+  /* Set height to 22px */
+  height: 22px;
+  /* Set border-radius to 50% */
+  border-radius: 50%;
+  /* Set border to 2px solid var(--border) */
+  border: 2px solid var(--border);
+  /* Set background to transparent */
+  background: transparent;
+  /* Set cursor to pointer */
+  cursor: pointer;
+  /* Set flex-shrink to 0 */
+  flex-shrink: 0;
+  /* Set display to flex */
+  display: flex;
+  /* Set align-items to center */
+  align-items: center;
+  /* Set justify-content to center */
+  justify-content: center;
+  /* Set transition to all 0.18s */
+  transition: all 0.18s;
+  /* Set padding to 0 */
+  padding: 0;
+}
+/* Set .todo-check to hover { border-color: var(--success); } */
+.todo-check:hover { border-color: var(--success); }
+/* Set .todo-check.done { background to var(--success); border-color: var(--success); } */
+.todo-check.done { background: var(--success); border-color: var(--success); }
+
+/* Set .checkmark { color to #fff; font-size: 13px; display: none; } */
+.checkmark { color: #fff; font-size: 13px; display: none; }
+/* Set .todo-check.done .checkmark { display to block; } */
+.todo-check.done .checkmark { display: block; }
+
+/* Styles for selector: .todo-text */
+.todo-text {
+  /* Set flex to 1 */
+  flex: 1;
+  /* Set font-size to 0.95rem */
+  font-size: 0.95rem;
+  /* Set color to var(--text) */
+  color: var(--text);
+  /* Set transition to color 0.2s */
+  transition: color 0.2s;
+  /* Set word-break to break-word */
+  word-break: break-word;
+}
+/* Styles for selector: .todo-item.done .todo-text */
+.todo-item.done .todo-text {
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set text-decoration to line-through */
+  text-decoration: line-through;
+}
+
+/* Styles for selector: .delete-btn */
+.delete-btn {
+  /* Set background to transparent */
+  background: transparent;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set font-size to 1.1rem */
+  font-size: 1.1rem;
+  /* Set padding to 4px 8px */
+  padding: 4px 8px;
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set opacity to 0 */
+  opacity: 0;
+  /* Set transition to opacity 0.15s, color 0.15s */
+  transition: opacity 0.15s, color 0.15s;
+}
+/* Set .todo-item to hover .delete-btn { opacity: 1; } */
+.todo-item:hover .delete-btn { opacity: 1; }
+/* Set .delete-btn to hover { color: var(--danger); } */
+.delete-btn:hover { color: var(--danger); }
+
+/* Styles for selector: .empty-state */
+.empty-state {
+  /* Set text-align to center */
+  text-align: center;
+  /* Set padding to 60px 0 */
+  padding: 60px 0;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set font-size to 0.9rem */
+  font-size: 0.9rem;
+}
+
+/* Set .empty-state .emoji { font-size to 2.5rem; margin-bottom: 12px; } */
+.empty-state .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+
+/* Styles for selector: .clear-btn */
+.clear-btn {
+  /* Set background to transparent */
+  background: transparent;
+  /* Set color to var(--text-muted) */
+  color: var(--text-muted);
+  /* Set border to 1px solid var(--border) */
+  border: 1px solid var(--border);
+  /* Set font-size to 0.8rem */
+  font-size: 0.8rem;
+  /* Set padding to 6px 14px */
+  padding: 6px 14px;
+  /* Set border-radius to 8px */
+  border-radius: 8px;
+  /* Set margin-top to 20px */
+  margin-top: 20px;
+}
+/* Set .clear-btn to hover { color: var(--danger); border-color: var(--danger); } */
+.clear-btn:hover { color: var(--danger); border-color: var(--danger); }

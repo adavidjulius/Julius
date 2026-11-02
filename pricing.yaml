@@ -1,0 +1,91 @@
+# Julius Canonical Model Token Pricing (WS1.3)
+# Rates in USD per 1,000,000 tokens (prompt / completion)
+
+version: 1
+updated_at: "2026-10-31"
+
+providers:
+  openai:
+    gpt-4o:
+      prompt: 2.50
+      completion: 10.00
+    gpt-4o-mini:
+      prompt: 0.15
+      completion: 0.60
+    o1:
+      prompt: 15.00
+      completion: 60.00
+    o3-mini:
+      prompt: 1.10
+      completion: 4.40
+
+  anthropic:
+    claude-3-5-sonnet-20241022:
+      prompt: 3.00
+      completion: 15.00
+    claude-3-5-haiku-20241022:
+      prompt: 0.80
+      completion: 4.00
+    claude-3-opus-20240229:
+      prompt: 15.00
+      completion: 75.00
+
+  gemini:
+    gemini-2.5-flash:
+      prompt: 0.075
+      completion: 0.30
+    gemini-2.5-pro:
+      prompt: 1.25
+      completion: 5.00
+    gemini-1.5-pro:
+      prompt: 1.25
+      completion: 5.00
+
+  deepseek:
+    deepseek-chat:
+      prompt: 0.14
+      completion: 0.28
+    deepseek-reasoner:
+      prompt: 0.55
+      completion: 2.19
+
+  xai:
+    grok-2:
+      prompt: 2.00
+      completion: 10.00
+    grok-2-mini:
+      prompt: 0.20
+      completion: 1.00
+
+  moonshot:
+    moonshot-v1-8k:
+      prompt: 1.20
+      completion: 1.20
+    moonshot-v1-32k:
+      prompt: 2.40
+      completion: 2.40
+
+  perplexity:
+    sonar-reasoning:
+      prompt: 1.00
+      completion: 5.00
+    sonar:
+      prompt: 1.00
+      completion: 1.00
+
+  nvidia:
+    "meta/llama-3.1-70b-instruct":
+      prompt: 0.00
+      completion: 0.00
+    "nvidia/nemotron-4-340b-instruct":
+      prompt: 0.00
+      completion: 0.00
+    "nvidia/nemotron-3-ultra-550b-a55b":
+      prompt: 0.00
+      completion: 0.00
+
+  ollama:
+    default:
+      prompt: 0.00
+      completion: 0.00
+

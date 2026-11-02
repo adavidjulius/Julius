@@ -1,0 +1,26 @@
+{
+  "name": "julius-web-interface",
+  "version": "1.0.0",
+  "description": "Universal interconnected web, iOS mobile PWA, and Android APK interface for Julius Agent",
+  "type": "module",
+  "scripts": {
+    "dev": "python server.py",
+    "start": "python server.py",
+    "build": "tsc"
+  },
+  "keywords": [
+    "julius",
+    "autonomous-agent",
+    "pwa",
+    "ios",
+    "android",
+    "rockchip-p200",
+    "widgets"
+  ],
+  "author": "Julius Team",
+  "license": "Proprietary",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
+

@@ -1,0 +1,10 @@
+{
+  "auth_status": {
+    "key": "auth_status",
+    "value": "logged_out",
+    "source_url": "https://arxiv.org/search/?query=mamba+state+space+model&searchtype=all&source=header&start=0",
+    "confidence": 1.0,
+    "timestamp": 1785228763.131925,
+    "ttl_seconds": null
+  }
+}

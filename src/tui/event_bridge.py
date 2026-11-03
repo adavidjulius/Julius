@@ -133,8 +133,19 @@ class EventBridge:
             msg = event.get("message", "")
             if msg:
                 m_low = msg.lower()
-                if "connected to" not in m_low and "connecting to" not in m_low and "deepseek" not in m_low:
-                    self.update_status(msg)
+                # Suppress raw internal connection noise; show meaningful status updates
+                _suppress = (
+                    "connected to" in m_low
+                    or "connecting to" in m_low
+                    # Do NOT suppress reusing session — it's useful context
+                )
+                if not _suppress:
+                    # Clean up "Reusing X session" → "♻ X active" for compact display
+                    if "reusing" in m_low and "session" in m_low:
+                        provider_part = msg.replace("Reusing ", "").replace(" session", "").strip()
+                        self.update_status(f"♻ {provider_part} · session active")
+                    else:
+                        self.update_status(msg)
 
         # 6. step_start
         elif event_type == "step_start":

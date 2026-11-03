@@ -559,30 +559,205 @@ fi
 
 # ─── Step 6: Create default .env (if missing) ────────────────────────────────
 
-# Execute command: step "Configuring environment"
 step "Configuring environment"
 
 ENV_FILE="${SCRIPT_DIR}/.env"
 
-# Evaluate condition check: -f "${ENV_FILE}"
 if [ -f "${ENV_FILE}" ]; then
-    # Execute command: ok ".env already exists — keeping your current configuration"
     ok ".env already exists — keeping your current configuration"
-# Fallback branch when preceding conditions evaluate to false
 else
-    # Execute command: info "Creating default .env configuration..."
     info "Creating default .env configuration..."
-    # Execute command: cat > "${ENV_FILE}" <<'ENVEOF'
     cat > "${ENV_FILE}" <<'ENVEOF'
 JULIUS_MAX_STEPS=9999
 JULIUS_HEADLESS=false
 JULIUS_WS_PORT=8000
 JULIUS_CLIENT_MAX_SIZE=104857600
 ENVEOF
-    # Execute command: ok ".env created with default values"
     ok ".env created with default values"
-# End of if-conditional control block
 fi
+
+# ─── Interactive API Key Setup Wizard ────────────────────────────────────────
+
+_has_real_key() {
+    local val
+    val="$(grep -E "^${1}=" "${ENV_FILE}" 2>/dev/null | cut -d= -f2- | tr -d '"' | tr -d "'" | xargs 2>/dev/null)"
+    [ -n "${val}" ] && \
+    [ "${val}" != "YOUR_NVIDIA_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_OPENAI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_ANTHROPIC_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_DEEPSEEK_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_GEMINI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_GROQ_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_XAI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_MOONSHOT_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_PERPLEXITY_API_KEY_HERE" ]
+}
+
+_set_env_key() {
+    local key="$1" val="$2"
+    if grep -qE "^${key}=" "${ENV_FILE}" 2>/dev/null; then
+        if [[ "${OSTYPE}" == "darwin"* ]]; then
+            sed -i '' "s|^${key}=.*|${key}=${val}|" "${ENV_FILE}"
+        else
+            sed -i "s|^${key}=.*|${key}=${val}|" "${ENV_FILE}"
+        fi
+    else
+        printf '\n%s=%s\n' "${key}" "${val}" >> "${ENV_FILE}"
+    fi
+}
+
+# Only run wizard if running in an interactive terminal
+if [ -t 0 ] && [ -t 1 ]; then
+
+    # ── Model Selection ─────────────────────────────────────────────────────
+    printf '\n%s╔══════════════════════════════════════════════════════════════╗%s\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '%s║          🧠  Julius — AI Provider Setup Wizard              ║%s\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '%s╚══════════════════════════════════════════════════════════════╝%s\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '\n%s  Select your primary AI model provider:%s\n\n' \
+        "${COLOR_BOLD}" "${COLOR_RESET}"
+    printf '  %s[1]%s  NVIDIA Nemotron 550B   %s(Free · 1,000 credits · Recommended)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[2]%s  Anthropic Claude       %s(claude-3-5-sonnet / haiku)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[3]%s  OpenAI ChatGPT         %s(gpt-4o / o3-mini)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[4]%s  DeepSeek               %s(deepseek-chat / deepseek-reasoner)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[5]%s  Google Gemini          %s(gemini-2.0-flash / 2.5-pro)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[6]%s  xAI Grok               %s(grok-2 / grok-3)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[7]%s  Local Ollama           %s(private · no API key needed)%s\n' \
+        "${COLOR_JULIUS}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %s[8]%s  Skip setup             %s(configure .env manually later)%s\n\n' \
+        "${COLOR_DIM}" "${COLOR_RESET}" "${COLOR_DIM}" "${COLOR_RESET}"
+    printf '  %sEnter choice [1–8, default: 1]:%s ' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+
+    WIZARD_CHOICE=""
+    read -r WIZARD_CHOICE 2>/dev/null || true
+    WIZARD_CHOICE="${WIZARD_CHOICE:-1}"
+
+    _prompt_key() {
+        local provider_name="$1" env_var="$2" key_url="$3"
+        printf '\n%s  ┌──────────────────────────────────────────────────────────┐%s\n' \
+            "${COLOR_JULIUS}" "${COLOR_RESET}"
+        printf '%s  │  %s API Key%s\n' \
+            "${COLOR_JULIUS}" "${provider_name}" "${COLOR_RESET}"
+        printf '%s  │  Get yours free at: %s%s%s\n' \
+            "${COLOR_DIM}" "${COLOR_CYAN}" "${key_url}" "${COLOR_RESET}"
+        printf '%s  └──────────────────────────────────────────────────────────┘%s\n' \
+            "${COLOR_JULIUS}" "${COLOR_RESET}"
+        printf '  %sPaste your API key (or press Enter to skip):%s ' \
+            "${COLOR_BOLD}" "${COLOR_RESET}"
+        local api_key_input=""
+        read -r api_key_input 2>/dev/null || true
+        echo "${api_key_input}"
+    }
+
+    case "${WIZARD_CHOICE}" in
+        1|"")
+            if ! _has_real_key "NVIDIA_API_KEY"; then
+                _nvidia_key="$(_prompt_key "NVIDIA Build NIM" "NVIDIA_API_KEY" "https://build.nvidia.com/explore/discover")"
+                if [ -n "${_nvidia_key}" ]; then
+                    _set_env_key "NVIDIA_API_KEY" "${_nvidia_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "nvidia"
+                    ok "NVIDIA API key saved ✓"
+                else
+                    warn "Skipped — you can add NVIDIA_API_KEY to .env later"
+                fi
+            else
+                ok "NVIDIA API key already configured ✓"
+            fi
+            ;;
+        2)
+            if ! _has_real_key "ANTHROPIC_API_KEY"; then
+                _anth_key="$(_prompt_key "Anthropic Claude" "ANTHROPIC_API_KEY" "https://console.anthropic.com/keys")"
+                if [ -n "${_anth_key}" ]; then
+                    _set_env_key "ANTHROPIC_API_KEY" "${_anth_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "anthropic"
+                    ok "Anthropic API key saved ✓"
+                else
+                    warn "Skipped — you can add ANTHROPIC_API_KEY to .env later"
+                fi
+            else
+                ok "Anthropic API key already configured ✓"
+            fi
+            ;;
+        3)
+            if ! _has_real_key "OPENAI_API_KEY"; then
+                _oai_key="$(_prompt_key "OpenAI ChatGPT" "OPENAI_API_KEY" "https://platform.openai.com/api-keys")"
+                if [ -n "${_oai_key}" ]; then
+                    _set_env_key "OPENAI_API_KEY" "${_oai_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "openai"
+                    ok "OpenAI API key saved ✓"
+                else
+                    warn "Skipped — you can add OPENAI_API_KEY to .env later"
+                fi
+            else
+                ok "OpenAI API key already configured ✓"
+            fi
+            ;;
+        4)
+            if ! _has_real_key "DEEPSEEK_API_KEY"; then
+                _ds_key="$(_prompt_key "DeepSeek" "DEEPSEEK_API_KEY" "https://platform.deepseek.com/api_keys")"
+                if [ -n "${_ds_key}" ]; then
+                    _set_env_key "DEEPSEEK_API_KEY" "${_ds_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "deepseek"
+                    ok "DeepSeek API key saved ✓"
+                else
+                    warn "Skipped — you can add DEEPSEEK_API_KEY to .env later"
+                fi
+            else
+                ok "DeepSeek API key already configured ✓"
+            fi
+            ;;
+        5)
+            if ! _has_real_key "GEMINI_API_KEY"; then
+                _gem_key="$(_prompt_key "Google Gemini" "GEMINI_API_KEY" "https://aistudio.google.com/app/apikey")"
+                if [ -n "${_gem_key}" ]; then
+                    _set_env_key "GEMINI_API_KEY" "${_gem_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "gemini"
+                    ok "Gemini API key saved ✓"
+                else
+                    warn "Skipped — you can add GEMINI_API_KEY to .env later"
+                fi
+            else
+                ok "Gemini API key already configured ✓"
+            fi
+            ;;
+        6)
+            if ! _has_real_key "XAI_API_KEY"; then
+                _xai_key="$(_prompt_key "xAI Grok" "XAI_API_KEY" "https://console.x.ai")"
+                if [ -n "${_xai_key}" ]; then
+                    _set_env_key "XAI_API_KEY" "${_xai_key}"
+                    _set_env_key "GROK_API_KEY" "${_xai_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "grok"
+                    ok "xAI API key saved ✓"
+                else
+                    warn "Skipped — you can add XAI_API_KEY to .env later"
+                fi
+            else
+                ok "xAI API key already configured ✓"
+            fi
+            ;;
+        7)
+            info "Ollama selected — no API key needed"
+            _set_env_key "JULIUS_DEFAULT_MODEL" "ollama"
+            ok "Default provider set to local Ollama ✓"
+            ;;
+        8)
+            warn "Setup wizard skipped — edit .env to configure API keys before running Julius"
+            ;;
+        *)
+            warn "Invalid selection '${WIZARD_CHOICE}' — skipping API key setup"
+            ;;
+    esac
+fi
+# ─────────────────────────────────────────────────────────────────────────────
 
 # Execute command: info "Current configuration:"
 info "Current configuration:"

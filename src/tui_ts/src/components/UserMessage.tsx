@@ -24,7 +24,11 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   const termCols = columns || (typeof process !== 'undefined' && process.stdout?.columns ? process.stdout.columns : 80);
   const hMargin = horizontalMargin !== undefined ? horizontalMargin : (termCols < 90 ? 2 : 4);
   const maxCardWidth = Math.max(24, termCols - (hMargin * 2) - 4);
-  const cardWidth = Math.min(maxCardWidth, Math.max(24, content.trim().length + 4));
+
+  // Dynamic card width: exactly fits content + 4 (padding & border), clamped cleanly between 8 and maxCardWidth
+  const lines = content.trim().split('\n');
+  const maxLineLen = Math.max(...lines.map((l) => l.length), 0);
+  const cardWidth = Math.min(maxCardWidth, Math.max(8, maxLineLen + 4));
 
   return (
     <Box

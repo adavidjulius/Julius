@@ -584,6 +584,245 @@ ENVEOF
 # End of if-conditional control block
 fi
 
+# ─── Interactive AI Provider Setup Wizard ─────────────────────────────────────
+
+_has_real_key() {
+    local val
+    val="$(grep -E "^${1}=" "${ENV_FILE}" 2>/dev/null | cut -d= -f2- | tr -d '"' | tr -d "'" | xargs 2>/dev/null)"
+    [ -n "${val}" ] && \
+    [ "${val}" != "YOUR_NVIDIA_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_OPENAI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_ANTHROPIC_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_DEEPSEEK_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_GEMINI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_GROQ_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_XAI_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_MOONSHOT_API_KEY_HERE" ] && \
+    [ "${val}" != "YOUR_PERPLEXITY_API_KEY_HERE" ]
+}
+
+_set_env_key() {
+    local key="$1" val="$2"
+    if grep -qE "^${key}=" "${ENV_FILE}" 2>/dev/null; then
+        if [[ "${OSTYPE}" == "darwin"* ]]; then
+            sed -i '' "s|^${key}=.*|${key}=${val}|" "${ENV_FILE}"
+        else
+            sed -i "s|^${key}=.*|${key}=${val}|" "${ENV_FILE}"
+        fi
+    else
+        printf '\n%s=%s\n' "${key}" "${val}" >> "${ENV_FILE}"
+    fi
+}
+
+_verify_api_key() {
+    local prov="$1" key="$2"
+    info "Checking ${prov} API key & endpoint connectivity..."
+    local status=""
+    case "${prov}" in
+        "NVIDIA")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 -H "Authorization: Bearer ${key}" https://integrate.api.nvidia.com/v1/models 2>/dev/null || echo "000")"
+            ;;
+        "OpenAI")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 -H "Authorization: Bearer ${key}" https://api.openai.com/v1/models 2>/dev/null || echo "000")"
+            ;;
+        "Anthropic")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 -H "x-api-key: ${key}" -H "anthropic-version: 2023-06-01" https://api.anthropic.com/v1/models 2>/dev/null || echo "000")"
+            ;;
+        "DeepSeek")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 -H "Authorization: Bearer ${key}" https://api.deepseek.com/models 2>/dev/null || echo "000")"
+            ;;
+        "Gemini")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 "https://generativelanguage.googleapis.com/v1beta/models?key=${key}" 2>/dev/null || echo "000")"
+            ;;
+        "xAI")
+            status="$(curl -s -o /dev/null -w "%{http_code}" -m 10 -H "Authorization: Bearer ${key}" https://api.x.ai/v1/models 2>/dev/null || echo "000")"
+            ;;
+        *)
+            status="200"
+            ;;
+    esac
+
+    if [ "${status}" = "200" ]; then
+        ok "${prov} API key verified & active ✓"
+    elif [ "${status}" = "401" ] || [ "${status}" = "403" ]; then
+        warn "${prov} authentication failed (HTTP ${status}) — saved to .env, please verify your key"
+    else
+        ok "${prov} key saved to .env (status probe: ${status})"
+    fi
+}
+
+# Run interactive arrow-navigated wizard if running in a terminal
+if [ -t 0 ] && [ -t 1 ]; then
+    printf '\n%s  ┌─────────────────────────────────────────────────────────────┐%s\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '%s  │  JULIUS — AI Provider Setup                                 │%s\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '%s  └─────────────────────────────────────────────────────────────┘%s\n\n' \
+        "${COLOR_BOLD}${COLOR_JULIUS}" "${COLOR_RESET}"
+    printf '  %sSelect primary AI provider (↑/↓ to navigate, Enter to choose):%s\n\n' \
+        "${COLOR_BOLD}" "${COLOR_RESET}"
+
+    PROVIDERS=(
+        "1. NVIDIA Nemotron 550B   (Free · 1,000 credits · Recommended)"
+        "2. Anthropic Claude       (claude-3-5-sonnet / haiku)"
+        "3. OpenAI ChatGPT         (gpt-4o / o3-mini)"
+        "4. DeepSeek               (deepseek-chat / deepseek-reasoner)"
+        "5. Google Gemini          (gemini-2.0-flash / 2.5-pro)"
+        "6. xAI Grok               (grok-2 / grok-3)"
+        "7. Local Ollama           (private · no API key needed)"
+        "8. Skip setup             (configure .env manually later)"
+    )
+
+    SELECTED_IDX=0
+    TOTAL_PROVIDERS=${#PROVIDERS[@]}
+
+    # Interactive Arrow Key Menu Loop
+    while true; do
+        for i in "${!PROVIDERS[@]}"; do
+            if [ "$i" -eq "$SELECTED_IDX" ]; then
+                printf "  %s❯ %s%s\n" "${COLOR_BOLD}${COLOR_JULIUS}" "${PROVIDERS[$i]}" "${COLOR_RESET}"
+            else
+                printf "    %s%s%s\n" "${COLOR_DIM}" "${PROVIDERS[$i]}" "${COLOR_RESET}"
+            fi
+        done
+
+        # Read single keypress
+        IFS= read -rsn1 KEY_PRESS 2>/dev/null || true
+        if [ "${KEY_PRESS}" = $'\x1b' ]; then
+            read -rsn2 -t 0.1 ESC_REST 2>/dev/null || true
+            KEY_PRESS="${KEY_PRESS}${ESC_REST}"
+        fi
+
+        case "${KEY_PRESS}" in
+            $'\x1b[A'|k|K) # Arrow Up or k
+                SELECTED_IDX=$(( (SELECTED_IDX - 1 + TOTAL_PROVIDERS) % TOTAL_PROVIDERS ))
+                ;;
+            $'\x1b[B'|j|J) # Arrow Down or j
+                SELECTED_IDX=$(( (SELECTED_IDX + 1) % TOTAL_PROVIDERS ))
+                ;;
+            "") # Enter key
+                break
+                ;;
+            [1-8]) # Number shortcut
+                SELECTED_IDX=$((KEY_PRESS - 1))
+                break
+                ;;
+        esac
+
+        # Move terminal cursor back up
+        printf "\033[%dA" "${TOTAL_PROVIDERS}"
+    done
+
+    printf '\n'
+
+    _ask_key_input() {
+        local name="$1" url="$2"
+        printf '%s> Asking for %s API key:%s\n' "${COLOR_BOLD}${COLOR_JULIUS}" "${name}" "${COLOR_RESET}"
+        printf '  %sGet your key at: %s%s%s\n' "${COLOR_DIM}" "${COLOR_CYAN}" "${url}" "${COLOR_RESET}"
+        printf '  %sEnter key (or press Enter to skip):%s ' "${COLOR_BOLD}" "${COLOR_RESET}"
+        local inp=""
+        read -r inp 2>/dev/null || true
+        echo "${inp}"
+    }
+
+    case "${SELECTED_IDX}" in
+        0) # NVIDIA
+            if ! _has_real_key "NVIDIA_API_KEY"; then
+                _key="$(_ask_key_input "NVIDIA Build NIM" "https://build.nvidia.com/explore/discover")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "NVIDIA_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "nvidia"
+                    _verify_api_key "NVIDIA" "${_key}"
+                else
+                    warn "Skipped — you can add NVIDIA_API_KEY to .env later"
+                fi
+            else
+                ok "NVIDIA API key already configured ✓"
+            fi
+            ;;
+        1) # Anthropic
+            if ! _has_real_key "ANTHROPIC_API_KEY"; then
+                _key="$(_ask_key_input "Anthropic Claude" "https://console.anthropic.com/keys")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "ANTHROPIC_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "anthropic"
+                    _verify_api_key "Anthropic" "${_key}"
+                else
+                    warn "Skipped — you can add ANTHROPIC_API_KEY to .env later"
+                fi
+            else
+                ok "Anthropic API key already configured ✓"
+            fi
+            ;;
+        2) # OpenAI
+            if ! _has_real_key "OPENAI_API_KEY"; then
+                _key="$(_ask_key_input "OpenAI ChatGPT" "https://platform.openai.com/api-keys")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "OPENAI_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "openai"
+                    _verify_api_key "OpenAI" "${_key}"
+                else
+                    warn "Skipped — you can add OPENAI_API_KEY to .env later"
+                fi
+            else
+                ok "OpenAI API key already configured ✓"
+            fi
+            ;;
+        3) # DeepSeek
+            if ! _has_real_key "DEEPSEEK_API_KEY"; then
+                _key="$(_ask_key_input "DeepSeek" "https://platform.deepseek.com/api_keys")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "DEEPSEEK_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "deepseek"
+                    _verify_api_key "DeepSeek" "${_key}"
+                else
+                    warn "Skipped — you can add DEEPSEEK_API_KEY to .env later"
+                fi
+            else
+                ok "DeepSeek API key already configured ✓"
+            fi
+            ;;
+        4) # Gemini
+            if ! _has_real_key "GEMINI_API_KEY"; then
+                _key="$(_ask_key_input "Google Gemini" "https://aistudio.google.com/app/apikey")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "GEMINI_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "gemini"
+                    _verify_api_key "Gemini" "${_key}"
+                else
+                    warn "Skipped — you can add GEMINI_API_KEY to .env later"
+                fi
+            else
+                ok "Gemini API key already configured ✓"
+            fi
+            ;;
+        5) # xAI
+            if ! _has_real_key "XAI_API_KEY"; then
+                _key="$(_ask_key_input "xAI Grok" "https://console.x.ai")"
+                if [ -n "${_key}" ]; then
+                    _set_env_key "XAI_API_KEY" "${_key}"
+                    _set_env_key "GROK_API_KEY" "${_key}"
+                    _set_env_key "JULIUS_DEFAULT_MODEL" "grok"
+                    _verify_api_key "xAI" "${_key}"
+                else
+                    warn "Skipped — you can add XAI_API_KEY to .env later"
+                fi
+            else
+                ok "xAI API key already configured ✓"
+            fi
+            ;;
+        6) # Ollama
+            info "Ollama selected — no API key needed"
+            _set_env_key "JULIUS_DEFAULT_MODEL" "ollama"
+            ok "Default provider set to local Ollama ✓"
+            ;;
+        7) # Skip
+            warn "Setup wizard skipped — edit .env before running Julius"
+            ;;
+    esac
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 # Execute command: info "Current configuration:"
 info "Current configuration:"
 # Repeat loop while condition evaluates to true: IFS= read -r line

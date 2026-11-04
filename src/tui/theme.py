@@ -536,13 +536,13 @@ def generate_tcss(theme: ThemeTokens) -> str:
     }}
 
 
-    /* Composer: Rounded input, defined outer box, matching rounded corners */
+    /* Composer: Rounded input, defined outer box, matching brand gold #C8B896 rounded corners */
     Composer, #composer-input, #composer-container {{
         width: 1fr;
         height: auto;
         min-height: 3;
         max-height: 8;
-        border: round {theme.border_idle};
+        border: round {theme.brand_gold};
         background: transparent;
         color: {theme.text};
         margin-top: 0;

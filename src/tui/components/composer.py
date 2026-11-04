@@ -40,7 +40,7 @@ class Composer(TextArea):
         height: 3;
         min-height: 3;
         max-height: 10;
-        border: round #3e3e42;
+        border: round #c8b896;
         background: transparent;
         color: #f5f5f7;
         padding: 0 1;

@@ -228,6 +228,20 @@ class LLMRouter:
             if not provider:
                 continue
 
+            # Skip providers with no API key configured (avoid leaking auth errors for unconfigured providers)
+            _provider_api_key = getattr(provider, "api_key", None)
+            _placeholder_patterns = ("YOUR_", "_API_KEY_HERE", "sk-placeholder", "nvapi-YOUR")
+            if (
+                candidate_name not in ("ollama", "openai_compat")
+                and _provider_api_key is not None
+                and (
+                    not str(_provider_api_key).strip()
+                    or any(pat in str(_provider_api_key) for pat in _placeholder_patterns)
+                )
+            ):
+                logger.debug(f"Skipping provider '{candidate_name}': no valid API key configured.")
+                continue
+
             breaker = self._circuit_breakers.get(candidate_name)
             if breaker and not breaker.can_attempt():
                 logger.warning(f"Circuit breaker for provider '{candidate_name}' is OPEN. Trying next candidate.")
@@ -330,10 +344,26 @@ class LLMRouter:
                 breaker.record_failure()
 
         # If all candidates exhausted, raise provider error
+        _last_err_clean = ""
+        if last_error:
+            _raw = str(last_error)
+            import re as _re
+            _last_err_clean = _re.sub(r'\{[^}]{0,300}\}', '', _raw).strip(' .:,')
+            if not _last_err_clean:
+                _last_err_clean = type(last_error).__name__
+        _hint_msg = (
+            "No API keys are configured. Run ./install.sh to set up your provider keys, "
+            "or edit .env with your NVIDIA_API_KEY."
+            if not _last_err_clean
+            else "Check your API key in .env, network connectivity, or run ./install.sh to reconfigure."
+        )
         raise ProviderError(
             code=JUL_PROV_UNAVAILABLE,
-            message=f"All configured providers ({', '.join(candidates)}) failed. Last error: {last_error}",
-            hint="Check provider credentials, network status, or local Ollama daemon.",
+            message=(
+                f"Unable to reach any configured AI provider. "
+                + (f"Last attempt failed: {_last_err_clean}" if _last_err_clean else "No providers are configured with valid API keys.")
+            ),
+            hint=_hint_msg,
         )
 
     @property

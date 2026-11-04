@@ -1306,6 +1306,18 @@ class WebAgent:
             """Sanitize thought and terminal action args of any leaked thinking tags and auto-heal missing thought/args."""
             if not isinstance(data, dict):
                 return data
+            # Hoist 'tool', 'function', 'name', 'call' to 'action' for broad model compatibility
+            if 'action' not in data:
+                for k in ('tool', 'function', 'name', 'call'):
+                    if k in data and isinstance(data[k], str):
+                        data['action'] = data.pop(k)
+                        break
+            # Hoist 'parameters' or 'arguments' to 'args'
+            if 'args' not in data:
+                for k in ('parameters', 'arguments', 'params'):
+                    if k in data and isinstance(data[k], dict):
+                        data['args'] = data.pop(k)
+                        break
             if 'thought' not in data:
                 data['thought'] = ''
             elif isinstance(data['thought'], str):
@@ -1315,7 +1327,8 @@ class WebAgent:
                 data['thought'] = th.strip()
             if 'action' in data and ('args' not in data or not isinstance(data.get('args'), dict)):
                 # If model emitted flat args e.g. {"action": "write_file", "path": "...", "content": "..."}
-                args = {k: v for k, v in data.items() if k not in ('action', 'thought', 'id')}
+                # or {"tool": "read_file", "path": "README.md"}
+                args = {k: v for k, v in data.items() if k not in ('action', 'thought', 'id', 'tool', 'function', 'name')}
                 data['args'] = args
             action_name = data.get('action')
             args = data.get('args')
@@ -1331,18 +1344,35 @@ class WebAgent:
             if batch_key:
                 for item in data[batch_key]:
                     if isinstance(item, dict):
+                        if 'action' not in item:
+                            for k in ('tool', 'function', 'name'):
+                                if k in item and isinstance(item[k], str):
+                                    item['action'] = item.pop(k)
+                                    break
                         if 'action' in item and ('args' not in item or not isinstance(item.get('args'), dict)):
-                            item['args'] = {k: v for k, v in item.items() if k not in ('action', 'id')}
+                            item['args'] = {k: v for k, v in item.items() if k not in ('action', 'id', 'tool', 'function', 'name')}
                         act = item.get('action')
                         it_args = item.get('args')
                         if isinstance(it_args, dict):
                             _normalize_action_args(act, it_args)
             return data
 
+        def _has_action(d: Any) -> bool:
+            return bool(
+                isinstance(d, dict)
+                and (
+                    'action' in d
+                    or 'actions' in d
+                    or 'tool' in d
+                    or 'function' in d
+                    or 'name' in d
+                )
+            )
+
         # First, try the parsed JSON from the client
         if response.parsed_json and isinstance(response.parsed_json, dict):
             data = response.parsed_json
-            if 'action' in data or 'actions' in data:
+            if _has_action(data):
                 return _clean_payload(data)
 
         raw = response.raw_text or ""
@@ -1355,7 +1385,7 @@ class WebAgent:
 
         try:
             data = extract_json_block(raw)
-            if isinstance(data, dict) and ('action' in data or 'actions' in data):
+            if _has_action(data):
                 return _clean_payload(data)
         except Exception:
             pass
@@ -1366,11 +1396,11 @@ class WebAgent:
             content = match.group(1).strip()
             try:
                 data = json.loads(content, strict=False)
-                if isinstance(data, dict) and ('action' in data or 'actions' in data):
+                if _has_action(data):
                     return _clean_payload(data)
             except Exception:
                 fixed = attempt_json_fix(content)
-                if fixed and ('action' in fixed or 'actions' in fixed):
+                if fixed and _has_action(fixed):
                     return _clean_payload(fixed)
                 continue
 
@@ -1392,11 +1422,11 @@ class WebAgent:
         for candidate in reversed(candidates):
             try:
                 data = json.loads(candidate, strict=False)
-                if isinstance(data, dict) and ('action' in data or 'actions' in data):
+                if _has_action(data):
                     return _clean_payload(data)
             except Exception:
                 fixed = attempt_json_fix(candidate)
-                if fixed and ('action' in fixed or 'actions' in fixed):
+                if fixed and _has_action(fixed):
                     return _clean_payload(fixed)
                 continue
 

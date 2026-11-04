@@ -14,7 +14,7 @@ import type {
   // Import or destructure parameter ActiveThinkingState
   ActiveThinkingState,
 } from './types.js';
-import { DARK_THEME } from './theme/tokens.js';
+import { DARK_THEME, LIGHT_THEME } from './theme/tokens.js';
 import { AgentBridge } from './bridge/AgentBridge.js';
 import { UserMessage } from './components/UserMessage.js';
 import { AssistantMessage } from './components/AssistantMessage.js';
@@ -50,7 +50,8 @@ export const App: React.FC<AppProps> = ({
 }) => {
   const { exit } = useApp();
   const { stdin, isRawModeSupported } = useStdin();
-  const theme = DARK_THEME;
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const theme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
 
   // Dynamic Terminal Window Dimensions
   const [dimensions, setDimensions] = useState({
@@ -229,7 +230,12 @@ export const App: React.FC<AppProps> = ({
         );
       } else if (kind === 'stream_chunk') {
         const chunk = event.chunk || '';
-        if (chunk) {
+        const trimmedChunk = chunk.trim();
+        const isJsonToolCall = Boolean(
+          trimmedChunk.startsWith('{') &&
+          (trimmedChunk.includes('"tool"') || trimmedChunk.includes('"action"') || trimmedChunk.includes('"function"'))
+        );
+        if (chunk && !isJsonToolCall) {
           setStreamingAnswer((prev) => prev + chunk);
           setActiveThinking((prev) => (prev ? { ...prev, isRunning: false } : null));
           // Preserve active action details for post-action inspection
@@ -252,17 +258,22 @@ export const App: React.FC<AppProps> = ({
           options: event.options || [],
         });
       } else if (kind === 'done' || kind === 'converse') {
-        const finalText = (kind === 'done' ? event.summary : event.message) || streamingAnswer;
+        const rawFinal = (kind === 'done' ? event.summary : event.message) || streamingAnswer;
+        const finalText = (rawFinal || '').trim();
+        const isJsonToolCall = Boolean(
+          finalText.startsWith('{') &&
+          (finalText.includes('"tool"') || finalText.includes('"action"') || finalText.includes('"function"'))
+        );
         const tools = (event.tools as unknown as ToolExecutionRecord[]) || currentTurnTools;
 
-        if (finalText && finalText.trim()) {
-          lastAssistantAnswerRef.current = finalText.trim();
+        if (finalText && !isJsonToolCall) {
+          lastAssistantAnswerRef.current = finalText;
           setMessages((prev) => [
             ...prev,
             {
               id: `ast_${Date.now()}`,
               role: 'assistant',
-              content: finalText.trim(),
+              content: finalText,
               timestamp: Date.now(),
               tools: tools.length > 0 ? [...tools] : undefined,
               thoughts: activeThinking?.thoughts,
@@ -587,18 +598,25 @@ export const App: React.FC<AppProps> = ({
     if (!trimmed) return;
     setScrollOffset(0);
 
-    // Check for client-side slash commands (with smart prefix matching)
+    // Check for client-side slash commands (with smart prefix and two-word matching)
     if (trimmed.startsWith('/')) {
-      const parts = trimmed.split(' ');
-      const cmd = parts[0]?.toLowerCase() || '';
-      const arg = parts.slice(1).join(' ').trim();
+      const spaceIdx = trimmed.indexOf(' ');
+      const rawCmd = (spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx)).toLowerCase();
+      const arg = spaceIdx === -1 ? '' : trimmed.slice(spaceIdx + 1).trim();
 
-      if (cmd === '/h' || cmd === '/help' || cmd === '/?') {
+      // Helper to match exact command or prefix of at least 2 characters (e.g. /he -> /help, /pl -> /plan)
+      const matchesCmd = (target: string, aliases: string[] = []): boolean => {
+        if (rawCmd === target || aliases.includes(rawCmd)) return true;
+        if (rawCmd.length >= 2 && target.startsWith(rawCmd)) return true;
+        return aliases.some((a) => a.length >= 2 && a.startsWith(rawCmd));
+      };
+
+      if (matchesCmd('/help', ['/h', '/?'])) {
         setActiveModal('help');
         return;
       }
 
-      if (cmd === '/m' || cmd === '/mo' || cmd.startsWith('/mod')) {
+      if (matchesCmd('/model', ['/m', '/mo', '/mod'])) {
         if (arg && bridge) {
           await bridge.switchModel(arg);
         } else {
@@ -607,24 +625,24 @@ export const App: React.FC<AppProps> = ({
         return;
       }
 
-      if (cmd === '/d' || cmd.startsWith('/dif')) {
+      if (matchesCmd('/diff', ['/d', '/dif', '/changes'])) {
         setActiveModal('diff');
         return;
       }
 
-      if (cmd === '/t' || cmd === '/th' || cmd.startsWith('/think')) {
+      if (matchesCmd('/think', ['/t', '/th'])) {
         setIsThinkingExpanded((prev) => !prev);
         return;
       }
 
-      if (cmd === '/a' || cmd === '/act' || cmd === '/action' || cmd === '/active' || cmd === '/inspect') {
+      if (matchesCmd('/action', ['/a', '/inspect', '/ps'])) {
         if (!arg) {
           setActiveModal('action');
           return;
         }
       }
 
-      if (cmd === '/c' || cmd.startsWith('/cle') || cmd === '/new' || cmd.startsWith('/ne')) {
+      if (matchesCmd('/clear', ['/c', '/new', '/ne', '/reset'])) {
         setMessages([]);
         setStreamingAnswer('');
         setActiveThinking(null);
@@ -635,32 +653,89 @@ export const App: React.FC<AppProps> = ({
         return;
       }
 
-      if (cmd === '/undo' || cmd === '/u') {
+      if (matchesCmd('/plan', ['/p', '/pl'])) {
+        if (!arg) {
+          showToast('Usage: /plan <task description>');
+          return;
+        }
+        // Execute prompt in plan mode
+        const userMsg: MessageRecord = {
+          id: `usr_${Date.now()}`,
+          role: 'user',
+          content: `/plan ${arg}`,
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, userMsg]);
+        setActiveThinking({
+          label: 'Planning',
+          fullThought: '',
+          thoughts: [],
+          workingSteps: [],
+          isRunning: true,
+        });
+        setActiveActionDetails(null);
+        setStreamingAnswer('');
+        bridge?.submitPrompt(`/plan ${arg}`);
+        return;
+      }
+
+      if (matchesCmd('/act')) {
+        if (!arg) {
+          showToast('Usage: /act <task description>');
+          return;
+        }
+        const userMsg: MessageRecord = {
+          id: `usr_${Date.now()}`,
+          role: 'user',
+          content: arg,
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, userMsg]);
+        setActiveThinking({
+          label: 'Thinking',
+          fullThought: '',
+          thoughts: [],
+          workingSteps: [],
+          isRunning: true,
+        });
+        setActiveActionDetails(null);
+        setStreamingAnswer('');
+        bridge?.submitPrompt(arg);
+        return;
+      }
+
+      if (matchesCmd('/undo', ['/u'])) {
         bridge?.undo();
         return;
       }
 
-      if (cmd === '/doctor' || cmd === '/doc') {
+      if (matchesCmd('/doctor', ['/doc'])) {
         bridge?.doctor();
         return;
       }
 
-      if (cmd === '/context' || cmd === '/ctx') {
+      if (matchesCmd('/context', ['/ctx', '/con'])) {
         bridge?.context();
         return;
       }
 
-      if (cmd === '/cost') {
+      if (matchesCmd('/cost')) {
         bridge?.cost();
         return;
       }
 
-      if (cmd === '/compact') {
+      if (matchesCmd('/compact', ['/comp'])) {
         bridge?.compact();
         return;
       }
 
-      if (cmd === '/q' || cmd.startsWith('/ex') || cmd.startsWith('/qu')) {
+      if (matchesCmd('/theme')) {
+        setIsDarkTheme((prev) => !prev);
+        showToast('Theme toggled');
+        return;
+      }
+
+      if (matchesCmd('/exit', ['/quit', '/q', '/ex'])) {
         await bridge?.close();
         exit();
         return;

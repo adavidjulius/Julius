@@ -224,21 +224,16 @@ export const Composer: React.FC<ComposerProps> = ({
     }
   }, { isActive: isFocused });
 
-  // Julius Brand Palette
+  // Julius Brand Palette: Warm Brand Gold #C8B896 for input box border
   const activeGold = theme.brand_gold || theme.accent || '#c8b896';
-
-  // Dynamic Border Contract:
-  // When active & typing: Warm Brand Gold #C8B896 round border
-  // After sending / while working: Ultra-thin hairline thread border with dimmed visibility
-  const isThreadBorder = hasSubmitted || isWorking;
-  const borderColor = isThreadBorder ? ((theme as any).border_subtle || '#1e1e24') : activeGold;
-  const borderStyle = isThreadBorder ? 'single' : 'round';
-  const borderDimColor = isThreadBorder;
+  const borderColor = activeGold;
+  const borderStyle = 'round';
+  const borderDimColor = false;
 
   // Render input content with slash command highlighting and cursor position
   const renderContent = () => {
     if (text.length === 0) {
-      if (isFocused && !isThreadBorder) {
+      if (isFocused) {
         // When focused and empty for new prompt, placeholder vanishes, cursor blinks at start
         return <Text color={activeGold}>█</Text>;
       }

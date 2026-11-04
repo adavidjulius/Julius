@@ -2106,29 +2106,34 @@ def is_json_or_protocol(text: str) -> bool:
     # 1. Direct prefix matches for raw JSON action streams and fragments
     if lower.startswith((
         'json{', 'json\n{', 'json\r\n{', 'json {',
-        '{"thought"', '{"action"', '{"actions"', '{"id"',
-        '"thought":', '"action":', '"actions":',
+        '{"thought"', '{"action"', '{"actions"', '{"tool"', '{"function"', '{"name"', '{"id"',
+        '"thought":', '"action":', '"actions":', '"tool":', '"function":', '"name":',
     )):
         return True
 
     # 2. Markdown fenced code blocks holding internal action JSON or starting action fences
     if lower.startswith(('```json', '```', '{')):
-        if any(marker in lower for marker in ('"action":', '"actions":', '"thought":', "'action':", "'actions':", "'thought':")):
+        if any(marker in lower for marker in (
+            '"action":', '"actions":', '"thought":', '"tool":', '"function":',
+            "'action':", "'actions':", "'thought':", "'tool':", "'function':",
+        )):
             return True
         if lower in ('```', '```json', '```json\n', '```\n', '{'):
             return True
 
     # 3. Action dictionary markers anywhere in string
-    if ('"action":' in lower or '"actions":' in lower) and ('"args":' in lower or '"thought":' in lower or '"id":' in lower):
+    if ('"action":' in lower or '"actions":' in lower or '"tool":' in lower) and (
+        '"args":' in lower or '"thought":' in lower or '"id":' in lower or '"path":' in lower or '"command":' in lower
+    ):
         return True
 
-    if re.search(r'["\'](?:action|actions)["\']\s*:\s*["\']?[a-zA-Z0-9_]+["\']?', s) and (
-        re.search(r'["\'](?:thought|args|mode|id)["\']\s*:', s)
+    if re.search(r'["\'](?:action|actions|tool|function)["\']\s*:\s*["\']?[a-zA-Z0-9_]+["\']?', s) and (
+        re.search(r'["\'](?:thought|args|mode|id|path|command|query)["\']\s*:', s)
     ):
         return True
 
     # 4. Bare thought prefix or JSON tag on opening brace
-    if re.search(r'^(?:json\s*)?\{\s*["\']thought["\']\s*:', s, flags=re.IGNORECASE):
+    if re.search(r'^(?:json\s*)?\{\s*["\'](?:thought|tool|action)["\']\s*:', s, flags=re.IGNORECASE):
         return True
 
     return False
@@ -2138,7 +2143,7 @@ def attempt_json_fix(raw: str) -> dict[str, Any] | None:
     """Attempt to repair common LLM JSON syntax errors (control chars, trailing commas, unquoted keys)."""
     try:
         data = json.loads(raw, strict=False)
-        if isinstance(data, dict) and ('action' in data or 'actions' in data or 'thought' in data):
+        if isinstance(data, dict) and ('action' in data or 'actions' in data or 'thought' in data or 'tool' in data or 'function' in data):
             return data
     except Exception:
         pass
@@ -2148,7 +2153,7 @@ def attempt_json_fix(raw: str) -> dict[str, Any] | None:
         # 2. Quote unquoted keys (e.g. {action: "..."} or , args: {...})
         fixed = re.sub(r'([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r'\1"\2":', fixed)
         data = json.loads(fixed, strict=False)
-        if isinstance(data, dict) and ('action' in data or 'actions' in data or 'thought' in data):
+        if isinstance(data, dict) and ('action' in data or 'actions' in data or 'thought' in data or 'tool' in data or 'function' in data):
             return data
     except Exception:
         pass
@@ -2169,7 +2174,7 @@ def extract_json_block(text: str) -> dict[str, Any]:
     for m in reversed(fenced_blocks):
         try:
             cand = json.loads(m.group(1).strip(), strict=False)
-            if isinstance(cand, dict) and ('action' in cand or 'actions' in cand or 'thought' in cand):
+            if isinstance(cand, dict) and ('action' in cand or 'actions' in cand or 'thought' in cand or 'tool' in cand or 'function' in cand):
                 return cand
         except (json.JSONDecodeError, ValueError):
             cand = attempt_json_fix(m.group(1).strip())
@@ -2195,7 +2200,7 @@ def extract_json_block(text: str) -> dict[str, Any]:
     for cand_str in reversed(candidates):
         try:
             cand = json.loads(cand_str, strict=False)
-            if isinstance(cand, dict) and ('action' in cand or 'actions' in cand or 'thought' in cand):
+            if isinstance(cand, dict) and ('action' in cand or 'actions' in cand or 'thought' in cand or 'tool' in cand or 'function' in cand):
                 return cand
         except (json.JSONDecodeError, ValueError):
             cand = attempt_json_fix(cand_str)

@@ -80,72 +80,41 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
     <Box
       flexDirection="column"
       width={cardWidth}
-      borderStyle="round"
-      borderColor={activeGold}
       paddingLeft={termCols < 60 ? 1 : 2}
       paddingRight={termCols < 60 ? 1 : 2}
-      paddingTop={0}
-      paddingBottom={0}
       marginTop={0}
-      marginBottom={isShortScreen ? 0 : 1}
+      marginBottom={1}
       alignSelf="center"
     >
-      <Box justifyContent="center">
-        <Text bold color={theme.text}>
-          Select Reasoning Model
+      <Box marginBottom={1}>
+        <Text bold color={activeGold}>
+          Select Model:
         </Text>
       </Box>
-      {!isShortScreen && (
-        <Box justifyContent="center" marginBottom={1}>
-          <Text color={activeGold}>
-            Choose active neural provider for reasoning & tool execution
-          </Text>
-        </Box>
-      )}
 
-      {/* Inner options container */}
-      <Box
-        flexDirection="column"
-        borderStyle="round"
-        borderColor={theme.border_idle}
-        paddingLeft={1}
-        paddingRight={1}
-        paddingTop={0}
-        paddingBottom={0}
-        marginBottom={1}
-      >
+      <Box flexDirection="column" marginBottom={1}>
         {models.map((m, idx) => {
           const isHighlighted = idx === selectedIndex;
           const isActive = m.id === activeModel;
 
           return (
-            <Box
-              key={m.id}
-              justifyContent="space-between"
-              paddingLeft={1}
-              paddingRight={1}
-            >
-              <Box>
-                <Text color={isHighlighted ? activeGold : theme.text} bold={isHighlighted}>
-                  {isHighlighted ? '❯ ' : '  '}{idx + 1}. {m.name}
-                </Text>
-                {isActive && (
-                  <Text color={theme.success} bold>
-                    {' '}(active)
-                  </Text>
-                )}
-              </Box>
-              <Text color={isHighlighted ? activeGold : theme.text_dim} bold={isHighlighted}>
-                {m.desc}
+            <Box key={m.id}>
+              <Text color={isHighlighted ? activeGold : theme.text} bold={isHighlighted}>
+                {isHighlighted ? '> ' : '  '}{idx + 1}. {m.name}
               </Text>
+              {isActive && (
+                <Text color={activeGold} bold>
+                  {' '}(active)
+                </Text>
+              )}
             </Box>
           );
         })}
       </Box>
 
-      <Box justifyContent="center">
+      <Box>
         <Text color={theme.text_faint}>
-          [↑/↓] Navigate  ·  [1-9] Direct select  ·  [Enter] Confirm  ·  [Esc] Cancel
+          [Up/Down] Navigate  ·  [1-9] Select  ·  [Enter] Confirm  ·  [Esc] Cancel
         </Text>
       </Box>
     </Box>

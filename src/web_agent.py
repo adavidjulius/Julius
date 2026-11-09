@@ -1818,7 +1818,7 @@ class WebAgent:
                     if clean_cmd:
                         return {"thought": "Extracted command", "action": "run_bash", "args": {"command": clean_cmd}}
                 outside_text = re.sub(r'```(?:json)?[\s\S]*?```', '', trimmed).strip()
-                if outside_text and len(outside_text) > 20:
+                if outside_text and not (outside_text.startswith('{') or outside_text.endswith('}') or '"action":' in outside_text) and len(outside_text) > 20:
                     return {"thought": "Extracted conversational text", "action": "converse", "args": {"message": outside_text}}
                 return None
 

@@ -397,10 +397,10 @@ class LLMRouter:
 
     @property
     def provider_name(self) -> str:
-        if hasattr(self, "_active_provider") and self._active_provider and self._active_provider not in ("ollama", "local", "llama"):
+        if hasattr(self, "_active_provider") and self._active_provider:
             return self._active_provider
         settings = get_settings(self.workspace)
-        if hasattr(settings, "active_provider") and settings.active_provider and settings.active_provider not in ("ollama", "local", "llama"):
+        if hasattr(settings, "active_provider") and settings.active_provider:
             return settings.active_provider
         return "nvidia"
 
@@ -508,8 +508,12 @@ class LLMRouter:
                 has_key = True
                 if prov_clean in cloud_keys:
                     has_key = any(os.getenv(k) or sec_mgr.get_secret(k) for k in cloud_keys[prov_clean])
-                self._provider_key = prov_clean
-                self._active_provider = prov_clean
+                if not has_key and prov_clean != "nvidia":
+                    self._provider_key = "nvidia"
+                    self._active_provider = "nvidia"
+                else:
+                    self._provider_key = prov_clean
+                    self._active_provider = prov_clean
         self._is_logged_in = True
 
     async def send_message(

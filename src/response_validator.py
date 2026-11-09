@@ -342,7 +342,7 @@ def _auto_heal_action_item(item: dict[str, Any]) -> dict[str, Any]:
 
 def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
     """
-    Validate an action dict against the expected schema with robust self-healing.
+    Validate an action dict against the expected schema.
 
     Supports:
     - Shape A: {"thought": "...", "action": "...", "args": {...}}
@@ -355,16 +355,15 @@ def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
     if not isinstance(data, dict):
         return False, 'Response is not a JSON object.'
 
-    # Run auto-healing on top-level payload
-    _auto_heal_action_item(data)
+    # Check thought
+    if 'thought' not in data:
+        return False, "Missing required top-level key: 'thought'"
 
     has_action = 'action' in data
     has_actions = 'actions' in data
 
     if has_action and has_actions:
-        # If both are present, prioritize actions list
-        data.pop('action', None)
-        has_action = False
+        return False, 'Use either "action" or "actions", not both'
 
     if not has_action and not has_actions:
         missing_keys = REQUIRED_KEYS - set(data.keys())
@@ -376,13 +375,11 @@ def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
         if not isinstance(items, list) or not items:
             return False, 'The "actions" field must be a non-empty list.'
         if len(items) > MAX_PARALLEL_ACTIONS:
-            data['actions'] = items[:MAX_PARALLEL_ACTIONS]
-            items = data['actions']
+            return False, f'At most {MAX_PARALLEL_ACTIONS} actions per batch, got {len(items)}.'
 
         mode = data.get('mode', 'parallel')
         if mode not in ('parallel', 'sequential'):
-            data['mode'] = 'parallel'
-            mode = 'parallel'
+            return False, f'Invalid mode: {mode!r}. Must be "parallel" or "sequential".'
 
         seen_ids: set[str] = set()
         written_paths: set[str] = set()
@@ -391,29 +388,35 @@ def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
             if not isinstance(item, dict):
                 return False, f'Action item {idx} must be a JSON object.'
 
-            _auto_heal_action_item(item)
             action_name = item.get('action')
             if not isinstance(action_name, str) or not action_name:
                 return False, f'Action item {idx} must have a non-empty string "action".'
 
             if action_name not in ACTION_ARG_SCHEMAS:
-                # If conversational intent, normalize to converse
-                if any(k in action_name.lower() for k in ('answer', 'reply', 'respond', 'chat', 'say', 'message', 'explain')):
-                    action_name = 'converse'
-                    item['action'] = 'converse'
-                else:
-                    return False, f'Unknown action: "{action_name}".'
+                return False, (
+                    f'Unknown action: "{action_name}". '
+                    f'Valid actions: {", ".join(sorted(ACTION_ARG_SCHEMAS.keys()))}'
+                )
 
-            args = item.get('args', {})
+            args = item.get('args')
             if not isinstance(args, dict):
-                return False, f'Action item {idx} "args" must be a JSON object.'
+                return False, f'Action item {idx} "args" must be a JSON object, got {type(args).__name__}.'
 
             req_args = ACTION_ARG_SCHEMAS[action_name]
             missing = req_args - set(args.keys())
             if missing:
-                return False, f'Action "{action_name}" is missing required argument(s): {sorted(missing)}.'
+                return False, (
+                    f'Action "{action_name}" is missing required argument(s): {sorted(missing)}. '
+                    f'Required: {sorted(req_args)}'
+                )
+
+            for arg_name in req_args:
+                if args[arg_name] is None:
+                    return False, f'Action item {idx} "{action_name}" has a null value for required arg "{arg_name}".'
 
             item_id = str(item.get('id') or f'a{idx}')
+            if item_id in seen_ids:
+                return False, f'Duplicate action id "{item_id}" in batch.'
             seen_ids.add(item_id)
 
             if mode == 'parallel' and action_name in ('write_file', 'edit_file', 'multi_edit'):
@@ -424,14 +427,7 @@ def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
                     written_paths.add(target_path)
 
         if len(items) > 1 and any(i.get('action') in TERMINAL_ACTIONS for i in items):
-            # Auto-heal: filter out terminal actions so tool actions execute first
-            non_term = [i for i in items if i.get('action') not in TERMINAL_ACTIONS]
-            if non_term:
-                data['actions'] = non_term
-                items = non_term
-            else:
-                data['actions'] = [items[0]]
-                items = data['actions']
+            return False, 'Terminal actions (done, converse, ask_human) cannot be mixed with other actions in a batch.'
 
         return True, ''
 
@@ -445,20 +441,22 @@ def validate_action(data: dict[str, Any]) -> tuple[bool, str]:
         return False, 'The "action" field must be a non-empty string.'
 
     if action not in ACTION_ARG_SCHEMAS:
-        if any(k in action.lower() for k in ('answer', 'reply', 'respond', 'chat', 'say', 'message', 'explain')):
-            action = 'converse'
-            data['action'] = 'converse'
-        else:
-            return False, f'Unknown action: "{action}".'
+        return False, (
+            f'Unknown action: "{action}". '
+            f'Valid actions: {", ".join(sorted(ACTION_ARG_SCHEMAS.keys()))}'
+        )
 
-    args = data.get('args', {})
+    args = data.get('args')
     if not isinstance(args, dict):
         return False, f'The "args" field must be a JSON object, got {type(args).__name__}.'
 
     required_args = ACTION_ARG_SCHEMAS[action]
-    missing = required_args - set(args.keys())
-    if missing:
-        return False, f'Action "{action}" is missing required argument(s): {sorted(missing)}.'
+    missing_args = required_args - set(args.keys())
+    if missing_args:
+        return False, (
+            f'Action "{action}" is missing required argument(s): {sorted(missing_args)}. '
+            f'Required: {sorted(required_args)}'
+        )
 
     for arg_name in required_args:
         if args[arg_name] is None:

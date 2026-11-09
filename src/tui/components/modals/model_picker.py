@@ -19,6 +19,14 @@ MODELS: List[Tuple[str, str, str]] = [
     ("nvidia/nemotron-3-nano-omni-30b-a3b-reasoning", "Nemotron 3 Nano Omni 30B", "NVIDIA NIM · High-Speed Reasoning & Tool Calling (Free)"),
     ("nvidia/nemotron-3.5-bolt-e4b", "Nemotron 3.5 Bolt", "NVIDIA NIM · Ultra-Low Latency Agent & Tool Calling (Free)"),
     ("nvidia/nemotron-3.5-super-vl-120b-a12b", "Nemotron 3.5 Super VL 120B", "NVIDIA NIM · Vision-Language 120B Flagship with Tools (Free)"),
+    ("nvidia", "NVIDIA Nemotron 550B (Build Free API)", "NVIDIA NIM Free API · 550B Ultra Reasoning & Code"),
+    ("deepseek", "DeepSeek-R1", "Deep multi-stage reasoning & architecture"),
+    ("chatgpt", "ChatGPT o3-mini", "High-accuracy code generation & synthesis"),
+    ("gemini", "Gemini 2.0 Flash", "Multimodal perception & long-context"),
+    ("grok", "Grok-3", "Fast real-time logic and shell operations"),
+    ("kimi", "Moonshot Kimi K3", "Long-context reasoning & math specialist"),
+    ("perplexity", "Perplexity Sonar", "Live web search & grounded citations"),
+    ("ollama", "Local Ollama LLM", "Private LAN uncensored neural model with DeepSeek fallback"),
 ]
 
 

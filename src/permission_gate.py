@@ -297,8 +297,8 @@ class PermissionGate:
         # ── Classify danger ───────────────────────────────────────────────
         danger_level = classify_danger(action_type, payload)
 
-        # Auto-grant LOW/MEDIUM danger actions in AUTO/NORMAL mode
-        if self.mode in (PermissionMode.AUTO, PermissionMode.NORMAL) and danger_level in (DangerLevel.LOW, DangerLevel.MEDIUM):
+        # Auto-grant LOW danger actions (or MEDIUM in AUTO mode)
+        if danger_level == DangerLevel.LOW or (self.mode == PermissionMode.AUTO and danger_level == DangerLevel.MEDIUM):
             return PermissionResponse.APPROVE_ONCE
 
         # In EDIT mode, auto-grant file writes/edits within workspace

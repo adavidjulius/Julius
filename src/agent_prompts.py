@@ -2258,7 +2258,7 @@ def normalize_actions(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], st
         if not isinstance(items, list) or not items:
             raise ValueError('"actions" must be a non-empty list')
         if len(items) > MAX_PARALLEL_ACTIONS:
-            items = items[:MAX_PARALLEL_ACTIONS]
+            raise ValueError(f'At most {MAX_PARALLEL_ACTIONS} actions per batch')
     elif 'action' in payload:
         items = [{'action': payload['action'], 'args': payload.get('args', {})}]
         mode = 'sequential'
@@ -2303,11 +2303,7 @@ def normalize_actions(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], st
         raise ValueError('No valid actions could be extracted from payload')
 
     if len(actions) > 1 and any(a['action'] in TERMINAL_ACTIONS for a in actions):
-        non_term = [a for a in actions if a['action'] not in TERMINAL_ACTIONS]
-        if non_term:
-            actions = non_term
-        else:
-            actions = [actions[0]]
+        raise ValueError('Terminal actions (done, converse, ask_human) must be sent alone')
 
     if mode == 'parallel':
         written: set[str] = set()

@@ -96,6 +96,46 @@ AVAILABLE_MODELS = {
         "description": "NVIDIA NIM · Multimodal Vision & Reasoning Tools",
         "badge": "nvidia",
     },
+    "nvidia": {
+        "name": "NVIDIA Nemotron 550B",
+        "description": "NVIDIA NIM Build Free API (550B reasoning & code)",
+        "badge": "nvidia",
+    },
+    "deepseek": {
+        "name": "DeepSeek V3 / R1",
+        "description": "DeepSeek reasoning & general agent (Web & API)",
+        "badge": "deepseek",
+    },
+    "gemini": {
+        "name": "Google Gemini 2.5",
+        "description": "Multimodal Flash & Pro with live vision (Web & API)",
+        "badge": "gemini",
+    },
+    "chatgpt": {
+        "name": "OpenAI ChatGPT-4o",
+        "description": "OpenAI flagship general intelligence (Web & API)",
+        "badge": "chatgpt",
+    },
+    "grok": {
+        "name": "xAI Grok",
+        "description": "Real-time search & reasoning (Web & API)",
+        "badge": "grok",
+    },
+    "kimi": {
+        "name": "Moonshot Kimi K3",
+        "description": "Long-context & math specialist (Web & API)",
+        "badge": "kimi",
+    },
+    "perplexity": {
+        "name": "Perplexity Sonar",
+        "description": "Live web search & grounded citations (API)",
+        "badge": "perplexity",
+    },
+    "ollama": {
+        "name": "Local Ollama LLM",
+        "description": "Local offline neural model with DeepSeek fallback",
+        "badge": "ollama",
+    },
 }
 
 MODEL_ALIASES = {

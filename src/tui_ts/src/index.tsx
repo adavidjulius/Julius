@@ -24,11 +24,11 @@ export function runTUI(): void {
 
   // 1. Enter terminal Alternate Screen Buffer (\x1b[?1049h)
   // 2. Clear screen and move cursor to (0,0) (\x1b[H\x1b[2J)
-  // 3. Enable SGR mouse tracking for status line clicks and wheel scrolling (\x1b[?1000h\x1b[?1006h)
+  // 3. Enable SGR mouse tracking for status line clicks and wheel scrolling (\x1b[?1000h\x1b[?1002h\x1b[?1006h)
   // 4. Ensure mouse pointer is normal arrow (\x1b]22;default\x1b\\)
   // 5. Enforce solid block text cursor and hide hardware cursor while rendering (\x1b[2 q\x1b[?25l)
   if (process.stdout.isTTY) {
-    process.stdout.write('\x1b[?1049h\x1b[H\x1b[2J\x1b[?1000h\x1b[?1006h\x1b]22;default\x1b\\\x1b[2 q\x1b[?25l');
+    process.stdout.write('\x1b[?1049h\x1b[H\x1b[2J\x1b[?1000h\x1b[?1002h\x1b[?1006h\x1b]22;default\x1b\\\x1b[2 q\x1b[?25l');
   }
 
   const cleanup = () => {

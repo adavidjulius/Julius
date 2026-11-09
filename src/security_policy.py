@@ -115,11 +115,11 @@ class SecurityPolicy:
     # ── Finding #7: comprehensive dangerous-pattern blocklist ────────────────────
     _DANGEROUS_PATTERNS: list[tuple[str, str]] = [
         # Destructive root/home/relative deletion
-        (r'rm\s+.*-[rfRF]+\s+/', "Recursive deletion targeting root partition"),
-        (r'rm\s+.*-[rfRF]+\s+~', "Recursive deletion targeting home"),
-        (r'rm\s+.*-[rfRF]+\s+\$HOME', "Recursive deletion targeting $HOME"),
-        (r'rm\s+.*-[rfRF]+\s+\.\./', "Recursive deletion escaping workspace via ../"),
-        (r'rm\s+.*-[rfRF]+\s+\*\s*$', "Wildcard recursive deletion"),
+        (r'rm\s+.*-[a-zA-Z]*[rR][a-zA-Z]*\s+/(?:$|\*|\s)', "Recursive deletion targeting root partition"),
+        (r'rm\s+.*-[a-zA-Z]*[rR][a-zA-Z]*\s+~(?:/?$|/\*\s*$|\s)', "Recursive deletion targeting home"),
+        (r'rm\s+.*-[a-zA-Z]*[rR][a-zA-Z]*\s+\$HOME(?:/?$|/\*\s*$|\s)', "Recursive deletion targeting $HOME"),
+        (r'rm\s+.*-[a-zA-Z]*[rR][a-zA-Z]*\s+\.\./', "Recursive deletion escaping workspace via ../"),
+        (r'rm\s+.*-[a-zA-Z]*[rR][a-zA-Z]*\s+\*\s*$', "Wildcard recursive deletion"),
         # System directory modification
         (r'(?:rm|mv|chmod|chown|tee|dd)\s+.*(?:/etc|/var|/System|/Library|/usr|/bin|/sbin|/dev|/proc)',
          "Modification of system directory"),
@@ -154,6 +154,10 @@ class SecurityPolicy:
             Tuple of (is_safe: bool, reason: str)
         """
         cleaned = command.strip()
+
+        # In accept mode, provide unrestricted execution across host
+        if getattr(self, "mode", None) == "accept":
+            return True, ""
 
         for pattern, reason in self._DANGEROUS_PATTERNS:
             # If user explicitly approved host access across Mac, allow host directory operations

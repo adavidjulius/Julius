@@ -120,6 +120,8 @@ class AgentIPCServer:
         self.app_config = load_config()
         # Determine active model using initial argument, config preference, or system default
         self.active_model = initial_model or self.app_config.model or get_default_provider()
+        if not self.active_model or self.active_model.lower() in ("ollama", "local", "llama", "default"):
+            self.active_model = "nvidia"
 
         # Initialize the configuration object for WebAgent with safe operational defaults
         self.agent_config = AgentConfig(
@@ -210,6 +212,7 @@ class AgentIPCServer:
             # Connect the agent's event handler to our raw event processing method
             on_event=self._handle_raw_event,
         )
+        self.agent.set_mode(getattr(self.session_state, "permission_mode", "auto"))
 
     # Asynchronous method to retrieve list of available cloud models and live LAN Ollama models
     async def get_available_models(self) -> List[Dict[str, str]]:
@@ -308,9 +311,15 @@ class AgentIPCServer:
             # Check if there is already an existing task running and not yet finished
             if self._current_task and not self._current_task.done():
                 # Log a warning that the previous task is being superseded
-                logger.warning("Superseding previous active task")
-                # Cancel the currently running asynchronous task
-                self._current_task.cancel()
+                logger.warning("Superseding previous active task cleanly")
+                if self.agent:
+                    self.agent.cancel_active_action()
+                prev_task = self._current_task
+                prev_task.cancel()
+                try:
+                    await asyncio.wait_for(prev_task, timeout=2.0)
+                except (asyncio.CancelledError, asyncio.TimeoutError, Exception):
+                    pass
 
             # Create and launch a new asynchronous task to execute the prompt
             self._current_task = asyncio.create_task(self._execute_prompt(prompt))
@@ -341,6 +350,16 @@ class AgentIPCServer:
             # Acknowledge receipt of the answer over IPC back to frontend
             send_ipc_message("question_ack", answer=answer)
 
+        # Handle dynamic operation mode switching (auto, plan, edit, accept, manual)
+        elif action == "set_mode":
+            target_mode = str(cmd_data.get("mode", "auto")).strip().lower()
+            if target_mode:
+                logger.info(f"Setting operation mode to: {target_mode}")
+                self.session_state.permission_mode = target_mode
+                if self.agent:
+                    self.agent.set_mode(target_mode)
+                send_ipc_message("mode_switched", mode=target_mode)
+
         # Handle dynamic model switching request from the model picker modal
         elif action == "switch_model":
             # Extract and trim the requested target model ID string
@@ -354,6 +373,9 @@ class AgentIPCServer:
         elif action == "cancel_action":
             # Log the cancellation request
             logger.info("User requested action cancellation")
+            # If the agent has an active action running, cancel it immediately
+            if self.agent:
+                self.agent.cancel_active_action()
             # If there is an active running task that is not done
             if self._current_task and not self._current_task.done():
                 # Cancel the active asyncio task
@@ -374,6 +396,14 @@ class AgentIPCServer:
             self.session_state.history.clear()
             if self._current_task and not self._current_task.done():
                 self._current_task.cancel()
+            if self.agent:
+                if hasattr(self.agent, "start_new_chat"):
+                    try:
+                        await self.agent.start_new_chat()
+                    except Exception as _cl_err:
+                        logger.debug(f"start_new_chat error: {_cl_err}")
+                if hasattr(self.agent, "session_history"):
+                    self.agent.session_history.clear()
             if self.agent and hasattr(self.agent, "client") and self.agent.client:
                 try:
                     if getattr(self.agent.client, "is_initialized", False):
@@ -450,6 +480,43 @@ class AgentIPCServer:
             report = "### 🗜️ Context Compacted\nConversation history was compressed to reclaim context window headroom."
             send_ipc_message("system_report", command="compact", report=report, toast="Context compacted")
 
+        elif action in ("vitals", "status", "system_status"):
+            from src.services.system_controller import get_system_controller
+            v = get_system_controller().get_system_vitals()
+            bat_display = f"{int(v.battery_percent)}% {'(Charging)' if v.battery_charging else ''}" if v.battery_percent is not None else "Desktop / AC Connected"
+            report = f"""### ⚡ System Telemetry & Vitals
+- **Host & Kernel**: `{v.os_name} {v.os_release} ({v.hostname})`
+- **CPU Utilization**: `{v.cpu_percent}%` ({v.cpu_count} logical cores)
+- **Memory Usage**: `{round(v.memory_used_gb, 1)} / {round(v.memory_total_gb, 1)} GB` ({round(v.memory_percent)}% utilized)
+- **Root Disk Storage**: `{round(v.disk_free_gb, 1)} GB free` ({round(100 - v.disk_percent_used)}% available)
+- **Battery Status**: `{bat_display}`
+- **System Uptime**: `{int(v.uptime_seconds // 3600)}h {int((v.uptime_seconds % 3600) // 60)}m`"""
+            send_ipc_message("system_report", command="vitals", report=report, vitals=v.to_dict())
+
+        elif action in ("alerts", "proactive"):
+            from src.services.proactive_daemon import get_proactive_daemon
+            daemon = get_proactive_daemon(workspace=self.workspace_dir)
+            alerts = daemon.get_latest_alerts(limit=5)
+            if alerts:
+                lines = [f"### 🔔 Proactive Alerts ({len(alerts)}):"]
+                for a in alerts:
+                    lines.append(f"- {a.format_line()}")
+                    if a.suggestion:
+                        lines.append(f"  *Tip*: {a.suggestion}")
+                report = "\n".join(lines)
+            else:
+                report = "### 🔔 Proactive System\nAll systems operational. No abnormal conditions or alerts detected."
+            send_ipc_message("system_report", command="alerts", report=report, count=len(alerts))
+
+        elif action == "earcon":
+            from src.voice.ambient_listener import play_earcon, EarconCue
+            cue_name = str(cmd_data.get("cue", "wake")).lower()
+            try:
+                cue = EarconCue(cue_name)
+                play_earcon(cue)
+            except Exception:
+                pass
+
         elif action == "exit":
             # Log that exit command was received
             logger.info("Received exit command")
@@ -498,22 +565,34 @@ class AgentIPCServer:
             if hasattr(self.agent, "client") and self.agent.client:
                 # If target is an Ollama model, set custom Ollama model name on client
                 if target.lower() in ("lexi", "qwen", "llama70b") or any(k in target.lower() for k in ("lexi", "qwen")):
-                    # Assign the specific Ollama model tag
                     self.agent.client._ollama_model = target
                 # If client has a close method, close existing browser session cleanly
                 if hasattr(self.agent.client, "close"):
-                    # Wrap close in protected try-block
                     try:
-                        # Asynchronously close previous provider session
                         await self.agent.client.close()
-                    # Catch and ignore errors during closing
                     except Exception:
-                        # Pass silently
                         pass
                 # Instantiate a fresh ProviderRouter for the new provider
                 self.agent.client = create_default_router(getattr(self.app_config, "workspace", None))
-                if hasattr(self.agent.client, "active_provider"):
-                    self.agent.client.active_provider = target
+
+                from src.providers.nim import VALIDATED_NVIDIA_TOOL_MODELS
+                is_nvidia = (
+                    target in VALIDATED_NVIDIA_TOOL_MODELS
+                    or target.lower().startswith("nvidia/")
+                    or "nemotron" in target.lower()
+                    or "muse-glimmer" in target.lower()
+                    or target.lower() in ("nvidia", "nemotron")
+                )
+                if is_nvidia:
+                    self.agent.client.active_provider = "nvidia"
+                    resolved_model = target if target != "nvidia" else "nvidia/nemotron-3-ultra-550b-a55b"
+                    self.agent.client._active_model = resolved_model
+                    self.agent.client._provider_key = "nvidia"
+                else:
+                    if hasattr(self.agent.client, "active_provider"):
+                        self.agent.client.active_provider = target
+                    if hasattr(self.agent.client, "_active_model"):
+                        self.agent.client._active_model = target
 
         # Update application config with new model preference
         self.app_config.model = target
@@ -551,21 +630,25 @@ class AgentIPCServer:
                 self.initialize_agent()
 
             # Execute the prompt asynchronously on the WebAgent until completion
-            await self.agent.run(prompt)
+            agent_res = await self.agent.run(prompt)
+            if agent_res and getattr(agent_res, "summary", None):
+                self.session_state.history.append(("assistant", agent_res.summary))
             # Notify frontend that prompt finished successfully
             send_ipc_message("prompt_finished", success=True)
         # Handle user cancellation gracefully
         except asyncio.CancelledError:
             # Log that task was cancelled
             logger.info("Task execution cancelled.")
-            # Notify frontend that prompt was cancelled
-            send_ipc_message("prompt_finished", success=False, cancelled=True)
+            # Only notify frontend if this task is still the current active task (not superseded)
+            if asyncio.current_task() == self._current_task:
+                send_ipc_message("prompt_finished", success=False, cancelled=True)
         # Handle unexpected exceptions during task execution
         except Exception as exc:
             # Log the full exception traceback for debugging
             logger.exception("Error executing prompt")
             # Notify frontend that prompt failed with an error message
-            send_ipc_message("prompt_finished", success=False, error=str(exc))
+            if asyncio.current_task() == self._current_task:
+                send_ipc_message("prompt_finished", success=False, error=str(exc))
             # If event bridge has not yet finalized this turn
             if not self.event_bridge._has_finalized_turn:
                 # Send error event through event bridge to show error banner in UI
@@ -620,8 +703,13 @@ class AgentIPCServer:
                 try:
                     # Parse the input line as a JSON dictionary
                     cmd_data = json.loads(line_str)
-                    # Dispatch and process the command asynchronously
-                    await self.handle_command(cmd_data)
+                    # Dispatch command: fire-and-forget for non-critical actions so
+                    # stdin reader stays responsive to cancel/exit commands
+                    action = cmd_data.get("action", "")
+                    if action in ("get_models", "switch_model", "doctor", "context", "cost", "compact", "undo"):
+                        asyncio.create_task(self.handle_command(cmd_data))
+                    else:
+                        await self.handle_command(cmd_data)
                 # Catch JSON decode syntax errors
                 except json.JSONDecodeError as err:
                     # Log error message detailing the malformed line

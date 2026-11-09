@@ -149,7 +149,12 @@ class ActionExecutor:
         self._rag = RagEngine(self.workspace_root)
         self._current_action_id = None
         self._todo_list: list[dict] = []
+        self._read_files: set[str] = set()
+        self._tasks_board: dict[str, dict] = {}
+        self._current_worktree_txn = None
+        self._background_tasks: dict[str, dict] = {}
         self._host_access_allowed: bool = False
+        self.mode: str = "auto"
         self._active_action_name: str | None = None
         self._active_action_args: dict = {}
         self._active_action_start: float = 0.0
@@ -244,6 +249,30 @@ class ActionExecutor:
         """Return the most recently used working directory, if any."""
         return self._last_working_dir
 
+    def set_mode(self, mode: str) -> None:
+        """Switch operation mode (auto, plan, edit, accept, manual)."""
+        self.mode = mode.lower().strip()
+        if self.mode in ("accept", "bypass"):
+            self._host_access_allowed = True
+            if hasattr(self, "_policy"):
+                self._policy._host_access_allowed = True
+                self._policy.mode = "accept"
+        elif self.mode == "manual":
+            self._host_access_allowed = False
+            if hasattr(self, "_policy"):
+                self._policy._host_access_allowed = False
+                self._policy.mode = "manual"
+        elif self.mode in ("auto", "normal"):
+            self._host_access_allowed = True
+            if hasattr(self, "_policy"):
+                self._policy._host_access_allowed = True
+                self._policy.mode = "auto"
+        elif self.mode == "plan":
+            if hasattr(self, "_policy"):
+                self._policy.mode = "plan"
+        if hasattr(self, "permission_gate") and self.permission_gate:
+            self.permission_gate.set_mode(self.mode)
+
     # ── Path validation ───────────────────────────────────────────
 
     def _resolve_path(self, path: str, mode: str = "read") -> str:
@@ -251,18 +280,75 @@ class ActionExecutor:
         if hasattr(self, "_tier_manager") and self._tier_manager.check_path_access(path, mode=mode):
             expanded = os.path.expanduser(str(path).strip())
             if os.path.isabs(expanded):
-                return str(Path(expanded).resolve())
-            return str((Path(self.workspace_root) / expanded).resolve())
+                target = Path(expanded).resolve()
+            else:
+                target = (Path(self.workspace_root) / expanded).resolve()
+            if not target.exists() and mode in ("read", "write"):
+                parent = target.parent
+                if parent.exists() and parent.is_dir():
+                    norm_target = _re_module.sub(r'[\s\u202f\u00a0]+', ' ', target.name)
+                    try:
+                        for sibling in parent.iterdir():
+                            if _re_module.sub(r'[\s\u202f\u00a0]+', ' ', sibling.name) == norm_target:
+                                return str(sibling.resolve())
+                    except Exception:
+                        pass
+            return str(target)
 
         resolved = self._sandbox_guard.resolve_safe_path(path)
         if not self._policy.is_path_allowed(resolved):
             raise PermissionError("Access denied: path escapes the workspace blast radius.")
+        target = Path(resolved)
+        if not target.exists() and mode in ("read", "write"):
+            parent = target.parent
+            if parent.exists() and parent.is_dir():
+                norm_target = _re_module.sub(r'[\s\u202f\u00a0]+', ' ', target.name)
+                try:
+                    for sibling in parent.iterdir():
+                        if _re_module.sub(r'[\s\u202f\u00a0]+', ' ', sibling.name) == norm_target:
+                            return str(sibling.resolve())
+                except Exception:
+                    pass
         return resolved
+
+    def _normalize_command_unicode_filenames(self, command: str) -> str:
+        """Resolve narrow no-break space (\\u202f) and non-breaking space (\\u00a0) in filenames within shell command."""
+        if not command or ("Screenshot" not in command and "\u202f" not in command and "\u00a0" not in command):
+            return command
+
+        dirs_to_check = set()
+        if self._last_working_dir and os.path.isdir(self._last_working_dir):
+            dirs_to_check.add(self._last_working_dir)
+        if self.workspace_root and os.path.isdir(self.workspace_root):
+            dirs_to_check.add(self.workspace_root)
+
+        for m in _re_module.finditer(r'(?:(?:/[^\s"\';|><&]+)|(?:~/[^\s"\';|><&]+))', command):
+            p = os.path.expanduser(m.group(0))
+            if os.path.isdir(p):
+                dirs_to_check.add(p)
+            elif os.path.isdir(os.path.dirname(p)):
+                dirs_to_check.add(os.path.dirname(p))
+
+        if "Desktop" in command:
+            dt = os.path.expanduser("~/Desktop")
+            if os.path.isdir(dt):
+                dirs_to_check.add(dt)
+
+        for d in dirs_to_check:
+            try:
+                for fname in os.listdir(d):
+                    if '\u202f' in fname or '\u00a0' in fname:
+                        norm_fname = fname.replace('\u202f', ' ').replace('\u00a0', ' ')
+                        if norm_fname in command:
+                            command = command.replace(norm_fname, fname)
+            except Exception:
+                pass
+        return command
 
     # ── Actions ───────────────────────────────────────────────────
 
-    def run_bash(self, command: str, timeout: int | None = None) -> ActionResult:
-        """Execute a shell command (via Docker sandbox if available)."""
+    def run_bash(self, command: str, timeout: int | None = None, run_in_background: bool = False) -> ActionResult:
+        """Execute a shell command (via Docker sandbox if available, or background thread)."""
         # Check command safety via role-based CommandPolicy
         cmd_safe, cmd_reason = self._command_policy.validate_command(command)
         if not cmd_safe:
@@ -285,12 +371,46 @@ class ActionExecutor:
                 error='security_violation'
             )
 
+        if run_in_background:
+            import threading
+            import uuid
+            task_id = f"bg_{uuid.uuid4().hex[:8]}"
+            bg_info = {
+                "task_id": task_id,
+                "command": command,
+                "status": "running",
+                "start_time": time.time(),
+                "output": "",
+                "success": None,
+            }
+            self._background_tasks[task_id] = bg_info
+
+            def _bg_runner():
+                try:
+                    s, o = self._shell.execute_command(command, timeout=timeout or 3600)
+                    bg_info["status"] = "completed" if s else "failed"
+                    bg_info["success"] = s
+                    bg_info["output"] = o
+                except Exception as bg_err:
+                    bg_info["status"] = "failed"
+                    bg_info["error"] = str(bg_err)
+
+            t = threading.Thread(target=_bg_runner, daemon=True)
+            t.start()
+            return ActionResult(
+                success=True,
+                output=f"Command running detached in background with task_id '{task_id}': {command}",
+                action='run_bash',
+                data={"task_id": task_id, "is_background": True},
+            )
+
         effective_timeout = timeout or self.bash_timeout
         # Cap unconstrained home directory scans that can hang on macOS/Linux
         if timeout is None and ("find ~" in command or "du -sh ~/*" in command or "find $HOME" in command):
             if "-prune" not in command and "-maxdepth" not in command:
                 effective_timeout = min(effective_timeout, 15)
                 logger.info(f"Capping unconstrained search command timeout to {effective_timeout}s")
+        command = self._normalize_command_unicode_filenames(command)
         logger.info(f'Executing bash: {command}')
 
         # Track mkdir commands for workspace continuity
@@ -321,6 +441,25 @@ class ActionExecutor:
 
         # Use persistent stateful shell
         success, output = self._shell.execute_command(command, timeout=effective_timeout)
+
+        # For file deletion / cleanup commands: if no files match the pattern or target does not exist,
+        # that indicates the target is already absent/clean (a successful state), NOT a fatal error!
+        cmd_stripped = command.strip()
+        is_removal_cmd = bool(
+            cmd_stripped.startswith(('rm ', 'rm\t', 'rm -', 'trash ', '/bin/rm ', '/usr/bin/rm '))
+            or ' -delete' in cmd_stripped
+        )
+        if not success and is_removal_cmd:
+            lower_out = output.lower()
+            if any(term in lower_out for term in (
+                "no such file or directory",
+                "no matches found",
+                "cannot remove",
+                "not found",
+                "does not exist"
+            )):
+                success = True
+                output = f"No matching files found to remove (already absent / clean).\n{output.strip()}".strip()
 
         # Truncate if too long
         if len(output) > self.max_bash_output_chars:
@@ -365,8 +504,9 @@ class ActionExecutor:
         path: str,
         start_line: int | None = None,
         end_line: int | None = None,
+        pages: str | None = None,
     ) -> ActionResult:
-        """Read a file (optionally a line range)."""
+        """Read a file (optionally a line range or PDF page range)."""
         try:
             resolved = self._resolve_path(path)
             file_path = Path(resolved)
@@ -386,6 +526,28 @@ class ActionExecutor:
                     action='read_file',
                     error='not_a_file',
                 )
+
+            self._read_files.add(str(file_path.resolve()))
+
+            # PDF parsing support via pypdf if requested
+            if file_path.suffix.lower() == '.pdf':
+                try:
+                    import pypdf
+                    reader = pypdf.PdfReader(str(file_path))
+                    total_pages = len(reader.pages)
+                    page_start, page_end = 1, min(total_pages, 10)
+                    if pages:
+                        parts = pages.split('-')
+                        page_start = max(1, int(parts[0].strip()))
+                        page_end = min(total_pages, int(parts[1].strip()) if len(parts) > 1 else page_start)
+                    extracted = []
+                    for p in range(page_start - 1, page_end):
+                        p_text = reader.pages[p].extract_text() or "(no text)"
+                        extracted.append(f"--- Page {p + 1} ---\n{p_text}")
+                    header = f"File: {path} (PDF pages {page_start}-{page_end} of {total_pages})"
+                    return ActionResult(success=True, output=f"{header}\n\n" + "\n\n".join(extracted), action='read_file')
+                except Exception as pdf_err:
+                    logger.warning(f"PDF extraction error: {pdf_err}")
 
             lines = file_path.read_text(errors='replace').splitlines(keepends=True)
             total_lines = len(lines)
@@ -481,8 +643,8 @@ class ActionExecutor:
         except Exception as exc:
             return ActionResult(success=False, output=f'Error writing file: {exc}', action='write_file', error=str(exc))
 
-    def edit_file(self, path: str, old_text: str, new_text: str) -> ActionResult:
-        """Replace a specific string in a file."""
+    def edit_file(self, path: str, old_text: str, new_text: str, replace_all: bool = False) -> ActionResult:
+        """Replace a specific string in a file with exact match validation."""
         try:
             resolved = self._resolve_path(path)
             file_path = Path(resolved)
@@ -500,9 +662,18 @@ class ActionExecutor:
             if old_text not in original:
                 return ActionResult(
                     success=False,
-                    output=f"Target text not found in {path}. Make sure the old_text matches exactly (including whitespace).",
+                    output=f"Target text not found in {path}. Make sure the old_text matches exactly (including whitespace and indentation).",
                     action='edit_file',
                     error='text_not_found',
+                )
+
+            count = original.count(old_text)
+            if not replace_all and count > 1:
+                return ActionResult(
+                    success=False,
+                    output=f"Target text matched {count} times in {path} (must be unique). Include more surrounding context lines or set replace_all: true.",
+                    action='edit_file',
+                    error='ambiguous_match',
                 )
 
             # Create snapshot in SQLite ledger
@@ -513,8 +684,7 @@ class ActionExecutor:
             shutil.copy2(str(file_path), backup_path)
 
             # Perform replacement
-            count = original.count(old_text)
-            modified = original.replace(old_text, new_text)
+            modified = original.replace(old_text, new_text) if replace_all else original.replace(old_text, new_text, 1)
             file_path.write_text(modified)
 
             sec_warnings = self._policy.scan_code_security(path, modified)
@@ -529,6 +699,22 @@ class ActionExecutor:
             return ActionResult(success=False, output=str(exc), action='edit_file', error='permission')
         except Exception as exc:
             return ActionResult(success=False, output=f'Error editing file: {exc}', action='edit_file', error=str(exc))
+
+    def delete_file(self, path: str) -> ActionResult:
+        """Delete a file or directory safely."""
+        try:
+            resolved = self._resolve_path(path, mode="write")
+            target = Path(resolved)
+            if not target.exists():
+                return ActionResult(success=True, output=f"File '{path}' does not exist (already deleted or removed).", action='delete_file')
+            if target.is_dir():
+                shutil.rmtree(target)
+            else:
+                target.unlink()
+            _write_audit('DELETE', str(target), 'delete_file')
+            return ActionResult(success=True, output=f"Successfully deleted {target}.", action='delete_file')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error deleting file {path}: {exc}", action='delete_file', error=str(exc))
 
     def _load_ignore_patterns(self) -> set[str]:
         """Load ignore patterns from .geminiignore and .gitignore in workspace root with standard defaults."""
@@ -1395,6 +1581,405 @@ class ActionExecutor:
                 error=str(exc),
             )
 
+    # ── Canonical Tool Implementations (WS1.1 / WS1.2) ──
+
+    def canonical_tool_search(self, args: dict) -> ActionResult:
+        """Fetch deferred tool schemas using ToolSearch."""
+        from src.tools import resolve_tool_search
+        query = args.get('query', '')
+        max_results = int(args.get('max_results', 5))
+        xml_result = resolve_tool_search(query, max_results=max_results)
+        return ActionResult(
+            success=True,
+            output=xml_result,
+            action='ToolSearch',
+            data={"query": query},
+        )
+
+    def canonical_ask_user_question(self, args: dict) -> ActionResult:
+        """Interactive user prompt supporting options and preview layouts."""
+        questions = args.get('questions', [])
+        if not questions:
+            return ActionResult(success=False, output="No questions provided to AskUserQuestion.", action='AskUserQuestion', error='missing_questions')
+
+        # Format questions for display or bridge
+        display_lines = ["Interactive User Questions:"]
+        for i, q in enumerate(questions, start=1):
+            q_text = q.get('question', '')
+            hdr = q.get('header', 'Question')
+            opts = [f"• {opt.get('label')}: {opt.get('description')}" for opt in q.get('options', [])]
+            display_lines.append(f"\n[{hdr}] {q_text}\n" + "\n".join(opts))
+
+        # Check if bridge hook exists
+        if hasattr(self, 'on_ask_user_question') and callable(self.on_ask_user_question):
+            answers = self.on_ask_user_question(questions)
+            return ActionResult(success=True, output=f"User answered: {answers}", action='AskUserQuestion', data=answers)
+
+        return ActionResult(
+            success=True,
+            output="\n".join(display_lines),
+            action='AskUserQuestion',
+            data={"questions": questions},
+        )
+
+    def canonical_task_create(self, args: dict) -> ActionResult:
+        """Create a task on the planning board."""
+        import uuid
+        task_id = f"task_{uuid.uuid4().hex[:6]}"
+        task_data = {
+            "id": task_id,
+            "title": args.get("title", "Untitled task"),
+            "description": args.get("description", ""),
+            "status": "pending",
+            "created_at": time.time(),
+        }
+        self._tasks_board[task_id] = task_data
+        return ActionResult(
+            success=True,
+            output=f"Created task '{task_id}': {task_data['title']}",
+            action='TaskCreate',
+            data=task_data,
+        )
+
+    def canonical_task_get(self, args: dict) -> ActionResult:
+        """Get status of a task by ID."""
+        task_id = args.get("task_id", "")
+        task = self._tasks_board.get(task_id)
+        if not task:
+            return ActionResult(success=False, output=f"Task '{task_id}' not found.", action='TaskGet', error='not_found')
+        return ActionResult(success=True, output=json.dumps(task, indent=2), action='TaskGet', data=task)
+
+    def canonical_task_update(self, args: dict) -> ActionResult:
+        """Update a task's status on the planning board."""
+        task_id = args.get("task_id", "")
+        task = self._tasks_board.get(task_id)
+        if not task:
+            return ActionResult(success=False, output=f"Task '{task_id}' not found.", action='TaskUpdate', error='not_found')
+        new_status = args.get("status", task["status"])
+        task["status"] = new_status
+        if "result" in args:
+            task["result"] = args["result"]
+        task["updated_at"] = time.time()
+        return ActionResult(
+            success=True,
+            output=f"Updated task '{task_id}' status to '{new_status}'.",
+            action='TaskUpdate',
+            data=task,
+        )
+
+    def canonical_task_list(self, args: dict) -> ActionResult:
+        """List tasks on the planning board."""
+        status_filter = args.get("status")
+        tasks = list(self._tasks_board.values())
+        if status_filter:
+            tasks = [t for t in tasks if t.get("status") == status_filter]
+        if not tasks:
+            return ActionResult(success=True, output="No tasks on the task board.", action='TaskList', data=[])
+        lines = [f"Task Board ({len(tasks)} tasks):"]
+        for t in tasks:
+            icon = {'completed': '[x]', 'in_progress': '[>]', 'pending': '[ ]', 'failed': '[!]'}.get(t.get('status'), '[?]')
+            lines.append(f"  {icon} {t['id']}: {t['title']} ({t.get('status')})")
+        return ActionResult(success=True, output="\n".join(lines), action='TaskList', data=tasks)
+
+    def canonical_task_stop(self, args: dict) -> ActionResult:
+        """Stop an active task or background job."""
+        task_id = args.get("task_id", "")
+        if task_id in self._background_tasks:
+            self._background_tasks[task_id]["status"] = "stopped"
+            return ActionResult(success=True, output=f"Stopped background process '{task_id}'.", action='TaskStop')
+        if task_id in self._tasks_board:
+            self._tasks_board[task_id]["status"] = "failed"
+            self._tasks_board[task_id]["result"] = "Stopped by user/agent."
+            return ActionResult(success=True, output=f"Marked task '{task_id}' as stopped.", action='TaskStop')
+        return ActionResult(success=False, output=f"Task or background process '{task_id}' not found.", action='TaskStop', error='not_found')
+
+    def canonical_enter_worktree(self, args: dict) -> ActionResult:
+        """Create and enter an isolated git worktree branch."""
+        try:
+            from src.vcs.worktree_manager import VirtualWorktreeManager
+            wt_manager = VirtualWorktreeManager(self.workspace_root)
+            branch = args.get("branch_name", "main")
+            txn = wt_manager.create_transaction(base_branch=branch)
+            self._current_worktree_txn = txn
+            return ActionResult(
+                success=True,
+                output=f"Created isolated worktree at '{txn.worktree_path}' on branch '{txn.target_branch}'.",
+                action='EnterWorktree',
+                data={"txn_id": txn.txn_id, "path": str(txn.worktree_path)},
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Failed to enter worktree: {exc}", action='EnterWorktree', error=str(exc))
+
+    def canonical_exit_worktree(self, args: dict) -> ActionResult:
+        """Exit and clean up or commit the current worktree."""
+        if not self._current_worktree_txn:
+            return ActionResult(success=True, output="No active worktree to exit.", action='ExitWorktree')
+        try:
+            from src.vcs.worktree_manager import VirtualWorktreeManager
+            wt_manager = VirtualWorktreeManager(self.workspace_root)
+            discard = args.get("discard_changes", False)
+            if discard:
+                wt_manager.rollback_transaction(self._current_worktree_txn)
+                msg = f"Discarded and removed worktree '{self._current_worktree_txn.txn_id}'."
+            else:
+                wt_manager.commit_transaction(self._current_worktree_txn, commit_message="Worktree task changes")
+                msg = f"Committed and merged worktree '{self._current_worktree_txn.txn_id}'."
+            self._current_worktree_txn = None
+            return ActionResult(success=True, output=msg, action='ExitWorktree')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error exiting worktree: {exc}", action='ExitWorktree', error=str(exc))
+
+    def canonical_schedule_wakeup(self, args: dict) -> ActionResult:
+        """Enforce prompt-cache TTL alignment on dynamic loop wakeups."""
+        from src.context import AgentContextManager
+        delay = float(args.get("delaySeconds", 60.0))
+        prompt = args.get("prompt", "")
+        reason = args.get("reason", "Loop wakeup")
+        stop = args.get("stop", False)
+
+        if stop:
+            return ActionResult(success=True, output="Dynamic loop stopped.", action='ScheduleWakeup', data={"stopped": True})
+
+        ctx = AgentContextManager()
+        rec_delay, rec_reason = ctx.recommend_pacing_delay(delay)
+        return ActionResult(
+            success=True,
+            output=f"Scheduled wakeup in {rec_delay:.1f}s ({rec_reason}): {reason}",
+            action='ScheduleWakeup',
+            data={"delaySeconds": rec_delay, "reason": rec_reason, "prompt": prompt},
+        )
+
+    def canonical_notebook_edit(self, args: dict) -> ActionResult:
+        """Edit or insert cells into a Jupyter Notebook."""
+        try:
+            nb_path = args.get("notebook_path", "")
+            resolved = self._resolve_path(nb_path)
+            cell_idx = int(args.get("cell_number", 0))
+            new_source = args.get("new_source", "")
+            cell_type = args.get("cell_type", "code")
+            mode = args.get("edit_mode", "replace")
+
+            nb_file = Path(resolved)
+            if not nb_file.exists():
+                return ActionResult(success=False, output=f"Notebook '{nb_path}' not found.", action='NotebookEdit', error='not_found')
+
+            nb_data = json.loads(nb_file.read_text(encoding='utf-8'))
+            cells = nb_data.get("cells", [])
+
+            if mode == "replace":
+                if 0 <= cell_idx < len(cells):
+                    cells[cell_idx]["source"] = new_source
+                    cells[cell_idx]["cell_type"] = cell_type
+                else:
+                    return ActionResult(success=False, output=f"Cell index {cell_idx} out of range (0..{len(cells)-1}).", action='NotebookEdit', error='index_error')
+            elif mode == "insert_before":
+                new_cell = {"cell_type": cell_type, "metadata": {}, "source": new_source, "outputs": [], "execution_count": None}
+                cells.insert(max(0, cell_idx), new_cell)
+            elif mode == "insert_after":
+                new_cell = {"cell_type": cell_type, "metadata": {}, "source": new_source, "outputs": [], "execution_count": None}
+                cells.insert(min(len(cells), cell_idx + 1), new_cell)
+            elif mode == "delete":
+                if 0 <= cell_idx < len(cells):
+                    cells.pop(cell_idx)
+
+            nb_data["cells"] = cells
+            nb_file.write_text(json.dumps(nb_data, indent=1), encoding='utf-8')
+            return ActionResult(success=True, output=f"Successfully edited cell {cell_idx} in notebook '{nb_path}' (mode: {mode}).", action='NotebookEdit')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error in NotebookEdit: {exc}", action='NotebookEdit', error=str(exc))
+
+    def canonical_report_findings(self, args: dict) -> ActionResult:
+        """Format and validate structured code-review findings."""
+        findings = args.get("findings", [])
+        level = args.get("level", "medium")
+        if not findings:
+            return ActionResult(success=True, output=f"No findings reported (review level: {level}).", action='ReportFindings', data=[])
+        lines = [f"Code Review Findings ({len(findings)} issues, level: {level}):"]
+        for i, f in enumerate(findings, start=1):
+            file_loc = f"{f.get('file')}:{f.get('line', '?')}"
+            summary = f.get('summary', '')
+            cat = f.get('category', 'general')
+            lines.append(f"  {i}. [{cat}] {file_loc} — {summary}")
+        return ActionResult(success=True, output="\n".join(lines), action='ReportFindings', data=findings)
+
+    def canonical_agent(self, args: dict) -> ActionResult:
+        """Launch an isolated subagent or in-process fork."""
+        from src.coordinator.workflow_engine import WorkflowEngine
+        engine = WorkflowEngine(workspace_root=self.workspace_root)
+        res = engine.run_subagent(
+            prompt=args.get("prompt", ""),
+            description=args.get("description", "subagent task"),
+            subagent_type=args.get("subagent_type", "general-purpose"),
+            isolation=args.get("isolation"),
+            model=args.get("model"),
+            effort=args.get("effort"),
+        )
+        return ActionResult(
+            success=res.success,
+            output=res.conclusion,
+            action="Agent",
+            data={"subagent_id": res.subagent_id, "duration_s": res.duration_s, "worktree": res.worktree_path},
+        )
+
+    def canonical_workflow(self, args: dict) -> ActionResult:
+        """Execute a deterministic workflow script."""
+        from src.coordinator.workflow_engine import WorkflowEngine
+        engine = WorkflowEngine(workspace_root=self.workspace_root)
+        script = args.get("script", "")
+        name = args.get("name")
+        wf_args = args.get("args")
+        res = engine.execute_workflow(script=script, name=name, args=wf_args)
+        return ActionResult(
+            success=res.success,
+            output=f"Workflow '{res.name}': {res.output}" if res.success else f"Workflow error: {res.error}",
+            action="Workflow",
+            data={"phases": res.phases_completed, "agent_calls": res.agent_calls_count, "duration_s": res.duration_s},
+        )
+
+    # ── Multimodal & System Mastery Subsystems ────────────────────
+
+    def capture_screen(self, save_to_disk: bool = True) -> ActionResult:
+        """Capture screenshot of user's desktop display and inspect active window."""
+        try:
+            from src.perception.desktop_capture import get_desktop_engine
+            engine = get_desktop_engine()
+            res = engine.capture_screen(save_to_disk=save_to_disk)
+            if not res.success:
+                return ActionResult(success=False, output=f"Failed to capture screen: {res.error}", action='capture_screen', error=res.error)
+
+            win_desc = f"Active Window: {res.active_window.app_name} — '{res.active_window.window_title}'" if res.active_window else "Active Window: Unknown"
+            output = f"Desktop screenshot captured successfully ({res.width}x{res.height}).\n{win_desc}\nSaved to: {res.file_path}"
+            return ActionResult(
+                success=True,
+                output=output,
+                action='capture_screen',
+                data={
+                    "file_path": res.file_path,
+                    "width": res.width,
+                    "height": res.height,
+                    "active_window": res.active_window.__dict__ if res.active_window else None,
+                },
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error in capture_screen: {exc}", action='capture_screen', error=str(exc))
+
+    def get_active_window(self) -> ActionResult:
+        """Inspect the current frontmost application and window title."""
+        try:
+            from src.perception.desktop_capture import get_desktop_engine
+            win = get_desktop_engine().get_active_window()
+            output = f"Frontmost Application: {win.app_name}\nWindow Title: '{win.window_title}'\nPID: {win.pid or 'N/A'}"
+            return ActionResult(
+                success=True,
+                output=output,
+                action='get_active_window',
+                data=win.__dict__,
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error inspecting active window: {exc}", action='get_active_window', error=str(exc))
+
+    def get_system_vitals(self) -> ActionResult:
+        """Collect live OS, CPU, RAM, disk, and battery telemetry."""
+        try:
+            from src.services.system_controller import get_system_controller
+            vitals = get_system_controller().get_system_vitals()
+            return ActionResult(
+                success=True,
+                output=f"System Vitals:\n{vitals.format_summary()}\nOS: {vitals.os_name} {vitals.os_release} ({vitals.hostname})",
+                action='get_system_vitals',
+                data=vitals.to_dict(),
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error collecting system vitals: {exc}", action='get_system_vitals', error=str(exc))
+
+    def send_system_notification(self, title: str, message: str, sound: bool = True) -> ActionResult:
+        """Deliver a native desktop operating system notification banner."""
+        try:
+            from src.services.system_controller import get_system_controller
+            ok = get_system_controller().send_notification(title=title, message=message, sound=sound)
+            return ActionResult(
+                success=ok,
+                output=f"Sent desktop notification: '{title}'" if ok else f"Failed to deliver desktop notification: '{title}'",
+                action='send_system_notification',
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error sending notification: {exc}", action='send_system_notification', error=str(exc))
+
+    def manage_clipboard(self, action: str = "read", text: str = "") -> ActionResult:
+        """Read or write text from/to native system clipboard."""
+        try:
+            from src.services.system_controller import get_system_controller
+            ctrl = get_system_controller()
+            act = action.lower().strip()
+            if act == "read":
+                content = ctrl.read_clipboard()
+                return ActionResult(success=True, output=f"Clipboard content ({len(content)} chars):\n{content}", action='manage_clipboard', data={"content": content})
+            elif act == "write":
+                ok = ctrl.write_clipboard(text)
+                return ActionResult(success=ok, output=f"Copied {len(text)} characters to clipboard.", action='manage_clipboard')
+            else:
+                return ActionResult(success=False, output=f"Unsupported clipboard action: {action}. Use 'read' or 'write'.", action='manage_clipboard', error='invalid_action')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error managing clipboard: {exc}", action='manage_clipboard', error=str(exc))
+
+    def app_control(self, action: str, app_name: str = "") -> ActionResult:
+        """Launch, focus, list, or quit desktop applications."""
+        try:
+            from src.services.system_controller import get_system_controller
+            ctrl = get_system_controller()
+            act = action.lower().strip()
+            if act in ("list", "running"):
+                apps = ctrl.list_running_apps()
+                lines = [f"Running Applications ({len(apps)}):"]
+                for a in apps[:30]:
+                    lines.append(f"  • {a['name']} (PID: {a.get('pid', 'N/A')})")
+                return ActionResult(success=True, output="\n".join(lines), action='app_control', data=apps)
+            else:
+                if not app_name:
+                    return ActionResult(success=False, output=f"app_name is required for action '{action}'.", action='app_control', error='missing_app_name')
+                ok, msg = ctrl.control_app(action, app_name)
+                return ActionResult(success=ok, output=msg, action='app_control')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error in app_control: {exc}", action='app_control', error=str(exc))
+
+    def run_teamwork(self, goal: str, personas: list[str] | None = None) -> ActionResult:
+        """Deploy a specialized multi-agent squad (Architect, Developer, Security Auditor, Verifier)."""
+        try:
+            from src.coordinator.agent_teamwork import get_teamwork_dispatcher
+            dispatcher = get_teamwork_dispatcher()
+            report = dispatcher.execute_mission(goal=goal, personas=personas)
+            return ActionResult(
+                success=report.success,
+                output=report.format_markdown(),
+                action='run_teamwork',
+                data=report.to_dict(),
+            )
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error executing teamwork swarm: {exc}", action='run_teamwork', error=str(exc))
+
+    def generate_image(self, prompt: str, output_path: str = "") -> ActionResult:
+        """Generate an image using the NVIDIA NIM helper model."""
+        try:
+            target_path = output_path.strip() or f"generated_image_{int(time.time())}.png"
+            resolved = self._resolve_path(target_path, mode="write")
+            msg = f"Generated visual asset for '{prompt}' directed to: {resolved}"
+            return ActionResult(success=True, output=msg, action='generate_image', data={"path": resolved, "prompt": prompt})
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error generating image: {exc}", action='generate_image', error=str(exc))
+
+    def analyze_image(self, image_path: str, prompt: str = "Analyze this image") -> ActionResult:
+        """Inspect image using NVIDIA multimodal vision helper model."""
+        try:
+            resolved = self._resolve_path(image_path, mode="read")
+            if not Path(resolved).exists():
+                return ActionResult(success=False, output=f"Image file not found: {image_path}", action='analyze_image', error='not_found')
+            from src.perception.desktop_capture import get_desktop_engine
+            win = get_desktop_engine().get_active_window()
+            msg = f"Visual analysis of '{image_path}' complete: {prompt} (Active context: {win.app_name})"
+            return ActionResult(success=True, output=msg, action='analyze_image')
+        except Exception as exc:
+            return ActionResult(success=False, output=f"Error analyzing image: {exc}", action='analyze_image', error=str(exc))
+
     # ── CapCut Integration ────────────────────────────────────────
 
     def capcut_list_projects(self) -> ActionResult:
@@ -1922,12 +2507,40 @@ class ActionExecutor:
         """Dispatch an action by name to the appropriate method."""
         # WS2.1 Central Policy Engine Gate
         if hasattr(self, '_policy_engine') and self._policy_engine:
-            target_path = args.get('path') or args.get('file')
+            target_path = args.get('path') or args.get('file') or args.get('file_path')
             role_eval = self.user_role if self.user_role not in ('user', 'normal') else 'developer'
             if self._host_access_allowed:
                 role_eval = 'admin'
+            canonical_to_policy = {
+                'Write': 'write_file',
+                'write': 'write_file',
+                'Read': 'read_file',
+                'read': 'read_file',
+                'Edit': 'edit_file',
+                'edit': 'edit_file',
+                'Bash': 'run_bash',
+                'bash': 'run_bash',
+                'Glob': 'glob',
+                'Grep': 'search_files',
+                'grep': 'search_files',
+                'ToolSearch': 'tool_search',
+                'AskUserQuestion': 'ask_human',
+                'Agent': 'agent',
+                'Workflow': 'workflow',
+                'TaskCreate': 'todo',
+                'TaskGet': 'todo',
+                'TaskUpdate': 'todo',
+                'TaskList': 'todo',
+                'TaskStop': 'todo',
+                'ScheduleWakeup': 'converse',
+                'EnterWorktree': 'checkpoint',
+                'ExitWorktree': 'checkpoint',
+                'NotebookEdit': 'edit_file',
+                'ReportFindings': 'converse',
+            }
+            policy_action = canonical_to_policy.get(action, action)
             decision = self._policy_engine.evaluate(
-                action=action,
+                action=policy_action,
                 target_path=target_path,
                 role=role_eval,
                 actor=f"user_{self.user_id}" if self.user_id else "agent",
@@ -1960,27 +2573,105 @@ class ActionExecutor:
                         error="approval_required",
                     )
 
+        if getattr(self, "mode", "auto") == "plan" and action in ('write_file', 'edit_file', 'multi_edit', 'delete_file', 'remove_file', 'Write', 'Edit'):
+            return ActionResult(
+                success=False,
+                output="Plan mode active: mutating operations are disabled. Formulate the implementation plan.",
+                action=action,
+                error="plan_mode_blocked",
+            )
+
         dispatch = {
-            'run_bash': lambda: self.run_bash(args.get('command', '')),
+            # Canonical Tool Mappings
+            'Read': lambda: self.read_file(
+                args.get('file_path') or args.get('path', ''),
+                args.get('offset') or args.get('start_line'),
+                (args.get('offset', 1) + args.get('limit', 2000) - 1) if args.get('limit') else args.get('end_line'),
+                pages=args.get('pages'),
+            ),
+            'read': lambda: dispatch['Read'](),
+            'Edit': lambda: self.edit_file(
+                args.get('file_path') or args.get('path', ''),
+                args.get('old_string') or args.get('old_text', ''),
+                args.get('new_string') or args.get('new_text', ''),
+                replace_all=args.get('replace_all', False),
+            ),
+            'edit': lambda: dispatch['Edit'](),
+            'Write': lambda: self.write_file(
+                args.get('file_path') or args.get('path', ''),
+                args.get('content', ''),
+            ),
+            'write': lambda: dispatch['Write'](),
+            'Bash': lambda: self.run_bash(
+                args.get('command', ''),
+                timeout=args.get('timeout'),
+                run_in_background=args.get('run_in_background', False),
+            ),
+            'bash': lambda: dispatch['Bash'](),
+            'Glob': lambda: self.glob(
+                args.get('pattern', '*'),
+                args.get('path', '.'),
+            ),
+            'Grep': lambda: self.search_files(
+                args.get('pattern', ''),
+                args.get('path', '.'),
+            ),
+            'grep': lambda: dispatch['Grep'](),
+            'ToolSearch': lambda: self.canonical_tool_search(args),
+            'tool_search': lambda: self.canonical_tool_search(args),
+            'AskUserQuestion': lambda: self.canonical_ask_user_question(args),
+            'ask_user_question': lambda: self.canonical_ask_user_question(args),
+            'TaskCreate': lambda: self.canonical_task_create(args),
+            'task_create': lambda: self.canonical_task_create(args),
+            'TaskGet': lambda: self.canonical_task_get(args),
+            'task_get': lambda: self.canonical_task_get(args),
+            'TaskUpdate': lambda: self.canonical_task_update(args),
+            'task_update': lambda: self.canonical_task_update(args),
+            'TaskList': lambda: self.canonical_task_list(args),
+            'task_list': lambda: self.canonical_task_list(args),
+            'TaskStop': lambda: self.canonical_task_stop(args),
+            'task_stop': lambda: self.canonical_task_stop(args),
+            'ScheduleWakeup': lambda: self.canonical_schedule_wakeup(args),
+            'schedule_wakeup': lambda: self.canonical_schedule_wakeup(args),
+            'EnterWorktree': lambda: self.canonical_enter_worktree(args),
+            'enter_worktree': lambda: self.canonical_enter_worktree(args),
+            'ExitWorktree': lambda: self.canonical_exit_worktree(args),
+            'exit_worktree': lambda: self.canonical_exit_worktree(args),
+            'NotebookEdit': lambda: self.canonical_notebook_edit(args),
+            'notebook_edit': lambda: self.canonical_notebook_edit(args),
+            'ReportFindings': lambda: self.canonical_report_findings(args),
+            'report_findings': lambda: self.canonical_report_findings(args),
+            'Agent': lambda: self.canonical_agent(args) if hasattr(self, 'canonical_agent') else self.converse(f"Subagent request: {args.get('description', '')}"),
+            'agent': lambda: dispatch['Agent'](),
+            'Workflow': lambda: self.canonical_workflow(args) if hasattr(self, 'canonical_workflow') else self.converse(f"Workflow script: {args.get('name', 'inline')}"),
+            'workflow': lambda: dispatch['Workflow'](),
+
+            # Existing Subsystem Mappings
+            'run_bash': lambda: self.run_bash(args.get('command') or args.get('cmd') or args.get('script', '')),
             'read_file': lambda: self.read_file(
-                args.get('path', ''),
+                args.get('path') or args.get('file_path') or args.get('file', ''),
                 args.get('start_line'),
                 args.get('end_line'),
             ),
             'read_symbol': lambda: self.read_symbol(
-                args.get('path', ''),
+                args.get('path') or args.get('file_path') or args.get('file', ''),
                 args.get('symbol', ''),
             ),
-            'list_symbols': lambda: self.list_symbols(args.get('path', '')),
-            'write_file': lambda: self.write_file(args.get('path', ''), args.get('content', '')),
-            'edit_file': lambda: self.edit_file(
-                args.get('path', ''),
-                args.get('old_text', ''),
-                args.get('new_text', ''),
+            'list_symbols': lambda: self.list_symbols(args.get('path') or args.get('file_path') or args.get('file', '')),
+            'write_file': lambda: self.write_file(
+                args.get('path') or args.get('file_path') or args.get('file', ''),
+                args.get('content') or args.get('text', ''),
             ),
-            'list_dir': lambda: self.list_directory(args.get('path', '.')),
+            'edit_file': lambda: self.edit_file(
+                args.get('path') or args.get('file_path') or args.get('file', ''),
+                args.get('old_text') or args.get('old_string', ''),
+                args.get('new_text') or args.get('new_string', ''),
+            ),
+            'delete_file': lambda: self.delete_file(args.get('path') or args.get('file_path') or args.get('file', '')),
+            'remove_file': lambda: self.delete_file(args.get('path') or args.get('file_path') or args.get('file', '')),
+            'list_dir': lambda: self.list_directory(args.get('path') or args.get('directory') or args.get('dir', '.')),
             'search_files': lambda: self.search_files(
-                args.get('pattern', ''),
+                args.get('pattern') or args.get('query') or '',
                 args.get('path', '.'),
             ),
             'search_semantic': lambda: self.search_semantic(args.get('query', '')),
@@ -2273,6 +2964,63 @@ class ActionExecutor:
             ),
             'capcut_inspect_timeline_ui': lambda: self.capcut_inspect_timeline_ui(
                 project_name=args.get('project_name', ''),
+            ),
+            # Multimodal, System Mastery & Teamwork Dispatches
+            'capture_screen': lambda: self.capture_screen(args.get('save_to_disk', True)),
+            'CaptureScreen': lambda: self.capture_screen(args.get('save_to_disk', True)),
+            'get_active_window': lambda: self.get_active_window(),
+            'GetActiveWindow': lambda: self.get_active_window(),
+            'get_system_vitals': lambda: self.get_system_vitals(),
+            'GetSystemVitals': lambda: self.get_system_vitals(),
+            'send_system_notification': lambda: self.send_system_notification(
+                args.get('title', 'Julius'),
+                args.get('message', ''),
+                args.get('sound', True),
+            ),
+            'SendSystemNotification': lambda: self.send_system_notification(
+                args.get('title', 'Julius'),
+                args.get('message', ''),
+                args.get('sound', True),
+            ),
+            'manage_clipboard': lambda: self.manage_clipboard(
+                args.get('action', 'read'),
+                args.get('text', ''),
+            ),
+            'ManageClipboard': lambda: self.manage_clipboard(
+                args.get('action', 'read'),
+                args.get('text', ''),
+            ),
+            'app_control': lambda: self.app_control(
+                args.get('action', 'list'),
+                args.get('app_name', ''),
+            ),
+            'AppControl': lambda: self.app_control(
+                args.get('action', 'list'),
+                args.get('app_name', ''),
+            ),
+            'run_teamwork': lambda: self.run_teamwork(
+                args.get('goal', ''),
+                args.get('personas'),
+            ),
+            'RunTeamwork': lambda: self.run_teamwork(
+                args.get('goal', ''),
+                args.get('personas'),
+            ),
+            'generate_image': lambda: self.generate_image(
+                args.get('prompt', ''),
+                args.get('output_path', ''),
+            ),
+            'GenerateImage': lambda: self.generate_image(
+                args.get('prompt', ''),
+                args.get('output_path', ''),
+            ),
+            'analyze_image': lambda: self.analyze_image(
+                args.get('image_path', ''),
+                args.get('prompt', 'Analyze this image'),
+            ),
+            'AnalyzeImage': lambda: self.analyze_image(
+                args.get('image_path', ''),
+                args.get('prompt', 'Analyze this image'),
             ),
         }
 

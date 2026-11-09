@@ -68,7 +68,7 @@ $brand
   ╔══╝  ║ ║╚═══╝║ ║╚════╗ ╔═╝ ╚═╗ ║╚═══╝║ ╔═══╝ ║
   ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝
 $reset$brand
-  Autonomous Web Agent — Native Windows Installer
+  Autonomous AI Copilot — Native Windows Installer
 $reset
 "@
 }

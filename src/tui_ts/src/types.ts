@@ -26,6 +26,7 @@ export interface ThemeTokens {
   readonly error: string;
   readonly border_idle: string;
   readonly border_focused: string;
+  readonly border_subtle?: string;
   readonly scrim: string;
   readonly is_dark: boolean;
   readonly is_no_color: boolean;
@@ -79,14 +80,37 @@ export interface MessageRecord {
   timestamp: number;
   tools?: ToolExecutionRecord[];
   thoughts?: string[];
+  fullThought?: string;
   workingSteps?: WorkingStep[];
   thoughtDurationS?: number;
 }
 
+export type ReasoningEffort = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+export type PermissionModeType = 'bypass' | 'normal' | 'plan' | 'strict';
+export type AppMode = 'auto' | 'plan' | 'edit' | 'accept' | 'manual';
+
+export interface ContextGaugeData {
+  current_tokens: number;
+  max_tokens: number;
+  percentage: number;
+  is_warm: boolean;
+  cache_read?: number;
+  cache_created?: number;
+}
+
+export interface QuestionPreviewOption {
+  label: string;
+  description: string;
+  preview?: string;
+}
+
 export interface JuliusSessionState {
   active_model: string;
+  effort_level?: ReasoningEffort;
+  permission_mode?: PermissionModeType;
   theme_name: string;
   token_count: number;
+  context_gauge?: ContextGaugeData;
   start_time: number;
   current_step: number;
   max_steps: number;
@@ -110,6 +134,7 @@ export type JuliusEventType =
   | 'action_scheduled'
   | 'tool_completed'
   | 'stream_chunk'
+  | 'stream_clear'
   | 'stream_end'
   | 'done'
   | 'converse'
@@ -140,6 +165,8 @@ export interface JuliusBridgeEvent {
   duration_s?: number;
   question?: string;
   options?: string[];
+  previewOptions?: QuestionPreviewOption[];
+  multiSelect?: boolean;
   status?: string;
   plan?: string;
   data?: unknown;

@@ -75,7 +75,8 @@ class OpenAICompatibleProvider(LLMProvider):
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
-            timeout = aiohttp.ClientTimeout(total=120, connect=15, sock_read=60)
+            # Generous timeout for long streaming LLM generation (600s total, 120s socket read)
+            timeout = aiohttp.ClientTimeout(total=600, connect=20, sock_read=120)
             self._session = aiohttp.ClientSession(timeout=timeout)
         return self._session
 
@@ -341,4 +342,19 @@ class OpenAICompatibleProvider(LLMProvider):
     async def close(self) -> None:
         if self._session and not self._session.closed:
             await self._session.close()
+
+    def chat(self, req: ChatRequest) -> str:
+        """Synchronous wrapper around stream() returning accumulated text."""
+        async def _collect():
+            text_chunks = []
+            reasoning_chunks = []
+            async for ev in self.stream(req):
+                if isinstance(ev, TextDelta):
+                    text_chunks.append(ev.text)
+                elif isinstance(ev, ReasoningDelta):
+                    reasoning_chunks.append(ev.reasoning)
+            await self.close()
+            return "".join(text_chunks) if text_chunks else "".join(reasoning_chunks)
+
+        return asyncio.run(_collect())
 

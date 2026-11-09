@@ -1,11 +1,16 @@
 """
-Conversation compression: raw conversation → structured summary.
-After every task, compresses the raw conversation into a structured memory record.
+Conversation compression and macro-compaction engine for Julius.
+Implements the multi-stage compaction pattern:
+- Thinking block stripping (reclaims massive tokens while preserving logic)
+- Structured synthesis of goals, file mutations, and active workspace state
+- Preserved tail segments kept verbatim
+- Critical system reminders marking the compaction boundary
 """
 
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -40,9 +45,6 @@ class ConversationCompressor:
         Extracts: files modified, functions changed, result status, issues.
         Returns an empty summary if turns is empty or invalid.
         """
-        import re
-
-        # Input validation
         if not turns or not isinstance(turns, list):
             logger.debug("Compression: Empty or invalid turns list, returning empty summary")
             return CompressedTaskSummary(
@@ -61,13 +63,18 @@ class ConversationCompressor:
         result = "success"
 
         # Patterns to extract from assistant turns
-        file_pattern = re.compile(r"(?:modified|created|edited|wrote|updated|changed|deleted)\s+(?:file\s+)?[`'\"]?([\w/.-]+(?:\.\w+)?)[`'\"]?", re.IGNORECASE)
+        file_pattern = re.compile(
+            r"(?:modified|created|edited|wrote|updated|changed|deleted)\s+(?:file\s+)?[`'\"]?([\w/.-]+\.[a-zA-Z0-9]+)[`'\"]?",
+            re.IGNORECASE,
+        )
         func_pattern = re.compile(r"(?:function|method|class)\s+[`'\"]?(\w+)[`'\"]?", re.IGNORECASE)
-        error_pattern = re.compile(r"(?:error|bug|issue|problem|fail|crash|broken)\s*:?\s*(.+?)[.!]?\s*$", re.IGNORECASE | re.MULTILINE)
+        error_pattern = re.compile(
+            r"(?:error|bug|issue|problem|fail|crash|broken)\s*:?\s*(.+?)[.!]?\s*$",
+            re.IGNORECASE | re.MULTILINE,
+        )
         fail_pattern = re.compile(r"\b(failed|error|couldn't|unable|not working|broken)\b", re.IGNORECASE)
 
         for turn in turns:
-            # Validate each turn
             if not isinstance(turn, dict):
                 continue
             content = turn.get("content", "")
@@ -78,47 +85,36 @@ class ConversationCompressor:
                 role = str(role)
 
             if role == "assistant":
-                # Extract file modifications
                 for match in file_pattern.finditer(content):
                     path = match.group(1)
                     if path not in files_modified:
                         files_modified.append(path)
 
-                # Extract function changes
                 for match in func_pattern.finditer(content):
                     name = match.group(1)
                     if name not in functions_changed:
                         functions_changed.append(name)
 
-                # Extract known issues
                 for match in error_pattern.finditer(content):
                     issue = match.group(1).strip()
                     if issue and issue not in known_issues and len(issue) > 5:
                         known_issues.append(issue)
 
-                # Check for failure signals
                 if fail_pattern.search(content):
-                    result = "partial"
+                    result = "failed"
 
-        # Deduplicate and clean
-        files_modified = list(dict.fromkeys(files_modified))
-        functions_changed = list(dict.fromkeys(functions_changed))
-        known_issues = list(dict.fromkeys(known_issues))
-
-        # Build summary
         summary_parts = []
         if files_modified:
-            summary_parts.append(f"Modified {len(files_modified)} files")
+            summary_parts.append(f"Modified files: {', '.join(files_modified)}")
         if functions_changed:
-            summary_parts.append(f"Changed {len(functions_changed)} functions")
+            summary_parts.append(f"Changed functions: {', '.join(functions_changed)}")
         if known_issues:
-            summary_parts.append(f"Issues: {'; '.join(known_issues[:3])}")
-
-        summary = ". ".join(summary_parts) if summary_parts else "Task completed"
+            summary_parts.append(f"Issues noted: {'; '.join(known_issues[:3])}")
+        summary_text = " | ".join(summary_parts) if summary_parts else "Routine task execution completed."
 
         return CompressedTaskSummary(
             task_id="",
-            summary=summary,
+            summary=summary_text,
             files_modified=files_modified,
             functions_changed=functions_changed,
             result=result,
@@ -126,24 +122,102 @@ class ConversationCompressor:
             turn_count=len(turns),
         )
 
-    def generate_episodic_note(self, task_summaries: List[CompressedTaskSummary]) -> str:
-        """Generate a day-level episodic note from multiple task summaries."""
-        if not task_summaries:
-            return "No tasks completed."
+    @staticmethod
+    def strip_thinking_blocks(text: str) -> str:
+        """Strip internal thinking/reasoning blocks to conserve context tokens."""
+        if not text:
+            return ""
+        # Strip <thought>...</thought> or <thinking>...</thinking>
+        cleaned = re.sub(r'<thought>[\s\S]*?</thought>', '', text, flags=re.IGNORECASE)
+        cleaned = re.sub(r'<thinking>[\s\S]*?</thinking>', '', cleaned, flags=re.IGNORECASE)
+        return cleaned.strip()
 
-        total = len(task_summaries)
-        success_count = sum(1 for t in task_summaries if t.result == "success")
-        all_files = set()
-        all_issues = set()
+    def compact_conversation(
+        self,
+        turns: List[Dict[str, Any]],
+        preserved_tail_count: int = 4,
+        git_diff_summary: str = "",
+    ) -> Dict[str, Any]:
+        """
+        Execute macro-compaction over conversation turns:
+        1. Preserves the most recent `preserved_tail_count` turns verbatim.
+        2. Strips thinking blocks from older turns.
+        3. Generates a structured summary of older turns (goals, files, decisions).
+        4. Injects a boundary marker and critical system reminder.
+        """
+        if len(turns) <= preserved_tail_count:
+            return {
+                "compacted_turns": turns,
+                "summary": "No compaction needed (turn count within preservation tail).",
+                "is_compacted": False,
+                "turns_summarized": 0,
+            }
 
-        for t in task_summaries:
-            all_files.update(t.files_modified)
-            all_issues.update(t.known_issues)
+        # Split turns
+        head_turns = turns[:-preserved_tail_count]
+        tail_turns = turns[-preserved_tail_count:]
 
-        parts = [f"Completed {success_count}/{total} tasks."]
-        if all_files:
-            parts.append(f"Files: {', '.join(list(all_files)[:5])}")
-        if all_issues:
-            parts.append(f"Issues: {'; '.join(list(all_issues)[:3])}")
+        # Extract structured knowledge from head turns
+        task_summary = self.compress(head_turns)
 
-        return " ".join(parts)
+        # Find primary user goals from early turns
+        user_intents = []
+        for t in head_turns:
+            if t.get("role") == "user":
+                msg = str(t.get("content", "")).strip()
+                if msg and len(msg) < 300:
+                    user_intents.append(msg)
+                elif msg:
+                    user_intents.append(msg[:300] + "...")
+
+        # Construct markdown summary block
+        summary_lines = [
+            "### Compacted Prior Conversation Summary",
+            "",
+            f"**Initial Directives:** {user_intents[0] if user_intents else 'Session task'}",
+        ]
+        if len(user_intents) > 1:
+            summary_lines.append(f"**Follow-up Requests:** {'; '.join(user_intents[1:4])}")
+
+        if task_summary.files_modified:
+            summary_lines.append(f"**Files Created / Modified:** {', '.join(task_summary.files_modified)}")
+        if task_summary.functions_changed:
+            summary_lines.append(f"**Functions/Symbols Modified:** {', '.join(task_summary.functions_changed)}")
+        if git_diff_summary:
+            summary_lines.append(f"**Workspace Git State:** {git_diff_summary}")
+        if task_summary.known_issues:
+            summary_lines.append(f"**Resolved Issues/Notes:** {'; '.join(task_summary.known_issues)}")
+
+        summary_content = "\n".join(summary_lines)
+
+        # Clean tail turns: strip thinking blocks from previous assistant messages
+        cleaned_tail = []
+        for turn in tail_turns:
+            cleaned_turn = dict(turn)
+            if cleaned_turn.get("role") == "assistant":
+                content = str(cleaned_turn.get("content", ""))
+                cleaned_turn["content"] = self.strip_thinking_blocks(content)
+            cleaned_tail.append(cleaned_turn)
+
+        # Assemble new compacted history
+        boundary_marker = {
+            "role": "system",
+            "content": (
+                "<system-reminder>\n"
+                "The conversation history was compacted because it approached context limits. "
+                "The prior turns have been summarized below; proceed from the preserved messages.\n"
+                "</system-reminder>\n\n"
+                + summary_content
+            ),
+            "is_compaction_marker": True,
+        }
+
+        compacted_turns = [boundary_marker] + cleaned_tail
+
+        return {
+            "compacted_turns": compacted_turns,
+            "summary": summary_content,
+            "is_compacted": True,
+            "turns_summarized": len(head_turns),
+            "files_modified": task_summary.files_modified,
+        }

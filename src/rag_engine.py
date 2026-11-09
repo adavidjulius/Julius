@@ -26,7 +26,12 @@ import time
 from pathlib import Path
 from typing import Any
 
-import numpy as np
+try:
+    import numpy as np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    _NUMPY_AVAILABLE = False
+    np = None  # type: ignore
 
 try:
     from .ast_parser import list_symbols, SymbolInfo

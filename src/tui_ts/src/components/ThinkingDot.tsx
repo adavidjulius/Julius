@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import type { ThemeTokens, WorkingStep } from '../types.js';
 import { DARK_THEME } from '../theme/tokens.js';
 import { formatActionDuration } from './modals/ActiveActionModal.js';
+import { shouldShowHint } from '../utils/hintManager.js';
 
 export interface ThinkingDotProps {
   label?: string;
@@ -249,9 +250,11 @@ export const ThinkingDot: React.FC<ThinkingDotProps> = ({
               Thinking · Reasoning Flow
             </Text>
           </Box>
-          <Text color={theme.text_faint}>
-            [Ctrl+T: collapse]
-          </Text>
+          {shouldShowHint('ctrl_t') && (
+            <Text color={theme.text_faint}>
+              [Ctrl+T: collapse]
+            </Text>
+          )}
         </Box>
       ) : (
         <Box flexDirection="row" alignItems="center">

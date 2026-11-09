@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import type { ThemeTokens } from '../types.js';
 import { DARK_THEME } from '../theme/tokens.js';
+import { shouldShowHint } from '../utils/hintManager.js';
 
 export interface CommandBoxProps {
   code: string;
@@ -10,7 +11,6 @@ export interface CommandBoxProps {
 }
 
 export const CommandBox: React.FC<CommandBoxProps> = ({
-  // Import or destructure parameter code
   code,
   language = 'bash',
   theme = DARK_THEME,
@@ -30,7 +30,9 @@ export const CommandBox: React.FC<CommandBoxProps> = ({
       {/* Top Header */}
       <Box justifyContent="space-between" marginBottom={0}>
         <Text color={theme.text_faint}>{language}</Text>
-        <Text color={theme.accent}>[Ctrl+Y to copy]</Text>
+        {shouldShowHint('ctrl_y') && (
+          <Text color={theme.accent}>[Ctrl+Y to copy]</Text>
+        )}
       </Box>
 
       {/* Code Content */}
@@ -44,4 +46,5 @@ export const CommandBox: React.FC<CommandBoxProps> = ({
     </Box>
   );
 };
+
 

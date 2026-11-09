@@ -35,6 +35,7 @@ export const DARK_THEME: ThemeTokens = {
   error: '#ff453a',        // Julius System Red
   border_idle: '#3e3e42',  // Crisp defined idle border
   border_focused: '#c8b896', // Focused dusty antique paper border
+  border_subtle: '#28282e', // Ultra-thin hairline card border
   scrim: 'rgba(0, 0, 0, 0.65)',
   is_dark: true,
   is_no_color: false,
@@ -66,6 +67,7 @@ export const LIGHT_THEME: ThemeTokens = {
   error: '#ff3b30',        // Julius System Red (light)
   border_idle: '#c7c7cc',  // Crisp defined idle light border
   border_focused: '#007aff', // Focused light accent
+  border_subtle: '#e5e5ea', // Hairline light card border
   scrim: 'rgba(0, 0, 0, 0.35)',
   is_dark: false,
   is_no_color: false,

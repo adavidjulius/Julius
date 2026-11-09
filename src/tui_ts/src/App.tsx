@@ -13,6 +13,7 @@ import type {
   WorkingStep,
   // Import or destructure parameter ActiveThinkingState
   ActiveThinkingState,
+  AppMode,
 } from './types.js';
 import { DARK_THEME, LIGHT_THEME } from './theme/tokens.js';
 import { AgentBridge } from './bridge/AgentBridge.js';
@@ -24,6 +25,7 @@ import { Composer } from './components/Composer.js';
 import { CommandSuggestions } from './components/CommandSuggestions.js';
 import { StatusLine } from './components/StatusLine.js';
 import { WelcomeView } from './components/WelcomeView.js';
+import { VirtualConversationView } from './components/VirtualConversationView.js';
 import { ConfirmationDialog } from './components/ConfirmationDialog.js';
 import { QuestionDialog } from './components/QuestionDialog.js';
 import { ToastNotification } from './components/ToastNotification.js';
@@ -32,6 +34,7 @@ import { HelpModal } from './components/modals/HelpModal.js';
 import { DiffReviewModal } from './components/modals/DiffReviewModal.js';
 import { ActiveActionModal, type ActiveActionDetails } from './components/modals/ActiveActionModal.js';
 import { copyToClipboard } from './utils/clipboard.js';
+import { recordShortcutUse } from './utils/hintManager.js';
 
 export interface AppProps {
   bridge?: AgentBridge;
@@ -80,9 +83,61 @@ export const App: React.FC<AppProps> = ({
   const [currentTurnTools, setCurrentTurnTools] = useState<ToolExecutionRecord[]>([]);
   const [query, setQuery] = useState('');
   const [runningAction, setRunningAction] = useState('');
-  const [activeModel, setActiveModel] = useState<string>(initialModel || 'nvidia');
-  const [availableModels, setAvailableModels] = useState<ModelOption[]>([]);
+  const [activeModel, setActiveModel] = useState<string>(initialModel || 'nvidia/nemotron-3-ultra-550b-a55b');
+  const [availableModels, setAvailableModels] = useState<ModelOption[]>([
+    {
+      id: 'nvidia/nemotron-3-ultra-550b-a55b',
+      name: 'Nemotron 3 Ultra 550B',
+      desc: 'NVIDIA NIM Free · 550B Flagship Reasoning & Tools (1,000 Credits)',
+    },
+    {
+      id: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+      name: 'Nemotron 3.5 Lightning 30B',
+      desc: 'NVIDIA NIM Free · Fast 30B Tool Calling Specialist',
+    },
+    {
+      id: 'claude-3-5-sonnet-20241022',
+      name: 'Claude 3.5 Sonnet',
+      desc: 'Anthropic · State-of-the-Art Coding & Architecture',
+    },
+    {
+      id: 'claude-3-5-haiku-20241022',
+      name: 'Claude 3.5 Haiku',
+      desc: 'Anthropic · Ultra-Fast Lightweight Intelligence',
+    },
+    {
+      id: 'gpt-4o',
+      name: 'GPT-4o',
+      desc: 'OpenAI · Flagship Omnimodal Reasoning',
+    },
+    {
+      id: 'o3-mini',
+      name: 'o3-mini',
+      desc: 'OpenAI · Deep Reasoning STEM & Code Specialist',
+    },
+    {
+      id: 'deepseek-chat',
+      name: 'DeepSeek V3',
+      desc: 'DeepSeek · High-Performance Low-Cost Coding',
+    },
+    {
+      id: 'deepseek-reasoner',
+      name: 'DeepSeek R1',
+      desc: 'DeepSeek · Open Reasoning & Math Model',
+    },
+    {
+      id: 'gemini-2.0-flash',
+      name: 'Gemini 2.0 Flash',
+      desc: 'Google AI · Ultra-Fast Multimodal Intelligence',
+    },
+    {
+      id: 'ollama',
+      name: 'Local Ollama',
+      desc: 'Local LAN · 100% Private Offline Inference',
+    },
+  ]);
   const [isDimmed, setIsDimmed] = useState(false);
+  const [appMode, setAppMode] = useState<AppMode>('auto');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isThinkingExpanded, setIsThinkingExpanded] = useState(false);
   const [isToolsExpanded, setIsToolsExpanded] = useState(false);
@@ -98,9 +153,11 @@ export const App: React.FC<AppProps> = ({
   const [pendingQuestion, setPendingQuestion] = useState<{
     question: string;
     options: string[];
+    previewOptions?: import('./types.js').QuestionPreviewOption[];
   } | null>(null);
 
   const lastAssistantAnswerRef = useRef<string>('');
+  const streamingAnswerRef = useRef<string>('');
   const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastWheelTimeRef = useRef<number>(0);
 
@@ -153,6 +210,11 @@ export const App: React.FC<AppProps> = ({
       showToast(`Model switched to ${newModel}`);
     });
 
+    activeBridge.on('mode_switched', (newMode) => {
+      setAppMode(newMode as AppMode);
+      showToast(`Mode switched to: ${newMode.toUpperCase()}`);
+    });
+
     activeBridge.on('bridge_event', (event: JuliusBridgeEvent) => {
       const { kind } = event;
 
@@ -172,7 +234,21 @@ export const App: React.FC<AppProps> = ({
           const dynamicLabel = formatSummary(thoughtText);
           const cleanThought = sanitizeThought(thoughtText);
           if (cleanThought) {
+            setRunningAction('');
             setActiveThinking((prev) => {
+              const prevThoughts = prev?.thoughts || [];
+              const lastThought = prevThoughts.length > 0 ? prevThoughts[prevThoughts.length - 1] : '';
+
+              // If the new thought chunk is an extension of the last thought in this turn, update in-place
+              let updatedThoughts: string[];
+              if (!lastThought) {
+                updatedThoughts = [cleanThought];
+              } else if (cleanThought.startsWith(lastThought) || lastThought.startsWith(cleanThought)) {
+                updatedThoughts = [...prevThoughts.slice(0, -1), cleanThought];
+              } else {
+                updatedThoughts = [...prevThoughts.slice(0, -1), `${lastThought} ${cleanThought}`];
+              }
+
               const newStep: WorkingStep = {
                 type: 'thought',
                 text: cleanThought,
@@ -180,8 +256,8 @@ export const App: React.FC<AppProps> = ({
               };
               return {
                 label: dynamicLabel,
-                fullThought: (prev?.fullThought ? prev.fullThought + '\n\n' : '') + cleanThought,
-                thoughts: [...(prev?.thoughts || []), cleanThought],
+                fullThought: cleanThought,
+                thoughts: updatedThoughts,
                 workingSteps: [...(prev?.workingSteps || []), newStep],
                 isRunning: true,
                 durationS: prev?.durationS,
@@ -204,6 +280,7 @@ export const App: React.FC<AppProps> = ({
           startTime: Date.now(),
           is_running: true,
         });
+        streamingAnswerRef.current = '';
         setStreamingAnswer('');
       } else if (kind === 'tool_completed') {
         const toolName = event.tool_name || event.action || 'tool';
@@ -228,15 +305,27 @@ export const App: React.FC<AppProps> = ({
               endTime: Date.now(),
             }
         );
+      } else if (kind === 'stream_clear') {
+        streamingAnswerRef.current = '';
+        setStreamingAnswer('');
+      } else if (kind === 'step_start') {
+        if (streamingAnswerRef.current) {
+          streamingAnswerRef.current = '';
+          setStreamingAnswer('');
+        }
       } else if (kind === 'stream_chunk') {
         const chunk = event.chunk || '';
-        const trimmedChunk = chunk.trim();
+        const cleanChunk = chunk
+          .replace(/<think>[\s\S]*?<\/think>/gi, '')
+          .replace(/<\/?(?:think|thought|reasoning)>/gi, '');
+        const trimmedChunk = cleanChunk.trim();
         const isJsonToolCall = Boolean(
           trimmedChunk.startsWith('{') &&
           (trimmedChunk.includes('"tool"') || trimmedChunk.includes('"action"') || trimmedChunk.includes('"function"'))
         );
-        if (chunk && !isJsonToolCall) {
-          setStreamingAnswer((prev) => prev + chunk);
+        if (cleanChunk && !isJsonToolCall) {
+          streamingAnswerRef.current += cleanChunk;
+          setStreamingAnswer(streamingAnswerRef.current);
           setActiveThinking((prev) => (prev ? { ...prev, isRunning: false } : null));
           // Preserve active action details for post-action inspection
           setActiveActionDetails((prev) => (prev ? {
@@ -256,33 +345,49 @@ export const App: React.FC<AppProps> = ({
         setPendingQuestion({
           question: event.question || '',
           options: event.options || [],
+          previewOptions: event.previewOptions,
         });
       } else if (kind === 'done' || kind === 'converse') {
-        const rawFinal = (kind === 'done' ? event.summary : event.message) || streamingAnswer;
-        const finalText = (rawFinal || '').trim();
+        const rawFinal = (kind === 'done' ? event.summary : event.message) || streamingAnswerRef.current;
+        const cleanFinal = (rawFinal || '')
+          .replace(/<think>[\s\S]*?<\/think>/gi, '')
+          .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+          .replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, '')
+          .replace(/<\/?(?:think|thought|reasoning)>/gi, '')
+          .trim();
+        const finalText = cleanFinal;
         const isJsonToolCall = Boolean(
-          finalText.startsWith('{') &&
-          (finalText.includes('"tool"') || finalText.includes('"action"') || finalText.includes('"function"'))
+          (finalText.startsWith('{') || finalText.startsWith('json{')) &&
+          (finalText.includes('"tool"') || finalText.includes('"action"') || finalText.includes('"function"') || finalText.includes('"actions"'))
         );
         const tools = (event.tools as unknown as ToolExecutionRecord[]) || currentTurnTools;
 
-        if (finalText && !isJsonToolCall) {
-          lastAssistantAnswerRef.current = finalText;
+        const displayContent = !isJsonToolCall && finalText
+          ? finalText
+          : (tools.length > 0
+              ? `I've completed ${tools.length} step(s) and verified the results.`
+              : (finalText && !finalText.startsWith('{') ? finalText : 'Task completed successfully.'));
+
+        if (displayContent) {
+          lastAssistantAnswerRef.current = displayContent;
           setMessages((prev) => [
             ...prev,
             {
               id: `ast_${Date.now()}`,
               role: 'assistant',
-              content: finalText,
+              content: displayContent,
               timestamp: Date.now(),
               tools: tools.length > 0 ? [...tools] : undefined,
               thoughts: activeThinking?.thoughts,
+              fullThought: activeThinking?.fullThought,
               workingSteps: activeThinking?.workingSteps,
               thoughtDurationS: activeThinking?.durationS,
             },
           ]);
+          setScrollOffset(0);
         }
 
+        streamingAnswerRef.current = '';
         setStreamingAnswer('');
         setActiveThinking(null);
         // Preserve last action details as completed for inspection with final frozen duration
@@ -336,6 +441,7 @@ export const App: React.FC<AppProps> = ({
     activeBridge.on('prompt_finished', (payload?: { success?: boolean; cancelled?: boolean; error?: string }) => {
       setRunningAction('');
       setActiveThinking(null);
+      setStreamingAnswer('');
       // Preserve active action details for post-action inspection
       setActiveActionDetails((prev) => (prev ? { ...prev, is_running: false } : null));
       if (payload?.cancelled) {
@@ -390,32 +496,26 @@ export const App: React.FC<AppProps> = ({
         return;
       }
 
-      // Capture mouse click sequences (\x1b[<0;col;rowM) without letting escape bytes leak into input
+      // Capture mouse click and wheel sequences (\x1b[<btn;col;rowM or m)
       const mouseMatch = str.match(/(?:\x1b)?\[<(\d+);(\d+);(\d+)([Mm])/);
       if (mouseMatch) {
         const btn = parseInt(mouseMatch[1] || '0', 10);
         const row = parseInt(mouseMatch[3] || '0', 10);
         const type = mouseMatch[4]; // 'M' is button press
 
-        // Mouse Wheel Scroll support: 64 = wheel up, 65 = wheel down
-        // Damped progressive single-step scroll (at most 1 step every 40ms) for smooth, non-bunchy navigation
-        if (btn === 64) {
-          const now = Date.now();
-          if (now - lastWheelTimeRef.current >= 40) {
-            lastWheelTimeRef.current = now;
-            setScrollOffset((prev) => prev + 1);
-          }
-          return;
-        }
-        if (btn === 65) {
-          const now = Date.now();
-          if (now - lastWheelTimeRef.current >= 40) {
-            lastWheelTimeRef.current = now;
-            setScrollOffset((prev) => Math.max(0, prev - 1));
-          }
+        // Mouse Wheel UP: button 64 or modifier variants (64 + 4, 8, etc.)
+        if (btn === 64 || ((btn & 64) === 64 && (btn & 1) === 0)) {
+          setScrollOffset((prev) => prev + 2);
           return;
         }
 
+        // Mouse Wheel DOWN: button 65 or modifier variants
+        if (btn === 65 || ((btn & 64) === 64 && (btn & 1) === 1)) {
+          setScrollOffset((prev) => Math.max(0, prev - 2));
+          return;
+        }
+
+        // Only handle explicit button click (btn === 0)
         if (type === 'M' && btn === 0) {
           if (!activeModal) {
             if (row >= dimensions.rows - 2 && (runningAction || activeActionDetails)) {
@@ -430,6 +530,19 @@ export const App: React.FC<AppProps> = ({
         }
         return;
       }
+
+      // Traditional XTerm mouse sequences (\x1b[M followed by 3 bytes)
+      if (str.startsWith('\x1b[M') && str.length >= 6) {
+        const cb = str.charCodeAt(3) - 32;
+        if (cb === 64 || cb === 96) {
+          setScrollOffset((prev) => prev + 2);
+          return;
+        }
+        if (cb === 65 || cb === 97) {
+          setScrollOffset((prev) => Math.max(0, prev - 2));
+          return;
+        }
+      }
     };
     stdin.on('data', handleRawStdin);
     return () => {
@@ -440,7 +553,7 @@ export const App: React.FC<AppProps> = ({
   // Global Keybindings, Shortcuts & Input Management
   useInput((input, key) => {
     // Immediately drop any mouse reporting codes or escape noise
-    if (input && /(\x1b)?\[<\d+;\d+;\d+[Mm]/.test(input)) {
+    if (input && (/(\x1b)?\[<\d+;\d+;\d+[Mm]/.test(input) || /^\x1b\[M/.test(input))) {
       return;
     }
 
@@ -464,15 +577,15 @@ export const App: React.FC<AppProps> = ({
       return;
     }
 
-    // 1. Single-key Confirmation: Y/N without needing Enter
+    // 1. Single-key / Quick Confirmation: Y/A/Enter to allow, N/D/Esc to deny
     if (pendingConfirmation) {
-      const lower = input.toLowerCase();
-      if (lower === 'y') {
+      const lower = (input || '').toLowerCase();
+      if (lower === 'y' || lower === 'a' || key.return) {
         bridge?.confirmAction(true);
         setPendingConfirmation(null);
         return;
       }
-      if (lower === 'n') {
+      if (lower === 'n' || lower === 'd' || key.escape) {
         bridge?.confirmAction(false);
         setPendingConfirmation(null);
         return;
@@ -481,6 +594,7 @@ export const App: React.FC<AppProps> = ({
 
     // 2. F2: Model Picker Modal (supports terminal F2 escape sequences)
     if (input === '\x1bOQ' || input === '\x1b[12~' || (key as unknown as Record<string, boolean>).f2) {
+      recordShortcutUse('f2_model');
       setActiveModal('model');
       return;
     }
@@ -491,24 +605,56 @@ export const App: React.FC<AppProps> = ({
       return;
     }
 
+    // Shift+Tab: Cycle operating modes (Auto -> Plan -> Edit -> Accept -> Manual)
+    const isShiftTab = Boolean(
+      (key.shift && ((key as any).tab || input === '\t' || input === '\x09')) ||
+      input === '\x1b[Z' ||
+      input === '\x1b[27;2;9~' ||
+      input === '\x1b[9;2u'
+    );
+    if (isShiftTab) {
+      const MODES: AppMode[] = ['auto', 'plan', 'edit', 'accept', 'manual'];
+      const MODE_DESCS: Record<AppMode, string> = {
+        auto: 'Auto (Autonomous)',
+        plan: 'Plan (Read-only Planning)',
+        edit: 'Edit (Code Development)',
+        accept: 'Accept (Full Access · No Restrictions)',
+        manual: 'Manual (Ask Confirmation)',
+      };
+      setAppMode((prev: AppMode) => {
+        const nextIdx = (MODES.indexOf(prev) + 1) % MODES.length;
+        const nextMode = MODES[nextIdx];
+        bridge?.setMode(nextMode);
+        showToast(`Mode: ${MODE_DESCS[nextMode]}`);
+        return nextMode;
+      });
+      return;
+    }
+
     // 4. Ctrl+I / Tab / F3: Action Inspector Modal
-    const isCtrlI = Boolean(
+    const isCtrlI = !isShiftTab && Boolean(
       input === '\x09' ||
       input === '\t' ||
       (key as any).tab ||
-      (key.ctrl && (input.toLowerCase() === 'i' || input === '\x09')) ||
+      (key.ctrl && (input?.toLowerCase() === 'i' || input === '\x09')) ||
       (key.ctrl && (key as any).tab) ||
       input === '\x1bOR' ||
       input === '\x1b[13~' ||
       (key as any).f3
     );
     if (isCtrlI) {
+      // If currently typing a slash command, let Tab complete the command instead of opening Action modal
+      if (query.startsWith('/') && !query.includes(' ')) {
+        return;
+      }
+      recordShortcutUse('ctrl_i');
       setActiveModal((prev) => (prev === 'action' ? null : 'action'));
       return;
     }
 
     // 5. Ctrl+Y: Copy last assistant answer to clipboard
     if (input === '\x19' || (key.ctrl && (input.toLowerCase() === 'y' || input === '\x19'))) {
+      recordShortcutUse('ctrl_y');
       const textToCopy = lastAssistantAnswerRef.current;
       if (textToCopy) {
         if (copyToClipboard(textToCopy)) {
@@ -524,12 +670,14 @@ export const App: React.FC<AppProps> = ({
 
     // 6. Ctrl+T: Toggle thinking expansion
     if (input === '\x14' || (key.ctrl && (input.toLowerCase() === 't' || input === '\x14'))) {
+      recordShortcutUse('ctrl_t');
       setIsThinkingExpanded((prev) => !prev);
       return;
     }
 
     // 7. Ctrl+O: Toggle tool summary expansion
     if (input === '\x0f' || (key.ctrl && (input.toLowerCase() === 'o' || input === '\x0f'))) {
+      recordShortcutUse('ctrl_o');
       setIsToolsExpanded((prev) => !prev);
       return;
     }
@@ -546,18 +694,17 @@ export const App: React.FC<AppProps> = ({
       return;
     }
 
-    // 9. Viewport Conversation Scrolling: PageUp, PageDown, Home, End, Ctrl+U, Up/Down arrows
-    // Progressive single-step scrolling for smooth viewport movement without jerky leaps
+    // 9. Viewport Conversation Scrolling: PageUp, PageDown, Home, End, Ctrl+U, Shift+Up/Down
     if (key.pageUp || input === '\x1b[5~' || input === '\x1b[5;2~') {
-      setScrollOffset((prev) => prev + 1);
+      setScrollOffset((prev) => prev + 4);
       return;
     }
     if (key.pageDown || input === '\x1b[6~' || input === '\x1b[6;2~') {
-      setScrollOffset((prev) => Math.max(0, prev - 1));
+      setScrollOffset((prev) => Math.max(0, prev - 4));
       return;
     }
     if (input === '\x1b[H' || input === '\x1b[1~' || (key as unknown as Record<string, boolean>).home) {
-      setScrollOffset(999);
+      setScrollOffset(9999);
       return;
     }
     if (input === '\x1b[F' || input === '\x1b[4~' || (key as unknown as Record<string, boolean>).end) {
@@ -565,15 +712,15 @@ export const App: React.FC<AppProps> = ({
       return;
     }
     if (input === '\x15' || (key.ctrl && input.toLowerCase() === 'u')) {
+      setScrollOffset((prev) => prev + 4);
+      return;
+    }
+    if (key.shift && key.upArrow) {
       setScrollOffset((prev) => prev + 2);
       return;
     }
-    if (!query && key.upArrow) {
-      setScrollOffset((prev) => prev + 1);
-      return;
-    }
-    if (!query && key.downArrow && scrollOffset > 0) {
-      setScrollOffset((prev) => Math.max(0, prev - 1));
+    if (key.shift && key.downArrow) {
+      setScrollOffset((prev) => Math.max(0, prev - 2));
       return;
     }
 
@@ -653,9 +800,58 @@ export const App: React.FC<AppProps> = ({
         return;
       }
 
+      if (matchesCmd('/mode')) {
+        const MODES: AppMode[] = ['auto', 'plan', 'edit', 'accept', 'manual'];
+        const target = (arg || '').toLowerCase().trim() as AppMode;
+        if (MODES.includes(target)) {
+          setAppMode(target);
+          bridge?.setMode(target);
+          showToast(`Mode: ${target.toUpperCase()}`);
+        } else {
+          setAppMode((prev: AppMode) => {
+            const nextIdx = (MODES.indexOf(prev) + 1) % MODES.length;
+            const nextMode = MODES[nextIdx];
+            bridge?.setMode(nextMode);
+            showToast(`Mode: ${nextMode.toUpperCase()}`);
+            return nextMode;
+          });
+        }
+        return;
+      }
+
+      if (matchesCmd('/auto')) {
+        setAppMode('auto');
+        bridge?.setMode('auto');
+        showToast('Mode: AUTO (Autonomous execution)');
+        return;
+      }
+
+      if (matchesCmd('/accept')) {
+        setAppMode('accept');
+        bridge?.setMode('accept');
+        showToast('Mode: ACCEPT (Full unrestricted access)');
+        return;
+      }
+
+      if (matchesCmd('/manual')) {
+        setAppMode('manual');
+        bridge?.setMode('manual');
+        showToast('Mode: MANUAL (Ask confirmation)');
+        return;
+      }
+
+      if (matchesCmd('/edit')) {
+        setAppMode('edit');
+        bridge?.setMode('edit');
+        showToast('Mode: EDIT (Code development)');
+        return;
+      }
+
       if (matchesCmd('/plan', ['/p', '/pl'])) {
         if (!arg) {
-          showToast('Usage: /plan <task description>');
+          setAppMode('plan');
+          bridge?.setMode('plan');
+          showToast('Mode: PLAN (Read-only planning)');
           return;
         }
         // Execute prompt in plan mode
@@ -726,6 +922,16 @@ export const App: React.FC<AppProps> = ({
 
       if (matchesCmd('/compact', ['/comp'])) {
         bridge?.compact();
+        return;
+      }
+
+      if (matchesCmd('/status', ['/vitals', '/vital', '/stat'])) {
+        bridge?.sendCommand({ action: 'vitals' });
+        return;
+      }
+
+      if (matchesCmd('/alerts', ['/alert', '/proactive'])) {
+        bridge?.sendCommand({ action: 'alerts' });
         return;
       }
 
@@ -824,14 +1030,15 @@ export const App: React.FC<AppProps> = ({
         flexGrow={1}
         justifyContent="flex-start"
       >
-        {/* Welcome wordmark banner ALWAYS at the top */}
-        <WelcomeView
-          scrolled={hasStarted}
-          showSubtitle={!hasStarted && !activeModal}
-          theme={theme}
-          columns={dimensions.columns}
-          rows={dimensions.rows}
-        />
+        {/* Welcome wordmark banner shown above modals */}
+        {activeModal && (
+          <WelcomeView
+            showSubtitle={false}
+            theme={theme}
+            columns={dimensions.columns}
+            rows={dimensions.rows}
+          />
+        )}
 
         {/* Floating Toast Notification */}
         <ToastNotification message={toastMessage} theme={theme} />
@@ -913,150 +1120,42 @@ export const App: React.FC<AppProps> = ({
         {/* Conversation Stream: Displayed when no modal is open */}
         {!activeModal && (
           <Box flexDirection="column" flexGrow={1}>
-            {/* Message history: viewport-windowed with true scrolling and overflow protection */}
             {(() => {
-              const activeGold = theme.brand_gold || theme.accent;
-              const isNarrow = dimensions.columns < 50;
-              const isShort = dimensions.rows < 24;
-              // Authentic Julius ASCII banner is preserved at top (~8 rows with margins)
-              const bannerHeight = isNarrow ? 2 : 8;
-              const footerHeight = 5;
-              const maxViewportRows = Math.max(4, dimensions.rows - bannerHeight - footerHeight);
-
-              // Indent all output (agent response, thinking panel, tool summary) by 1 tab space (4 columns)
-              // to clearly define Question (Input) vs Answer (Output)
-              const outputMargin = hMargin + 4;
-
-              // Estimate rendered height of each message with strict pixel-perfect row budgeting
-              const estimateTurnLines = (m: MessageRecord): number => {
-                let lines = 2; // base marginTop(1) + marginBottom(1)
-                if (m.role === 'user') {
-                  const contentLen = m.content.length;
-                  const innerWidth = Math.max(20, dimensions.columns - 16);
-                  const textLines = Math.ceil(contentLen / innerWidth) || 1;
-                  // Card contains top border (1) + bottom border (1) + wrapped content text lines
-                  return lines + 2 + textLines;
-                }
-                if (m.tools && filterRealTools(m.tools).length > 0) {
-                  lines += 2; // ToolSummary
-                }
-                const contentLines = m.content.split('\n').length;
-                lines += Math.min(contentLines, maxViewportRows - 2);
-                return lines;
-              };
-
-              const turns = [...messages];
-              const turnHeights = turns.map(estimateTurnLines);
-
-              // Clamped scroll offset
-              const maxScroll = Math.max(0, turns.length - 1);
-              const currentOffset = Math.min(scrollOffset, maxScroll);
-
-              let targetEnd = turns.length - 1 - currentOffset;
-              if (targetEnd < 0) targetEnd = 0;
-
-              let targetStart = targetEnd;
-              let usedRows = 0;
-
-              // Reserve space for live streaming or active thinking with accurate row tracking
-              if (streamingAnswer) {
-                usedRows += Math.min(streamingAnswer.split('\n').length + 2, 8);
-              }
-              if (activeThinking) {
-                const thCount = activeThinking.thoughts.length;
-                usedRows += isThinkingExpanded ? Math.min(2 + thCount * 2, 10) : 2;
-              }
-
-              while (targetStart >= 0) {
-                const h = turnHeights[targetStart] || 3;
-                if (usedRows + h > maxViewportRows && targetStart < targetEnd) {
-                  break;
-                }
-                usedRows += h;
-                targetStart--;
-              }
-              targetStart = Math.max(0, targetStart + 1);
-
-              const visibleMessages = turns.length > 0 ? turns.slice(targetStart, targetEnd + 1) : [];
-              const hiddenAbove = targetStart;
-              const hiddenBelow = turns.length - 1 - targetEnd;
+              const footerRows = 4 + (query.startsWith('/') && !query.includes(' ') ? 4 : 0);
+              const maxViewportRows = Math.max(4, dimensions.rows - footerRows);
 
               return (
                 <>
-                  {hiddenAbove > 0 && (
-                    <Box paddingLeft={hMargin + 2} marginTop={0} marginBottom={1}>
-                      <Text color={theme.text_faint}>
-                        ↑ ({hiddenAbove} earlier {hiddenAbove === 1 ? 'turn' : 'turns'} hidden · PageUp / ↑ to scroll)
-                      </Text>
-                    </Box>
-                  )}
-                  {visibleMessages.map((m) => {
-                    if (m.role === 'user') {
-                      return <UserMessage key={m.id} content={m.content} theme={theme} horizontalMargin={hMargin} columns={dimensions.columns} />;
-                    }
+                  <VirtualConversationView
+                    messages={messages}
+                    activeThinking={activeThinking}
+                    runningAction={runningAction}
+                    streamingAnswer={streamingAnswer}
+                    currentTurnTools={currentTurnTools}
+                    isThinkingExpanded={isThinkingExpanded}
+                    isToolsExpanded={isToolsExpanded}
+                    onToggleThinking={() => setIsThinkingExpanded((p) => !p)}
+                    onToggleTools={() => setIsToolsExpanded((p) => !p)}
+                    scrollOffset={scrollOffset}
+                    viewportHeight={maxViewportRows}
+                    columns={dimensions.columns}
+                    theme={theme}
+                    horizontalMargin={hMargin}
+                    activeModel={activeModel}
+                    appMode={appMode}
+                  />
 
-                    return (
-                      <Box key={m.id} flexDirection="column">
-                        {/* ToolSummary strictly ABOVE assistant response, indented by tab space under output */}
-                        {m.tools && filterRealTools(m.tools).length > 0 && (
-                          <ToolSummary
-                            tools={m.tools}
-                            isExpanded={isToolsExpanded}
-                            onToggle={() => setIsToolsExpanded((p) => !p)}
-                            theme={theme}
-                            horizontalMargin={outputMargin}
-                            columns={dimensions.columns}
-                          />
-                        )}
-                        <AssistantMessage content={m.content} theme={theme} horizontalMargin={outputMargin} columns={dimensions.columns} />
-                      </Box>
-                    );
-                  })}
-                  {hiddenBelow > 0 && (
-                    <Box paddingLeft={hMargin + 2} marginTop={1} marginBottom={0}>
-                      <Text bold color={activeGold}>
-                        ↓ Scrolled up ({hiddenBelow} newer {hiddenBelow === 1 ? 'turn' : 'turns'} below · Press End to return) ↓
+                  {/* Floating scroll indicator when user is scrolled up */}
+                  {scrollOffset > 0 && (
+                    <Box flexDirection="row" justifyContent="center" width="100%" marginTop={0} marginBottom={0}>
+                      <Text color={theme.text_faint}>
+                        ↓ Scrolled up ({scrollOffset} line{scrollOffset > 1 ? 's' : ''} above bottom · Press End to return) ↓
                       </Text>
                     </Box>
                   )}
                 </>
               );
             })()}
-
-            {/* Live streaming assistant answer indented by tab space */}
-            {streamingAnswer.length > 0 && (
-              <Box flexDirection="column">
-                {currentTurnTools.length > 0 && filterRealTools(currentTurnTools).length > 0 && (
-                  <ToolSummary
-                    tools={currentTurnTools}
-                    isExpanded={isToolsExpanded}
-                    onToggle={() => setIsToolsExpanded((p) => !p)}
-                    theme={theme}
-                    horizontalMargin={outputMargin}
-                    columns={dimensions.columns}
-                  />
-                )}
-                <AssistantMessage content={streamingAnswer} theme={theme} horizontalMargin={outputMargin} columns={dimensions.columns} />
-              </Box>
-            )}
-
-            {/* Active thinking indicator indented by tab space */}
-            {activeThinking && (
-              <ThinkingDot
-                label={activeThinking.label}
-                fullThought={activeThinking.fullThought}
-                thoughts={activeThinking.thoughts}
-                workingSteps={activeThinking.workingSteps}
-                activeAction={runningAction}
-                isRunning={activeThinking.isRunning}
-                durationS={activeThinking.durationS}
-                isExpanded={isThinkingExpanded}
-                onToggle={() => setIsThinkingExpanded((p) => !p)}
-                theme={theme}
-                horizontalMargin={outputMargin}
-                columns={dimensions.columns}
-              />
-            )}
 
             {/* Active Confirmation Dialog */}
             {pendingConfirmation && (
@@ -1072,7 +1171,16 @@ export const App: React.FC<AppProps> = ({
               <QuestionDialog
                 question={pendingQuestion.question}
                 options={pendingQuestion.options}
+                previewOptions={pendingQuestion.previewOptions}
+                onSelectOption={(chosen) => {
+                  const answer = typeof chosen === 'string' ? chosen : chosen.label;
+                  if (bridge) {
+                    bridge.sendInput(answer);
+                  }
+                  setPendingQuestion(null);
+                }}
                 theme={theme}
+                columns={dimensions.columns}
               />
             )}
           </Box>
@@ -1088,13 +1196,16 @@ export const App: React.FC<AppProps> = ({
         <Composer
           onSubmit={handlePromptSubmit}
           onChange={(val) => {
+            if (scrollOffset > 0) {
+              setScrollOffset(0);
+            }
             if (val.startsWith('/')) {
               setQuery(val);
             } else if (query) {
               setQuery('');
             }
           }}
-          isFocused={isComposerFocused && !activeModal && !pendingConfirmation && !pendingQuestion}
+          isFocused={isComposerFocused && !activeModal && !pendingConfirmation}
           isWorking={Boolean(activeThinking) || Boolean(streamingAnswer) || Boolean(runningAction)}
           columns={dimensions.columns}
           rows={dimensions.rows}
@@ -1108,9 +1219,10 @@ export const App: React.FC<AppProps> = ({
           theme={theme}
         />
 
-        {/* Single-line Status Telemetry (Bottom row, clean without model tag) */}
+        {/* Single-line Status Telemetry (Bottom row with Mode Badge & Shift+Tab hint) */}
         <StatusLine
-          hintText="? for help · / for commands"
+          appMode={appMode}
+          hintText="/ for commands"
           runningText={runningAction}
           isDimmed={isDimmed}
           theme={theme}

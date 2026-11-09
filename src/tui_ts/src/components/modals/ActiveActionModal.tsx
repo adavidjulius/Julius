@@ -23,11 +23,6 @@ export interface ActiveActionModalProps {
   rows?: number;
 }
 
-/**
- * Format duration in seconds to human-readable string:
- * - Under 60s: "4.1s", "29.2s"
- * - 60s and above: "1m 54s", "2m 10s"
- */
 export function formatActionDuration(seconds: number): string {
   if (!seconds || seconds <= 0) return '0.0s';
   if (seconds < 60) return `${seconds.toFixed(1)}s`;
@@ -36,10 +31,7 @@ export function formatActionDuration(seconds: number): string {
   return remainingSecs > 0 ? `${mins}m ${remainingSecs}s` : `${mins}m`;
 }
 
-/**
- * Format raw terminal output, resolving carriage returns (\r) and stripping ANSI escapes cleanly.
- */
-function formatTerminalOutput(raw: string, maxLines: number = 7): string[] {
+function formatTerminalOutput(raw: string, maxLines: number = 6): string[] {
   if (!raw) return [];
   const lines = raw.replace(/\r\n/g, '\n').split('\n');
   const processed: string[] = [];
@@ -51,7 +43,6 @@ function formatTerminalOutput(raw: string, maxLines: number = 7): string[] {
       const nonEmpties = parts.filter((p) => p.trim());
       cleanLine = nonEmpties.length > 0 ? nonEmpties[nonEmpties.length - 1]! : parts[parts.length - 1]!;
     }
-    // Strip ANSI escape codes
     cleanLine = cleanLine.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').trimEnd();
     if (cleanLine) {
       processed.push(cleanLine);
@@ -61,17 +52,6 @@ function formatTerminalOutput(raw: string, maxLines: number = 7): string[] {
   return processed.slice(-maxLines);
 }
 
-/**
- * Authentic Active Action Modal.
- * Exact visual and behavioral parity with Python Textual's ActiveActionModal:
- * - Card width: 78, rounded Brand Gold #C8B896 border, centered.
- * - Title: "Active Action" in bold #f5f5f7.
- * - Subtitle: "Live status and control of background operations" in gold.
- * - Status Line: "STATUS: ● RUNNING (Xs)" or "STATUS: ✓ Completed" or "STATUS: ○ IDLE".
- * - Command Box: rounded #3e3e42 border, showing "$ <command>" in cyan.
- * - Process Output Box: height 8, rounded #3e3e42 border, ALWAYS rendered with live or completed stream.
- * - Actions: "[⏹ Cancel Action]" (red #b91c1c when running) and "[Close]" (#2c2c2e).
- */
 export const ActiveActionModal: React.FC<ActiveActionModalProps> = ({
   activeAction = null,
   runningAction = '',
@@ -98,6 +78,7 @@ export const ActiveActionModal: React.FC<ActiveActionModalProps> = ({
       }
       return;
     }
+
     const start = activeAction?.startTime || Date.now();
     const interval = setInterval(() => {
       setElapsed((Date.now() - start) / 1000);
@@ -106,14 +87,11 @@ export const ActiveActionModal: React.FC<ActiveActionModalProps> = ({
   }, [isRunning, activeAction?.startTime, activeAction?.endTime, activeAction?.duration, runningAction]);
 
   useInput((input, key) => {
-    // Dismiss modal on Escape, Q, or Enter
     if (key.escape || input.toLowerCase() === 'q' || key.return) {
       onClose();
       return;
     }
-
-    // Cancel active action on C / c (only when running)
-    if (isRunning && input.toLowerCase() === 'c') {
+    if (input.toLowerCase() === 'c') {
       onCancelAction();
       onClose();
       return;
@@ -129,147 +107,76 @@ export const ActiveActionModal: React.FC<ActiveActionModalProps> = ({
 
   const termCols = columns || (typeof process !== 'undefined' && process.stdout?.columns ? process.stdout.columns : 80);
   const termRows = rows || (typeof process !== 'undefined' && process.stdout?.rows ? process.stdout.rows : 24);
-  const cardWidth = Math.min(78, Math.max(36, termCols - 4));
-  const isShortScreen = termRows < 18;
-  const outputBoxHeight = termRows <= 24 ? 4 : (termRows <= 32 ? 6 : 8);
+  const cardWidth = Math.min(74, Math.max(36, termCols - 4));
+  const outputBoxHeight = termRows <= 24 ? 3 : 5;
+  const outputLines = formatTerminalOutput(currentOutput, outputBoxHeight);
 
-  const outputLines = formatTerminalOutput(currentOutput, Math.max(2, outputBoxHeight - 2));
-
+  // Subtle clean border per design requirements
   return (
     <Box
       flexDirection="column"
       width={cardWidth}
-      flexShrink={0}
       borderStyle="round"
-      borderColor={activeGold}
-      paddingLeft={termCols < 60 ? 1 : 2}
-      paddingRight={termCols < 60 ? 1 : 2}
+      borderColor={theme.border_idle || '#3e3e42'}
+      paddingLeft={2}
+      paddingRight={2}
       paddingTop={0}
       paddingBottom={0}
-      marginTop={0}
       marginBottom={1}
       alignSelf="center"
     >
-      {/* 1. Modal Header Title */}
-      <Box justifyContent="center" flexShrink={0}>
-        <Text bold color={theme.text || '#f5f5f7'}>
+      {/* 1. Header & Status */}
+      <Box justifyContent="space-between" marginBottom={0}>
+        <Text bold color="#f5f5f7">
           Active Action
+        </Text>
+        <Text>
+          {isRunning ? (
+            <Text bold color={theme.success || '#22c55e'}>● Running ({actionName}) · {formatActionDuration(elapsed)}</Text>
+          ) : currentCommand ? (
+            <Text bold color={theme.success || '#22c55e'}>✓ Completed · {formatActionDuration(elapsed)}</Text>
+          ) : (
+            <Text color={theme.text_faint}>○ Idle</Text>
+          )}
         </Text>
       </Box>
 
-      {/* 2. Subtitle */}
-      {!isShortScreen && (
-        <Box justifyContent="center" marginBottom={1}>
-          <Text color={activeGold}>
-            Live status and control of background operations
-          </Text>
-        </Box>
-      )}
+      {/* 2. Command Display */}
+      <Box flexDirection="row" marginTop={0} marginBottom={0}>
+        <Text bold color={activeGold}>$ </Text>
+        <Text color="#38bdf8" wrap="wrap">
+          {displayCommand || 'No active background command'}
+        </Text>
+      </Box>
 
-      {/* 3. Status Line */}
-      <Box justifyContent="center" marginBottom={1}>
-        <Text bold color={theme.text || '#f5f5f7'}>STATUS: </Text>
-        {isRunning ? (
-          <Text>
-            <Text bold color={theme.success || '#22c55e'}>● Running ({actionName})</Text>
-            <Text color={theme.text_faint || '#86868b'}>  •  </Text>
-            <Text bold color={activeGold}>{formatActionDuration(elapsed)} elapsed</Text>
-            <Text color={theme.text_faint || '#86868b'}>  (Click 'Cancel Action' below if stuck)</Text>
-          </Text>
-        ) : currentCommand ? (
-          <Text>
-            <Text bold color={theme.success || '#22c55e'}>✓ Completed</Text>
-            {elapsed > 0 && <Text color={theme.text_faint || '#86868b'}>  •  {formatActionDuration(elapsed)}</Text>}
-          </Text>
+      {/* 3. Output Section */}
+      <Box flexDirection="column" marginTop={0} marginBottom={1}>
+        <Box marginBottom={0}>
+          <Text color={theme.text_dim}>Output:</Text>
+        </Box>
+        {outputLines.length > 0 ? (
+          outputLines.map((line, idx) => (
+            <Text key={idx} color="#ded2b8" wrap="wrap">
+              {line}
+            </Text>
+          ))
         ) : (
-          <Text color={theme.text_faint || '#86868b'}>
-            ○ IDLE
+          <Text color={theme.text_faint}>
+            {isRunning ? 'Process executing... live output will stream here' : '(No process output)'}
           </Text>
         )}
       </Box>
 
-      {/* 4. Command Box */}
-      <Box
-        flexDirection="column"
-        borderStyle="round"
-        borderColor={theme.border_idle || '#3e3e42'}
-        paddingLeft={1}
-        paddingRight={1}
-        marginBottom={1}
-      >
-        <Box marginBottom={0}>
-          <Text bold color={theme.text_dim || '#86868b'}>Command / Target:</Text>
-        </Box>
-        <Box>
-          <Text bold color={activeGold}>$ </Text>
-          {displayCommand ? (
-            <Text bold color="#38bdf8" wrap="wrap">
-              {displayCommand}
-            </Text>
-          ) : (
-            <Text color={theme.text_faint || '#86868b'}>
-              No tool action actively executing.
-            </Text>
-          )}
-        </Box>
-      </Box>
-
-      {/* 5. Terminal / Process Output Box - ALWAYS VISIBLE */}
-      <Box
-        flexDirection="column"
-        borderStyle="round"
-        borderColor={theme.border_idle || '#3e3e42'}
-        paddingLeft={1}
-        paddingRight={1}
-        height={outputBoxHeight}
-        overflowY="hidden"
-        marginBottom={1}
-      >
-        <Box marginBottom={0}>
-          <Text bold color={theme.text_dim || '#86868b'}>Process Output:</Text>
-        </Box>
-        <Box flexDirection="column" flexGrow={1}>
-          {outputLines.length > 0 ? (
-            outputLines.map((line, idx) => (
-              <Text key={idx} color="#ded2b8" wrap="wrap">
-                {line}
-              </Text>
-            ))
-          ) : isRunning ? (
-            <Text>
-              <Text color={activeGold}>$ </Text>
-              <Text color={theme.text_faint || '#86868b'}>
-                Process executing... output will stream here
-              </Text>
-            </Text>
-          ) : (
-            <Text color={theme.text_faint || '#86868b'}>
-              (No recent output to display)
-            </Text>
-          )}
-        </Box>
-      </Box>
-
-      {/* 6. Controls / Action Buttons */}
-      <Box flexDirection="row" justifyContent="center" marginBottom={1}>
-        {isRunning ? (
+      {/* 4. Controls */}
+      <Box flexDirection="row" justifyContent="flex-end" marginBottom={0}>
+        {isRunning && (
           <Box marginRight={2}>
             <Text backgroundColor="#b91c1c" color="#ffffff" bold>
-              {'  ⏹ Cancel Action [C]  '}
-            </Text>
-          </Box>
-        ) : (
-          <Box marginRight={2}>
-            <Text backgroundColor="#2a2020" color="#555555">
-              {'  ⏹ Cancel Action [C]  '}
+              {' [C] Cancel Action '}
             </Text>
           </Box>
         )}
-        <Box>
-          <Text backgroundColor="#2c2c2e" color="#f5f5f7" bold>
-            {'  Close [Esc]  '}
-          </Text>
-        </Box>
+        <Text color={theme.text_faint}>[Esc / Enter] Close</Text>
       </Box>
     </Box>
   );

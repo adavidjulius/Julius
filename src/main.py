@@ -90,7 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
     exec_tool_parser.add_argument('payload')
 
     from .agent_config import get_default_provider, SUPPORTED_PROVIDERS
-    agent_parser = subparsers.add_parser('agent', help='launch the autonomous web agent')
+    agent_parser = subparsers.add_parser('agent', help='launch the autonomous AI copilot')
     agent_parser.add_argument('task', help='the task to accomplish')
     agent_parser.add_argument('--provider', default=get_default_provider(), choices=list(SUPPORTED_PROVIDERS))
     agent_parser.add_argument('--max-steps', type=int, default=None)
@@ -242,5 +242,9 @@ def main(argv: list[str] | None = None) -> int:
     return 2
 
 
-if __name__ == '__main__':
+def cli_entrypoint() -> None:
     raise SystemExit(main())
+
+
+if __name__ == '__main__':
+    cli_entrypoint()

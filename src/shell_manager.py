@@ -53,6 +53,11 @@ class StatefulShell:
         shell_env = dict(self.env if self.env is not None else os.environ)
         shell_env['TERM'] = 'dumb'
         shell_env['PAGER'] = 'cat'
+        shell_env['GIT_PAGER'] = 'cat'
+        shell_env['CI'] = '1'
+        shell_env['DEBIAN_FRONTEND'] = 'noninteractive'
+        shell_env['PYTHONUNBUFFERED'] = '1'
+        shell_env['npm_config_yes'] = 'true'
         # Ensure project virtual environment and standard system paths are present in PATH
         current_path = shell_env.get('PATH', '')
         venv_bin = os.path.join(self.workspace_root, ".venv", "bin")
@@ -152,13 +157,45 @@ class StatefulShell:
             except Exception:
                 pass
 
+    def _sanitize_and_close_command(self, command: str) -> str:
+        """
+        Ensure the command does not leave unclosed here-documents, unclosed quotes,
+        or unbalanced syntax that would cause bash to hang waiting on stdin/secondary prompt.
+        """
+        clean_cmd = command.rstrip()
+
+        # 1. Detect unclosed here-documents: << 'EOF', << "EOF", << EOF, << 'PYEOF'
+        here_matches = list(re.finditer(r'<<-?\s*[\'"]?([A-Za-z0-9_]+)[\'"]?', clean_cmd))
+        for m in here_matches:
+            delimiter = m.group(1)
+            # Check if delimiter appears as a standalone line after the << declaration
+            post_match = clean_cmd[m.end():]
+            lines_after = [l.strip() for l in post_match.splitlines()]
+            if delimiter not in lines_after:
+                logger.warning(f"StatefulShell: Auto-closing unclosed here-doc delimiter '{delimiter}' to prevent PTY hang")
+                clean_cmd += f"\n{delimiter}\n"
+
+        # 2. Check for unbalanced single quotes
+        single_quotes = len(re.findall(r"(?<!\\)'", clean_cmd))
+        if single_quotes % 2 != 0:
+            logger.warning("StatefulShell: Auto-closing unclosed single quote to prevent PTY hang")
+            clean_cmd += "'\n"
+
+        # 3. Check for unbalanced double quotes
+        double_quotes = len(re.findall(r'(?<!\\)"', clean_cmd))
+        if double_quotes % 2 != 0:
+            logger.warning("StatefulShell: Auto-closing unclosed double quote to prevent PTY hang")
+            clean_cmd += '"\n'
+
+        return clean_cmd
+
     def _execute_command_locked(self, command: str, timeout: int) -> tuple[bool, str]:
         """Internal: execute a command while holding the lock."""
         if not self._pty_active:
             return self._execute_stateless(command, timeout)
 
         sentinel = "JULIUS_DONE"
-        clean_cmd = command.rstrip()
+        clean_cmd = self._sanitize_and_close_command(command.rstrip())
         full_cmd = f"{clean_cmd}\necho {sentinel}_$?_\n"
         payload = full_cmd.encode('utf-8')
 
@@ -250,6 +287,13 @@ class StatefulShell:
                         if match:
                             exit_code = int(match.group(1))
                             break
+
+                        # Break secondary prompt stalls (e.g. bash waiting on unclosed syntax)
+                        if output.rstrip().endswith(('>', '> ', '>>', '>> ')):
+                            try:
+                                os.write(self.master_fd, b"\n\x03")
+                            except OSError:
+                                pass
                     else:
                         break
                 except (OSError, BlockingIOError):

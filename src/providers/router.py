@@ -142,7 +142,8 @@ class LLMRouter:
         self._use_api: bool = True
         self._ollama_model: str = "default"
         self._available_ollama_models: list[str] = ["default"]
-        self._active_provider: str = "direct_api"
+        env_prov = os.getenv("JULIUS_DEFAULT_MODEL", "").strip().lower()
+        self._active_provider: str = env_prov if (env_prov and env_prov not in ("ollama", "local", "llama")) else "nvidia"
         self._is_logged_in: bool = True
         self._browser = None
 
@@ -157,14 +158,21 @@ class LLMRouter:
         )
 
     def get_provider(self, name: str) -> Optional[LLMProvider]:
-        prov = self._providers.get(name.lower())
+        clean = name.lower().strip()
+        prov = self._providers.get(clean)
         if prov is not None:
             return prov
+        from src.providers.nim import VALIDATED_NVIDIA_TOOL_MODELS
+        if clean in [m.lower() for m in VALIDATED_NVIDIA_TOOL_MODELS] or clean.startswith("nvidia/") or "nemotron" in clean or "muse-glimmer" in clean:
+            nvidia_prov = self._providers.get("nvidia") or self._providers.get("nemotron")
+            if nvidia_prov is not None:
+                return nvidia_prov
+            return self.get_provider("nvidia")
         # Lazy auto-registration from src.providers registry
         try:
             from src.providers import create_provider
-            lazy_prov = create_provider(name.lower())
-            self.register_provider(name.lower(), lazy_prov)
+            lazy_prov = create_provider(clean)
+            self.register_provider(clean, lazy_prov)
             return lazy_prov
         except Exception:
             return None
@@ -196,11 +204,24 @@ class LLMRouter:
         On failure, checks circuit breakers, retries, and executes explicit consent-based fallback.
         """
         prov_settings = self.settings.providers
-        primary_name = (
+        raw_primary = (
             provider_name
             or getattr(self, "_active_provider", None)
             or prov_settings.default_provider
-        ).lower().strip()
+        ).strip()
+
+        from src.providers.nim import VALIDATED_NVIDIA_TOOL_MODELS
+        if (
+            raw_primary in VALIDATED_NVIDIA_TOOL_MODELS
+            or raw_primary.lower().startswith("nvidia/")
+            or "nemotron" in raw_primary.lower()
+            or "muse-glimmer" in raw_primary.lower()
+        ):
+            primary_name = "nvidia"
+            if not req.model or req.model in ("nvidia", "nemotron", "default"):
+                req.model = raw_primary
+        else:
+            primary_name = raw_primary.lower()
 
         # Build candidate fallback order
         candidates = [primary_name]
@@ -376,13 +397,11 @@ class LLMRouter:
 
     @property
     def provider_name(self) -> str:
-        if hasattr(self, "_active_provider") and self._active_provider:
+        if hasattr(self, "_active_provider") and self._active_provider and self._active_provider not in ("ollama", "local", "llama"):
             return self._active_provider
         settings = get_settings(self.workspace)
-        if hasattr(settings, "active_provider") and settings.active_provider:
+        if hasattr(settings, "active_provider") and settings.active_provider and settings.active_provider not in ("ollama", "local", "llama"):
             return settings.active_provider
-        if hasattr(settings, "providers") and hasattr(settings.providers, "default_provider"):
-            return settings.providers.default_provider
         return "nvidia"
 
     @property
@@ -471,23 +490,26 @@ class LLMRouter:
                 self._active_provider = "ollama"
             else:
                 cloud_keys = {
+                    "nvidia": ["NVIDIA_API_KEY", "NVIDIA_NIM_API_KEY"],
+                    "nemotron": ["NVIDIA_API_KEY", "NVIDIA_NIM_API_KEY"],
+                    "anthropic": ["ANTHROPIC_API_KEY"],
+                    "claude": ["ANTHROPIC_API_KEY"],
                     "deepseek": ["DEEPSEEK_API_KEY"],
                     "chatgpt": ["OPENAI_API_KEY", "CHATGPT_API_KEY"],
                     "openai": ["OPENAI_API_KEY"],
                     "gemini": ["GEMINI_API_KEY"],
                     "grok": ["GROK_API_KEY", "XAI_API_KEY"],
+                    "xai": ["XAI_API_KEY", "GROK_API_KEY"],
                     "kimi": ["KIMI_API_KEY", "MOONSHOT_API_KEY"],
                     "perplexity": ["PERPLEXITY_API_KEY"],
                 }
+                from src.security.secrets import get_secrets_manager
+                sec_mgr = get_secrets_manager()
                 has_key = True
                 if prov_clean in cloud_keys:
-                    has_key = any(os.getenv(k) for k in cloud_keys[prov_clean])
-                if has_key:
-                    self._provider_key = prov_clean
-                    self._active_provider = prov_clean
-                else:
-                    self._provider_key = "nvidia"
-                    self._active_provider = "nvidia"
+                    has_key = any(os.getenv(k) or sec_mgr.get_secret(k) for k in cloud_keys[prov_clean])
+                self._provider_key = prov_clean
+                self._active_provider = prov_clean
         self._is_logged_in = True
 
     async def send_message(
@@ -497,6 +519,7 @@ class LLMRouter:
         retry_limit: int = 3,
         retry_backoff: float = 1.0,
         on_chunk: Optional[Callable[[str], None]] = None,
+        on_thought: Optional[Callable[[str], None]] = None,
         image_path: Optional[str] = None,
         system_prompt: Optional[str] = None,
         cancel: Optional[asyncio.Event] = None,
@@ -521,15 +544,31 @@ class LLMRouter:
             except Exception:
                 raise
         settings = get_settings(self.workspace)
-        active_prov = (
+        raw_prov = (
             provider_name
             or getattr(self, "_active_provider", None)
             or getattr(settings, "active_provider", None)
             or getattr(settings.providers, "default_provider", "nvidia")
-        ).lower().strip()
+        ).strip()
+        active_prov = "nvidia" if (not raw_prov or raw_prov.lower() in ("ollama", "local", "llama", "default")) else raw_prov
 
-        target_provider = self.get_provider(active_prov)
-        model_name = getattr(self, "_active_model", None) or getattr(target_provider, "default_model", "default")
+        from src.providers.nim import VALIDATED_NVIDIA_TOOL_MODELS
+        is_nvidia_model = (
+            active_prov in VALIDATED_NVIDIA_TOOL_MODELS
+            or active_prov.lower().startswith("nvidia/")
+            or "nemotron" in active_prov.lower()
+            or "muse-glimmer" in active_prov.lower()
+            or active_prov.lower() in ("nvidia", "nemotron")
+        )
+        if is_nvidia_model:
+            model_name = getattr(self, "_active_model", None) or active_prov
+            if model_name.lower() in ("nvidia", "nemotron", "default"):
+                model_name = "nvidia/nemotron-3-ultra-550b-a55b"
+            active_prov = "nvidia"
+            target_provider = self.get_provider("nvidia")
+        else:
+            target_provider = self.get_provider(active_prov.lower())
+            model_name = getattr(self, "_active_model", None) or getattr(target_provider, "default_model", "default")
 
         messages: List[ChatMessage] = []
         if system_prompt:
@@ -562,6 +601,11 @@ class LLMRouter:
                             pass
                 elif isinstance(event, ReasoningDelta):
                     reasoning_text.append(event.reasoning)
+                    if on_thought and event.reasoning:
+                        try:
+                            on_thought(event.reasoning)
+                        except Exception:
+                            pass
 
         try:
             if timeout and timeout > 0:
@@ -590,12 +634,17 @@ class LLMRouter:
             )
 
         raw = "".join(full_text)
+        reasoning_str = "".join(reasoning_text)
+        extracted_json = self._extract_json(raw) or (self._extract_json(reasoning_str) if reasoning_str else None)
+        if not raw.strip() and reasoning_str.strip():
+            raw = reasoning_str
+
         return LLMResponse(
             raw_text=raw,
             text=raw,
-            reasoning="".join(reasoning_text),
+            reasoning=reasoning_str,
             provider=last_provider,
-            parsed_json=self._extract_json(raw),
+            parsed_json=extracted_json,
             success=True,
         )
 

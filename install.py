@@ -36,16 +36,24 @@ from src.platform_compat import (
     python_executable,
 )
 
-BANNER = r"""
-      _       _ _           
-     | |     | (_)          
-     | |_   _| |_ _   _ ___ 
- _   | | | | | | | | | / __|
-| |__| | |_| | | | |_| \__ \
- \____/ \__,_|_|_|\__,_|___/
+COLOR_JULIUS = "\033[38;2;200;184;150m"
+COLOR_RESET = "\033[0m"
 
-  Autonomous Web Agent — Universal Installer (Python)
+JULIUS_BANNER = r"""
+  ╔═════╗ ╔╗   ╔╗ ╔╗      ╔═════╗ ╔╗   ╔╗ ╔═════╗
+  ╚══╗  ║ ║║   ║║ ║║      ╚═╗ ╔═╝ ║║   ║║ ║ ╔═══╝
+     ║  ║ ║║   ║║ ║║        ║ ║   ║║   ║║ ║ ╚═══╗
+     ║  ║ ║║   ║║ ║║        ║ ║   ║║   ║║ ╚═══╗ ║
+  ╔══╝  ║ ║╚═══╝║ ║╚════╗ ╔═╝ ╚═╗ ║╚═══╝║ ╔═══╝ ║
+  ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚═════╝
 """
+JULIUS_COMPACT_BANNER = "  ━━━  J U L I U S  ━━━"
+
+
+def get_banner(subtitle: str = "Autonomous AI Copilot — Universal Installer (Python)") -> str:
+    cols = shutil.get_terminal_size((80, 24)).columns
+    banner_art = JULIUS_COMPACT_BANNER if cols < 52 else JULIUS_BANNER.strip("\n")
+    return f"{COLOR_JULIUS}{banner_art}\n  {subtitle}{COLOR_RESET}\n"
 
 
 def _safe_print(text: str) -> None:
@@ -91,7 +99,7 @@ def main() -> int:
     parser.add_argument("--python", default=None, help="Custom Python binary to use")
     args = parser.parse_args()
 
-    _safe_print(f"\033[1;33m{BANNER}\033[0m")
+    _safe_print(get_banner())
     total_steps = 5
 
     # 1. Environment & Platform check
@@ -183,14 +191,19 @@ def main() -> int:
         else:
             log_warn(f"Verification output: {res.stderr}")
 
+    if sys.stdin.isatty() and not os.environ.get("CI"):
+        try:
+            from src.cli.setup_wizard import run_first_run_setup
+            run_first_run_setup(str(PROJECT_ROOT))
+        except Exception:
+            pass
+
     print("\n\033[1;32mInstallation Complete!\033[0m")
     print("---------------------------------------------------------")
     if IS_WINDOWS:
-        print("Launch Julius CLI / TUI:     .\\julius.ps1  or  python julius.py")
-        print("Launch Julius GUI:           .\\.venv\\Scripts\\python.exe julius_gui.py")
+        print("Launch Julius:     .\\julius.cmd  or  python julius.py")
     else:
-        print("Launch Julius CLI / TUI:     ./julius  or  python3 julius.py")
-        print("Launch Julius GUI:           ./.venv/bin/python julius_gui.py")
+        print("Launch Julius:     julius  or  ./julius")
     print("---------------------------------------------------------\n")
     return 0
 

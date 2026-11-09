@@ -29,6 +29,19 @@ from typing import Any, Callable, Optional
 logger = logging.getLogger(__name__)
 
 
+# ── Permission Modes (WS1.1 / WS1.2) ──────────────────────────────────────────
+
+class PermissionMode(str, Enum):
+    BYPASS = "bypass"
+    ACCEPT = "accept"
+    AUTO = "auto"
+    NORMAL = "normal"
+    EDIT = "edit"
+    PLAN = "plan"
+    MANUAL = "manual"
+    STRICT = "strict"
+
+
 # ── Danger classification ─────────────────────────────────────────────────────
 
 class DangerLevel(str, Enum):
@@ -216,10 +229,12 @@ class PermissionGate:
         emit_event: Optional[Callable] = None,
         allowlist_path: str | Path | None = None,
         default_timeout: float = 120.0,
+        mode: PermissionMode = PermissionMode.NORMAL,
     ) -> None:
         self._emit = emit_event
         self._allowlist = load_allowlist(allowlist_path)
         self._default_timeout = default_timeout
+        self.mode = mode
 
         # Session-level auto-approvals (set by "Approve Session")
         self._session_approvals: set[str] = set()
@@ -228,10 +243,23 @@ class PermissionGate:
         self._pending: dict[str, asyncio.Future[PermissionResponse]] = {}
 
         logger.info(
-            "PermissionGate initialised (allowlist_rules=%d, timeout=%.0fs)",
+            "PermissionGate initialised (mode=%s, allowlist_rules=%d, timeout=%.0fs)",
+            self.mode.value,
             len(self._allowlist),
             self._default_timeout,
         )
+
+    def set_mode(self, mode: PermissionMode | str) -> None:
+        """Switch active permission mode (bypass, normal, plan, strict)."""
+        if isinstance(mode, str):
+            try:
+                self.mode = PermissionMode(mode.lower().strip())
+            except ValueError:
+                logger.warning(f"Unknown permission mode '{mode}', defaulting to normal")
+                self.mode = PermissionMode.NORMAL
+        else:
+            self.mode = mode
+        logger.info(f"PermissionGate switched to mode: {self.mode.value}")
 
     async def request_permission(
         self,
@@ -242,40 +270,39 @@ class PermissionGate:
         server_name: str = "",
         tool_name: str = "",
     ) -> PermissionResponse:
-        """Request user permission for an action.
+        """Request user permission for an action according to active mode."""
+        # ── Mode check: BYPASS / ACCEPT auto-approves all actions without restriction ──
+        if self.mode in (PermissionMode.BYPASS, PermissionMode.ACCEPT):
+            logger.debug("Accept/Bypass mode: auto-approving %s without restriction", action_type.value)
+            return PermissionResponse.APPROVE_ONCE
 
-        This method pauses the calling coroutine until the user responds or
-        the timeout expires. The worker coroutine is *not* terminated — it
-        simply awaits the gate.
+        # ── Mode check: PLAN blocks all mutating operations ───────────────
+        if self.mode == PermissionMode.PLAN:
+            if action_type in (ActionType.BASH_COMMAND, ActionType.FILE_WRITE, ActionType.FILE_DELETE, ActionType.GIT_OPERATION):
+                logger.warning("Plan mode active: blocked mutating action %s: %s", action_type.value, payload[:60])
+                return PermissionResponse.REJECT
 
-        Args:
-            action_type: Category of action being requested.
-            payload: The command/content/arguments to display.
-            description: Human-readable description.
-            timeout: Override default timeout (seconds).
-            server_name: MCP server name for allowlist matching.
-            tool_name: MCP tool name for allowlist matching.
-
-        Returns:
-            A ``PermissionResponse`` indicating the user's decision.
-        """
         # ── Auto-grant: read-only MCP tools from allowlist ────────────────
-        if action_type == ActionType.MCP_CALL and tool_name:
+        if self.mode not in (PermissionMode.STRICT, PermissionMode.MANUAL) and action_type == ActionType.MCP_CALL and tool_name:
             if is_auto_approved(tool_name, server_name, self._allowlist):
                 logger.debug("Auto-approved MCP call: %s (server: %s)", tool_name, server_name)
                 return PermissionResponse.APPROVE_ONCE
 
         # ── Session-level approval shortcut ───────────────────────────────
         approval_key = f"{action_type.value}:{tool_name or payload[:64]}"
-        if approval_key in self._session_approvals:
+        if self.mode not in (PermissionMode.STRICT, PermissionMode.MANUAL) and approval_key in self._session_approvals:
             logger.debug("Session-approved: %s", approval_key)
             return PermissionResponse.APPROVE_SESSION
 
         # ── Classify danger ───────────────────────────────────────────────
         danger_level = classify_danger(action_type, payload)
 
-        # Auto-grant LOW danger actions
-        if danger_level == DangerLevel.LOW:
+        # Auto-grant LOW/MEDIUM danger actions in AUTO/NORMAL mode
+        if self.mode in (PermissionMode.AUTO, PermissionMode.NORMAL) and danger_level in (DangerLevel.LOW, DangerLevel.MEDIUM):
+            return PermissionResponse.APPROVE_ONCE
+
+        # In EDIT mode, auto-grant file writes/edits within workspace
+        if self.mode == PermissionMode.EDIT and action_type == ActionType.FILE_WRITE and danger_level == DangerLevel.LOW:
             return PermissionResponse.APPROVE_ONCE
 
         # ── Build the permission request ──────────────────────────────────

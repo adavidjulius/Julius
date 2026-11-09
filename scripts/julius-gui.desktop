@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Julius Agent
-Comment=Autonomous Web Agent (Julius)
+Comment=Autonomous AI Copilot (Julius)
 Exec=julius-gui
 Icon=julius
 Terminal=false

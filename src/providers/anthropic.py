@@ -72,7 +72,8 @@ class AnthropicProvider(LLMProvider):
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=120, connect=15, sock_read=60))
+            # Generous timeout for long streaming LLM generation (600s total, 120s socket read)
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=600, connect=20, sock_read=120))
         return self._session
 
     def _convert_messages(self, req: ChatRequest) -> tuple[Optional[str], List[Dict[str, Any]]]:

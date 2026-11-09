@@ -106,9 +106,16 @@ Available Commands:
 def parse_args():
     # Create argument parser describing Julius CLI
     parser = argparse.ArgumentParser(
-        description="Julius - Autonomous web-chat coding and reasoning agent",
+        description="Julius - Autonomous AI system copilot & reasoning agent",
         # Use argument defaults formatter
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    # Add version flag
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="Julius 2.0.0",
+        help="Show Julius version and exit"
     )
     # Add optional positional argument for initial task / command
     parser.add_argument(

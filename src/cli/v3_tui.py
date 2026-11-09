@@ -71,58 +71,43 @@ KNOWN_SLASH_COMMANDS = {
 }
 
 AVAILABLE_MODELS = {
-    "nvidia": {
-        "name": "NVIDIA Nemotron 550B",
-        "description": "NVIDIA NIM Build Free API (550B reasoning & code)",
+    "nvidia/nemotron-3-ultra-550b-a55b": {
+        "name": "Nemotron 3 Ultra 550B",
+        "description": "NVIDIA NIM · 550B Flagship Reasoning & Tool Calling (Free)",
         "badge": "nvidia",
     },
-    "deepseek": {
-        "name": "DeepSeek V3 / R1",
-        "description": "DeepSeek reasoning & general agent (Web & API)",
-        "badge": "deepseek",
+    "nvidia/nemotron-3.5-lightning-30b-a3b": {
+        "name": "Nemotron 3.5 Lightning 30B",
+        "description": "NVIDIA NIM · Fast 30B Native Tool Specialist",
+        "badge": "nvidia",
     },
-    "gemini": {
-        "name": "Google Gemini 2.5",
-        "description": "Multimodal Flash & Pro with live vision (Web & API)",
-        "badge": "gemini",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": {
+        "name": "Nemotron 3 Nano Omni 30B",
+        "description": "NVIDIA NIM · 30B Multimodal Reasoning & Tools",
+        "badge": "nvidia",
     },
-    "chatgpt": {
-        "name": "OpenAI ChatGPT-4o",
-        "description": "OpenAI flagship general intelligence (Web & API)",
-        "badge": "chatgpt",
+    "nvidia/nemotron-3.5-bolt-e4b": {
+        "name": "Nemotron 3.5 Bolt",
+        "description": "NVIDIA NIM · High-Efficiency Execution & Tools",
+        "badge": "nvidia",
     },
-    "grok": {
-        "name": "xAI Grok",
-        "description": "Real-time search & reasoning (Web & API)",
-        "badge": "grok",
-    },
-    "kimi": {
-        "name": "Moonshot Kimi K3",
-        "description": "Long-context & math specialist (Web & API)",
-        "badge": "kimi",
-    },
-    "perplexity": {
-        "name": "Perplexity Sonar",
-        "description": "Online citation & deep research (Web & API)",
-        "badge": "perplexity",
-    },
-    "ollama": {
-        "name": "Local Ollama LLM",
-        "description": "Private LAN uncensored neural reasoning (DeepSeek R1 14B / Lexi)",
-        "badge": "ollama",
+    "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+        "name": "Nemotron 3.5 Super VL 120B",
+        "description": "NVIDIA NIM · Multimodal Vision & Reasoning Tools",
+        "badge": "nvidia",
     },
 }
 
 MODEL_ALIASES = {
-    "nvidia-nim": "nvidia",
-    "nemotron": "nvidia",
-    "nemotron-550b": "nvidia",
-    "nvidia-550b": "nvidia",
-    "550b": "nvidia",
-    "aifree": "aifreeforever",
-    "deepseek-v4-flash": "aifreeforever",
-    "free-deepseek": "aifreeforever",
-    "v4-flash": "aifreeforever",
+    "nvidia": "nvidia/nemotron-3-ultra-550b-a55b",
+    "nemotron": "nvidia/nemotron-3-ultra-550b-a55b",
+    "nemotron-550b": "nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia-550b": "nvidia/nemotron-3-ultra-550b-a55b",
+    "550b": "nvidia/nemotron-3-ultra-550b-a55b",
+    "lightning": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "omni": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "bolt": "nvidia/nemotron-3.5-bolt-e4b",
+    "super-vl": "nvidia/nemotron-3.5-super-vl-120b-a12b",
     "gpt": "chatgpt",
     "gpt4": "chatgpt",
     "gpt-4": "chatgpt",
@@ -776,7 +761,7 @@ class JuliusCLIV3App(App):
         ]
         for line in banner_lines:
             banner_text.append(f"{line}\n", style="bold #c8b896")
-        banner_text.append("\n  Autonomous Web-Chat & Coding Agent", style="dim #a1a1aa")
+        banner_text.append("\n  Autonomous AI Copilot & Coding Partner", style="dim #a1a1aa")
 
         tips_text = Text()
         tips_text.append("💡 Quick Tips & Commands\n\n", style="bold #c8b896")

@@ -87,9 +87,9 @@ def build_workspace_context(workspace_root: str) -> str:
         try:
             content = progress_path.read_text(errors='replace')
             line_count = len(content.splitlines())
-            parts.append(f'**Task Tracking**: `progress.txt` present ({line_count} lines) — check for prior work before starting.')
+            parts.append(f'**Task Tracking**: `progress.txt` present ({line_count} lines) — reference when roadmap or feature tracking is requested.')
         except OSError:
-            parts.append('**Task Tracking**: `progress.txt` present — check for prior work.')
+            parts.append('**Task Tracking**: `progress.txt` present — reference when roadmap or feature tracking is requested.')
 
     # ── Ecosystem detection ───────────────────────────────────────
     detected_ecosystems: list[str] = []
@@ -134,9 +134,11 @@ def build_workspace_context(workspace_root: str) -> str:
         parts.append('')
         parts.append(
             '> CURRENT FRAMEWORK ENVIRONMENT: You are working inside the '
-            "'Julius' agent workspace. Project dependencies and entry points "
-            'are tracked via `prd.json` and `progress.txt`. Always check these '
-            'files for context before starting a new task.'
+            "'Julius' workspace. Note: Only inspect project tracking files "
+            '(`prd.json`, `progress.txt`) when the user explicitly requests project-level '
+            'planning, roadmap status, or feature tracking. For conversational queries, '
+            'follow-up questions, or specific system commands, respond directly without '
+            'consulting workspace tracking files.'
         )
 
     return '\n'.join(parts) if len(parts) > 1 else ''

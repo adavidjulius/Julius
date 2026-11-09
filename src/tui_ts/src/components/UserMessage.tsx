@@ -39,7 +39,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
     >
       <Box
         borderStyle="single"
-        borderColor={(theme as any).border_subtle || '#28282e'}
+        borderColor={theme.border_subtle || '#28282e'}
         borderDimColor={true}
         paddingLeft={1}
         paddingRight={1}

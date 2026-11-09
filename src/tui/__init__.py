@@ -2,7 +2,12 @@
 Julius TUI Package: Next-Gen Julius Terminal Interface.
 """
 
-from .app import JuliusApp, StreamPanel, JuliusTUI
+try:
+    from .app import JuliusApp, StreamPanel, JuliusTUI
+except ImportError:
+    JuliusApp = None  # type: ignore
+    StreamPanel = None  # type: ignore
+    JuliusTUI = None  # type: ignore
 from .theme import ThemeTokens, get_theme, DARK_THEME, LIGHT_THEME
 from .motion import MotionPresets, is_reduced_motion
 from .markdown import (

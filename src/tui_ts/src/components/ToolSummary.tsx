@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 import type { ThemeTokens, ToolExecutionRecord } from '../types.js';
 import { DARK_THEME } from '../theme/tokens.js';
+import { shouldShowHint } from '../utils/hintManager.js';
 
 export interface ToolSummaryProps {
   tools: ToolExecutionRecord[];
@@ -90,7 +91,8 @@ export const ToolSummary: React.FC<ToolSummaryProps> = ({
       if (line.length > maxCmdLen) maxCmdLen = line.length;
     }
   }
-  const dynamicCardWidth = Math.min(Math.min(76, maxAllowedWidth), Math.max(30, maxCmdLen + 8));
+  const minCardWidth = Math.min(48, maxAllowedWidth);
+  const dynamicCardWidth = Math.min(Math.min(76, maxAllowedWidth), Math.max(minCardWidth, maxCmdLen + 8));
 
   return (
     <Box
@@ -129,9 +131,11 @@ export const ToolSummary: React.FC<ToolSummaryProps> = ({
             <Text bold color={activeGold}>
               ● Executed Command{count > 1 ? 's' : ''}
             </Text>
-            <Text color={theme.text_faint}>
-              [Ctrl+O: collapse]
-            </Text>
+            {shouldShowHint('ctrl_o') && (
+              <Text color={theme.text_faint}>
+                [Ctrl+O: collapse]
+              </Text>
+            )}
           </Box>
 
           {/* Clean command list in Sky Blue (#38bdf8) with Brand Gold prompt ($ ) */}

@@ -1,7 +1,7 @@
 Name:           julius-agent
 Version:        1.0.0
 Release:        1%{?dist}
-Summary:        Autonomous Web Agent (Julius)
+Summary:        Autonomous AI Copilot (Julius)
 License:        MIT
 URL:            https://github.com/JuliusAgent/Julius
 BuildArch:      noarch
@@ -14,7 +14,7 @@ Requires:       portaudio
 Requires:       systemd
 
 %description
-An autonomous web agent and helper that executes coding tasks, handles undos, and runs tests.
+An autonomous AI copilot and system partner that executes coding tasks, handles undos, and runs tests.
 
 %install
 # Create directories

@@ -145,13 +145,9 @@ def check_ollama_online_sync(timeout: float = 0.5) -> bool:
 def get_default_provider() -> ProviderName:
     """Dynamically determine default provider: NVIDIA Nemotron 550B Build Free API is the primary default."""
     env_default = os.getenv("JULIUS_DEFAULT_MODEL", "").strip().lower()
-    # If user explicitly requested local model
-    if env_default in ("ollama", "llama", "local"):
-        # Return ollama
-        return "ollama"
-    # If environment default is in supported providers list
-    if env_default in SUPPORTED_PROVIDERS:
-        # Return the requested supported provider
+    if env_default in ("nvidia", "nemotron", "nvidia-nim", "nim"):
+        return "nvidia"
+    if env_default in SUPPORTED_PROVIDERS and env_default not in ("ollama", "llama", "local"):
         return env_default  # type: ignore
 
     # NVIDIA Nemotron 550B (Build Free API) is the primary default provider.
@@ -161,7 +157,7 @@ def get_default_provider() -> ProviderName:
 # Dataclass holding all configuration settings for the autonomous WebAgent
 @dataclass
 class AgentConfig:
-    """Full configuration for the autonomous web agent."""
+    """Full configuration for the autonomous AI copilot."""
 
     # ── LLM Provider ──────────────────────────────────────────────
     # Active neural reasoning model provider
@@ -202,7 +198,7 @@ class AgentConfig:
     # Maximum characters of terminal output to return in observation prompt
     max_bash_output_chars: int = 8000  # truncate bash output
     # Maximum seconds before a bash command execution times out
-    bash_timeout: int = 25  # seconds per bash command (capped to prevent frozen TUI sessions)
+    bash_timeout: int = 60  # seconds per bash command (prevents premature timeouts on builds/tests)
 
     # ── Sandbox (Phase 2) ─────────────────────────────────────────
     # Whether to isolate execution inside a Docker container

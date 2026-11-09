@@ -66,7 +66,7 @@ class ChatRequest:
     model: str
     tools: Optional[List[ToolDefinition]] = None
     temperature: float = 0.2
-    max_tokens: Optional[int] = 4096
+    max_tokens: Optional[int] = 8192
     stream: bool = True
     json_mode: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)

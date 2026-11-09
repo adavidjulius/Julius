@@ -40,6 +40,7 @@ htmlcov/
 # ── Node & JavaScript ───────────────────────────────────────────────────────
 node_modules/
 **/node_modules/
+node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -141,6 +142,7 @@ Julius OS/tools/*.dex
 Julius OS/log/
 
 # ── Local Test Scratch Artifacts ─────────────────────────────────────────────
+.julius/test_scratch/
 audit_report.json
 camera_capture.jpg
 current_state.png

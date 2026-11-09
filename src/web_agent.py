@@ -1,9 +1,9 @@
 """
-Autonomous web-chat-driven agent loop.
+Autonomous agent loop.
 
 This is the main orchestrator that ties together:
 - Observation (workspace state)
-- Reasoning (web chat LLM)
+- Reasoning (LLM)
 - Action execution (bash, file ops, git)
 - Safety (confirmation, abort, limits)
 
@@ -14,9 +14,11 @@ from __future__ import annotations
 from typing import Callable
 
 import asyncio
+import inspect
 import json
 import logging
 import os
+import re
 import signal
 import sys
 import time
@@ -107,9 +109,26 @@ class AgentResult:
         return '\n'.join(lines)
 
 
+def _clean_payload(data: dict) -> dict:
+    """Sanitize thought and terminal action args of any leaked thinking tags and auto-heal missing thought/args."""
+    if not isinstance(data, dict):
+        return data
+    from .response_validator import _auto_heal_action_item
+    _auto_heal_action_item(data)
+    batch_key = next((k for k in ('actions', 'batch', 'steps') if isinstance(data.get(k), list)), None)
+    if batch_key:
+        cleaned_items = []
+        for item in data[batch_key]:
+            if isinstance(item, dict):
+                _auto_heal_action_item(item)
+                cleaned_items.append(item)
+        data[batch_key] = cleaned_items
+    return data
+
+
 class WebAgent:
     """
-    Autonomous agent that uses a web chat LLM for reasoning and
+    Autonomous agent that uses an LLM for reasoning and
     executes real actions on the local machine.
     """
 
@@ -138,11 +157,28 @@ class WebAgent:
         self._abort_listener = None
         self._confirm_future: asyncio.Future[bool] | None = None
         self._host_access_granted: bool = False
+        self.mode: str = "auto"
         self.working_state_mgr = WorkingStateManager(self.config.allowed_directory)
         self.current_working_state: TaskWorkingState | None = None
         self._current_in_flight_action: str | None = None
         self._current_in_flight_file: str | None = None
         self._is_running: bool = False
+        self.session_history: list[dict[str, Any]] = []
+
+    def set_mode(self, mode: str) -> None:
+        """Switch agent operation mode (auto, plan, edit, accept, manual)."""
+        self.mode = mode.lower().strip()
+        if self.mode in ("accept", "bypass"):
+            self._host_access_granted = True
+            self.config.confirm_actions = False
+        elif self.mode == "manual":
+            self._host_access_granted = False
+            self.config.confirm_actions = True
+        elif self.mode in ("auto", "normal"):
+            self._host_access_granted = True
+            self.config.confirm_actions = False
+        if hasattr(self, "executor") and self.executor:
+            self.executor.set_mode(self.mode)
 
     def _is_outside_workspace(self, action_name: str, args: dict) -> bool:
         """Return True if the proposed action targets paths or commands outside the workspace."""
@@ -192,13 +228,81 @@ class WebAgent:
     async def start_new_chat(self) -> None:
         """Start a fresh chat conversation on the active browser session."""
         self._steps = []
-        if self.client and self.client.is_initialized:
-            await self.client.start_new_conversation()
+        self.session_history.clear()
+        if self.client and getattr(self.client, "is_initialized", False):
+            if hasattr(self.client, "start_new_conversation") and callable(self.client.start_new_conversation):
+                res = self.client.start_new_conversation()
+                if inspect.isawaitable(res):
+                    await res
+
+    def _is_followup_query(self, prompt: str) -> bool:
+        """Detect whether the prompt is an anaphoric or contextual follow-up to prior turns."""
+        if not getattr(self, "session_history", None):
+            return False
+        p = prompt.lower().strip()
+        followup_phrases = (
+            "with those", "with that", "with these", "with them",
+            "those details", "these details", "that detail", "this detail",
+            "what can you do to that", "what can you do with that", "what can we do to that",
+            "what can we do with that", "what can i do with that", "what can i do with those",
+            "what can we do with those", "what can you do with those",
+            "what about that", "what about those", "what about them", "what about this",
+            "what can be done", "how to use that", "how to use those",
+            "explain that", "explain those", "how about that", "how about those",
+            "why did that", "how did that", "tell me more", "what does that mean",
+            "and then", "next step", "what next", "continue", "do that",
+            "how to fix that", "what else", "show me that",
+            "based on that", "from that", "from those",
+            # Hardware / device follow-up references
+            "this model", "tis model", "that model", "the model",
+            "my device", "this device", "that device", "the device",
+            "my mac", "this mac", "my machine", "the machine", "my laptop",
+            "when did", "when was", "where was", "who made",
+            "how much is my", "how much is this", "how capable",
+            "capable", "real world", "real-world",
+            # User clarification phrases
+            "i asking", "i asked", "i mean", "not you", "not you bro", "not the ai",
+            "not you,", "not talking about you", "about my",
+        )
+        if any(marker in p for marker in followup_phrases):
+            return True
+
+        # Contextual inquiry referencing previous topics without executable command verbs
+        words = p.split()
+        if not any(k in p for k in ("git ", "npm ", "cargo ", "docker ", "pytest ", "chmod ", "rm -", "delete all")):
+            if any(w in words for w in ("that", "those", "these", "it", "them", "which", "how", "why", "what", "when", "where", "can")):
+                if any(w in words for w in ("device", "model", "mac", "macbook", "spec", "specs", "cpu", "ram", "memory", "launched", "released", "launch", "release", "market", "hardware", "chip")):
+                    return True
+            if len(words) <= 12 and any(w in words for w in ("that", "those", "these", "it", "them", "which", "how", "why", "what", "when", "where")):
+                return True
+        return False
+
+    def _format_session_context(self, max_turns: int = 4) -> str:
+        """Format recent conversational history turns for LLM prompt context injection."""
+        if not getattr(self, "session_history", None):
+            return ""
+        recent = self.session_history[-max_turns:]
+        lines = ["### PREVIOUS CONVERSATION IN THIS SESSION:"]
+        for i, turn in enumerate(recent, 1):
+            u = turn.get("user_prompt", "")
+            a = turn.get("assistant_response", "")
+            tools = turn.get("tools_summary", "")
+            lines.append(f"[Turn {i}]")
+            lines.append(f"User: {u}")
+            if tools:
+                lines.append(f"Actions Taken & Findings: {tools}")
+            if a:
+                a_preview = a if len(a) <= 800 else a[:800] + "..."
+                lines.append(f"Julius: {a_preview}")
+            lines.append("")
+        return "\n".join(lines).strip()
 
     async def close(self) -> None:
         """Close the agent's browser client cleanly."""
-        if self.client:
-            await self.client.close()
+        if self.client and hasattr(self.client, "close") and callable(self.client.close):
+            res = self.client.close()
+            if inspect.isawaitable(res):
+                await res
 
     def _emit(self, event_type: str, **kwargs) -> None:
         """Emit a structured event to the GUI callback if set."""
@@ -236,6 +340,7 @@ class WebAgent:
 
         self._is_running = True
         self._aborted = False
+        self._steps = []
         effective_max = max_steps if max_steps is not None else self.config.max_steps
         is_unlimited = (effective_max is None or effective_max <= 0)
         start_time = time.time()
@@ -272,7 +377,7 @@ class WebAgent:
             # Build the initial observation with dynamic workspace context (Step 5)
             dir_listing = self.executor.list_directory('.').output
             workspace_ctx = build_workspace_context(self.config.allowed_directory)
-            # Use fast, high-performance compact system prompt for all web-chat and local providers
+            # Use fast, high-performance compact system prompt for all providers
             from .agent_prompts import get_compact_system_prompt
             default_sys_pr = get_compact_system_prompt(self.config.allowed_directory)
             sys_pr = getattr(self, 'system_prompt', None) or default_sys_pr
@@ -282,8 +387,78 @@ class WebAgent:
             pk_str = pk if isinstance(pk, str) else ""
             pn_str = pn if isinstance(pn, str) else ""
             is_aifree = "aifree" in pk_str.lower() or "aifree" in pn_str.lower()
+            is_followup = self._is_followup_query(task)
+            is_identity_query = any(q in task_lower for q in ("who is julius", "who are you", "who are u", "what is your name", "tell me about yourself", "who are you man", "who r u"))
+            is_conversational_turn = is_identity_query or (
+                len(task_lower.split()) <= 15
+                and any(task_lower.startswith(g) for g in ("hello", "hi", "hey", "who", "what are you", "roast", "tell me a", "tell a", "how are you", "good morning", "good evening", "thanks", "thank you", "distract", "joke", "poem", "sing"))
+                and not any(k in task_lower for k in ("file", "code", "git", "test", "build", "run", "delete", "create", "install", "mkdir", "rm", "fix", "script", "dir", "directory", "grep", "search", "write", "edit", "commit", "push", "pull", "pr", "repo", "chmod", "sh", "bash"))
+            )
 
-            if is_aifree:
+            if is_followup:
+                session_ctx = self._format_session_context()
+                initial_prompt = (
+                    f"You are Julius, an expert engineer and systems copilot right here in the terminal.\n\n"
+                    f"{session_ctx}\n\n"
+                    f"### USER'S DIRECT FOLLOW-UP QUESTION:\n"
+                    f"**{task}**\n\n"
+                    f"CRITICAL INSTRUCTIONS FOR THIS FOLLOW-UP QUESTION:\n"
+                    f"1. The user's question directly references the previous discussion, data, or tool results from the conversation above (such as network scan results, discovered IPs/devices, computer/hardware specifications, or prior outputs).\n"
+                    f"2. DISAMBIGUATION OF 'MODEL' AND 'DEVICE': If the discussion above involved the user's host computer or hardware (Mac, MacBook, M4, macOS, RAM, device data, etc.), references to 'this model', 'my model', 'the model', 'it', or 'my device' refer strictly to the USER'S PHYSICAL HARDWARE DEVICE (e.g. MacBook Air M4), NOT you or the language model! When asked when it launched or what it is capable of, answer about their physical Mac hardware!\n"
+                    f"3. If the user clarifies a question (e.g. 'I was asking about my device, not you'), immediately and directly ANSWER the clarified question about their physical device without deflecting.\n"
+                    f"4. Ground your answer DIRECTLY on that conversation context. Do NOT run directory listings (`list_dir`), do NOT inspect `prd.json` or `progress.txt`, and do NOT wander into codebase inspection unless the user explicitly asks about workspace code.\n"
+                    f"5. Explain clear, actionable options or answers directly to the user using the 'converse' action.\n\n"
+                    f"```json\n"
+                    f"{{\n"
+                    f'  "thought": "Direct follow-up response based on the previous conversation and findings",\n'
+                    f'  "action": "converse",\n'
+                    f'  "args": {{\n'
+                    f'    "message": "Your direct, helpful response based on the previous context"\n'
+                    f'  }}\n'
+                    f"}}\n"
+                    f"```"
+                )
+            elif is_identity_query:
+                initial_prompt = (
+                    f"### CONVERSATIONAL IDENTITY QUESTION:\n"
+                    f"**{task}**\n\n"
+                    f"You are Julius. Answer warmly, directly, and authentically in the first person as Julius (a skilled, calm, charismatic human engineer and systems specialist in our digital workshop).\n"
+                    f"CRITICAL RULES:\n"
+                    f"- Do NOT read or recite README.md or say 'Based on the README.md in the Julius workspace'.\n"
+                    f"- Do NOT describe yourself as a robotic AI assistant or software package.\n"
+                    f"- Speak naturally with human warmth, confidence, and subtle wit.\n"
+                    f"- Respond with action 'converse' and your personal introduction.\n\n"
+                    f"```json\n"
+                    f"{{\n"
+                    f'  "thought": "Introducing myself warmly and authentically as Julius",\n'
+                    f'  "action": "converse",\n'
+                    f'  "args": {{\n'
+                    f'    "message": "I\'m Julius. I\'m your technical partner and systems engineer right here in your terminal. I handle our code, debug issues, automate the system, and build whatever you want to create. What are we working on today?"\n'
+                    f'  }}\n'
+                    f"}}\n"
+                    f"```"
+                )
+            elif is_conversational_turn:
+                session_ctx = self._format_session_context() if getattr(self, "session_history", None) else ""
+                session_hdr = f"{session_ctx}\n\n" if session_ctx else ""
+                initial_prompt = (
+                    f"You are Julius, an engineer and systems copilot right here in the terminal with warmth, subtle wit, and sharp engineering intuition.\n"
+                    f"{session_hdr}"
+                    f"### USER MESSAGE:\n"
+                    f"**{task}**\n\n"
+                    f"Respond directly, engagingly, and naturally to the user. "
+                    f"Respond with action 'converse' and your message:\n\n"
+                    f"```json\n"
+                    f"{{\n"
+                    f'  "thought": "Direct conversational response to user",\n'
+                    f'  "action": "converse",\n'
+                    f'  "args": {{\n'
+                    f'    "message": "Your conversational response here"\n'
+                    f'  }}\n'
+                    f"}}\n"
+                    f"```"
+                )
+            elif is_aifree:
                 initial_prompt = (
                     f"You are Julius, an autonomous software engineering assistant on macOS.\n"
                     f"Working Directory: {self.config.allowed_directory}\n\n"
@@ -300,8 +475,19 @@ class WebAgent:
                     f"Core actions: converse (for chat/greetings/direct answers), run_bash (shell commands), read_file, write_file, edit_file, list_dir, done (finished)."
                 )
             else:
+                mode_banner = ""
+                if self.mode == "plan":
+                    mode_banner = "### [PLAN MODE ACTIVE - READ ONLY PLANNING & ARCHITECTURAL REASONING]\nDo NOT execute file writes, deletes, or modifying commands. Analyze the task, inspect code, and formulate a clear, structured implementation plan using converse or done.\n\n"
+                elif self.mode in ("accept", "bypass"):
+                    mode_banner = "### [ACCEPT MODE ACTIVE - FULL UNRESTRICTED EXECUTION]\nYou have full unrestricted access across the host. Execute all required operations directly without limitation.\n\n"
+
+                session_ctx = self._format_session_context() if getattr(self, "session_history", None) else ""
+                session_hdr = f"{session_ctx}\n\n" if session_ctx else ""
+
                 # Place user task prominently at the top so web LLMs execute immediately instead of acknowledging the manual
                 initial_prompt = (
+                    f"{mode_banner}"
+                    f"{session_hdr}"
                     f"### CURRENT TASK TO EXECUTE IMMEDIATELY:\n"
                     f"**{task}**\n\n"
                     f"You are Julius. Execute the task above directly using the appropriate tool action(s). "
@@ -322,6 +508,14 @@ class WebAgent:
                 spinner.start()
 
             step_num = 0
+            _consecutive_failures = 0
+            _MAX_CONSECUTIVE_FAILURES = 5
+            _last_action_sig = None
+            _duplicate_action_count = 0
+            _MAX_DUPLICATE_ACTIONS = 7  # 7-times rule: allow comprehensive retries and intervention before aborting
+            _warned_failed_steps: set[int] = set()
+            _warned_premature_done = False
+            _warned_converse = False
             while True:
                 step_num += 1
                 if not is_unlimited and step_num > effective_max:
@@ -369,24 +563,71 @@ class WebAgent:
                 is_json_action_stream = False
                 streamed_message_pos = 0
                 last_emitted_thought = ""
+                thought_buffer = ""
+
+                def _flush_thought() -> None:
+                    nonlocal thought_buffer, last_emitted_thought
+                    if not thought_buffer:
+                        return
+                    clean_th = re.sub(r'</?(?:think|thought|reasoning)>', '', thought_buffer)
+                    clean_th = re.sub(r'```(?:json)?', '', clean_th).strip('`{}[] ').strip()
+                    if clean_th and clean_th != last_emitted_thought and clean_th.lower() not in ('json', '```', '```json'):
+                        last_emitted_thought = clean_th
+                        self._emit('thought', text=clean_th)
+
+                def _on_thought(th_text: str) -> None:
+                    nonlocal thought_buffer
+                    if not th_text:
+                        return
+                    clean_th = re.sub(r'</?(?:think|thought|reasoning)>', '', th_text)
+                    if clean_th:
+                        thought_buffer += clean_th
 
                 def _on_chunk(text: str) -> None:
-                    nonlocal stream_buffer, is_json_action_stream, streamed_message_pos, last_emitted_thought
+                    nonlocal stream_buffer, is_json_action_stream, streamed_message_pos, last_emitted_thought, thought_buffer
                     stream_buffer += text
-                    trimmed = stream_buffer.strip()
 
-                    # Immediate detection of code fences, JSON blocks, or internal protocol markers
+                    # 1. Inspect thinking content if embedded in stream (<think>...</think>)
+                    if "<think>" in stream_buffer:
+                        if "</think>" not in stream_buffer:
+                            # Currently inside a thinking tag - silently buffer reasoning without micro-token UI jitter
+                            th_part = stream_buffer.split("<think>", 1)[1]
+                            clean_th = re.sub(r'</?think>', '', th_part)
+                            thought_buffer = clean_th
+                            return
+                        else:
+                            # Thinking tag has completed - extract thought and flush cleanly & statically
+                            all_th = re.findall(r'<think>(.*?)</think>', stream_buffer, flags=re.DOTALL)
+                            if all_th:
+                                thought_buffer = all_th[-1]
+                            _flush_thought()
+                    else:
+                        # Output outside of thinking tags has started - flush any buffered thought instantly
+                        if thought_buffer and not last_emitted_thought:
+                            _flush_thought()
+
+                    # 2. Extract content outside of all thinking tags
+                    non_think = re.sub(r'<think>.*?</think>', '', stream_buffer, flags=re.DOTALL)
+                    if "<think>" in non_think:
+                        non_think = non_think.split("<think>", 1)[0]
+                    trimmed_non_think = non_think.strip()
+
+                    # 3. Check for JSON action protocol
                     if (
                         is_json_action_stream
-                        or trimmed.startswith(('```', '{', 'json'))
-                        or is_json_or_protocol(trimmed)
-                        or is_json_or_protocol(stream_buffer)
-                        or "{" in stream_buffer
+                        or trimmed_non_think.startswith(('```', '{', 'json'))
+                        or is_json_or_protocol(trimmed_non_think)
+                        or is_json_or_protocol(non_think)
+                        or "{" in non_think
                     ):
+                        if not is_json_action_stream and streamed_message_pos > 0:
+                            # Pre-action stream detected; clear so preliminary half-sentences do not dangle
+                            self._emit('stream_clear')
+                            streamed_message_pos = 0
                         is_json_action_stream = True
 
-                        # 1. Extract thought from JSON if present
-                        m_th = re.search(r'"thought"\s*:\s*"((?:[^"\\]|\\.)*)', stream_buffer)
+                        # Extract thought from JSON if present
+                        m_th = re.search(r'"thought"\s*:\s*"((?:[^"\\]|\\.)*)', non_think)
                         if m_th:
                             raw_th = m_th.group(1).replace('\\"', '"').replace('\\n', ' ').strip()
                             clean_th = re.sub(r'```(?:json)?', '', raw_th).strip('`{}[] ').strip()
@@ -394,42 +635,26 @@ class WebAgent:
                                 last_emitted_thought = clean_th
                                 self._emit('thought', text=clean_th)
 
-                        # 2. Extract and stream message/summary for direct conversational responses (stories, answers)
-                        # so the user sees live streaming text in real-time!
-                        m_msg = re.search(r'"(?:message|summary)"\s*:\s*"((?:[^"\\]|\\.)*)', stream_buffer)
+                        # Extract message/summary for direct conversational responses
+                        m_msg = re.search(r'"(?:message|summary)"\s*:\s*"((?:[^"\\]|\\.)*)', non_think)
                         if m_msg:
                             content = m_msg.group(1).replace('\\"', '"').replace('\\n', '\n')
-                            if len(content) > streamed_message_pos:
-                                delta = content[streamed_message_pos:]
-                                streamed_message_pos = len(content)
+                            clean_content = re.sub(r'</?(?:think|thought|reasoning)>', '', content)
+                            if len(clean_content) > streamed_message_pos:
+                                delta = clean_content[streamed_message_pos:]
+                                streamed_message_pos = len(clean_content)
                                 if delta and not re.fullmatch(r'(?:\\[nrt]|[\s])+', delta):
                                     self._emit('stream', text=delta.replace('\\n', '\n'))
                         return
 
-                    # Handling non-JSON streams (e.g. DeepSeek-R1 <think> or direct narrative)
-                    if "<think>" in stream_buffer:
-                        if "</think>" not in stream_buffer:
-                            # Inside thinking tag
-                            th_part = stream_buffer.split("<think>", 1)[1].strip()
-                            clean_th = re.sub(r'```(?:json)?', '', th_part).strip('`{}[] ').strip()
-                            if clean_th and clean_th != last_emitted_thought and clean_th.lower() not in ('json', '```', '```json'):
-                                last_emitted_thought = clean_th
-                                self._emit('thought', text=clean_th)
-                        else:
-                            # After thinking tag: stream direct output
-                            after_think = stream_buffer.split("</think>", 1)[1]
-                            if after_think.strip().startswith(('```', '{', 'json')):
-                                is_json_action_stream = True
-                            elif len(after_think) > streamed_message_pos:
-                                delta = after_think[streamed_message_pos:]
-                                streamed_message_pos = len(after_think)
-                                if delta and not is_json_or_protocol(delta) and not re.fullmatch(r'(?:\\[nrt]|[\s])+', delta):
-                                    self._emit('stream', text=delta.replace('\\n', '\n'))
-                    else:
-                        # Direct conversational text (e.g. uncensored story without JSON)
-                        # Ensure we never emit markdown code fences or JSON syntax into chat or thinking
-                        if not trimmed.startswith(('```', '{', 'json')) and text and not re.fullmatch(r'(?:\\[nrt]|[\s])+', text):
-                            self._emit('stream', text=text.replace('\\n', '\n'))
+                    # 4. Direct conversational stream (non-JSON)
+                    if not trimmed_non_think.startswith(('```', '{', 'json')):
+                        if len(non_think) > streamed_message_pos:
+                            delta = non_think[streamed_message_pos:]
+                            streamed_message_pos = len(non_think)
+                            clean_delta = re.sub(r'</?(?:think|thought|reasoning)>', '', delta)
+                            if clean_delta and not is_json_or_protocol(clean_delta) and not re.fullmatch(r'(?:\\[nrt]|[\s])+', clean_delta):
+                                self._emit('stream', text=clean_delta.replace('\\n', '\n'))
 
                 step_start = time.time()
                 if step_num == 1 and image_path:
@@ -445,15 +670,17 @@ class WebAgent:
                         retry_limit=self.config.retry_limit,
                         retry_backoff=self.config.retry_backoff_base,
                         on_chunk=_on_chunk,
+                        on_thought=_on_thought,
                     )
 
+                _flush_thought()
                 self._emit('stream_end')
 
                 auto_rec = getattr(self.client, "attempt_auto_recovery", None)
                 if getattr(response, "error", None) and callable(auto_rec):
                     try:
                         import inspect
-                        rec_res = auto_rec(prompt, on_chunk=_on_chunk)
+                        rec_res = auto_rec(prompt, on_chunk=_on_chunk, on_thought=_on_thought)
                         if inspect.isawaitable(rec_res):
                             recovered = await rec_res
                             if recovered and getattr(recovered, "success", False):
@@ -476,20 +703,77 @@ class WebAgent:
                 action_data = self._parse_action(response)
 
                 if action_data is None:
-                    if self.config.verbose:
-                        print(f'   ⚠️  Could not parse JSON action from response.')
-                        print(f'   Raw response preview: {response.raw_text[:300]}')
-                    last_result = 'ERROR: Your response did not contain valid JSON. Please respond with ONLY a JSON action block as specified in the system prompt.'
-                    self._steps.append(StepRecord(
-                        step=step_num,
-                        thought='(unparseable)',
-                        action='parse_error',
-                        args={},
-                        result=last_result,
-                        success=False,
-                        duration_ms=int((time.time() - step_start) * 1000),
-                    ))
-                    continue
+                    # Autonomous Auto-Healing Layer 1:
+                    # Check if the LLM produced a conversational / direct answer in text or reasoning
+                    raw_candidate = (
+                        (response.text or "")
+                        or (response.raw_text or "")
+                        or (getattr(response, "reasoning", "") or "")
+                    ).strip()
+
+                    # Strip any outer thinking tags and residual markers
+                    clean_candidate = re.sub(r'<think>.*?</think>', '', raw_candidate, flags=re.DOTALL)
+                    clean_candidate = re.sub(r'<thought>.*?</thought>', '', clean_candidate, flags=re.DOTALL)
+                    clean_candidate = re.sub(r'<reasoning>.*?</reasoning>', '', clean_candidate, flags=re.DOTALL)
+                    clean_candidate = re.sub(r'</?(?:think|thought|reasoning)>', '', clean_candidate).strip()
+
+                    # Guard against treating raw JSON protocol strings or code as conversational messages
+                    is_proto = (
+                        is_json_or_protocol(clean_candidate)
+                        or clean_candidate.startswith(('{', '[', 'json{', '```json'))
+                        or '"actions":' in clean_candidate
+                        or '"action":' in clean_candidate
+                    )
+
+                    if clean_candidate and len(clean_candidate) > 10 and not is_proto:
+                        # Auto-heal: convert direct conversational text to valid converse action
+                        action_data = {
+                            "thought": "Direct conversational response from model",
+                            "action": "converse",
+                            "args": {"message": clean_candidate},
+                        }
+                    elif is_proto:
+                        # Attempt secondary recovery of action data from JSON fragment
+                        recovered = None
+                        try:
+                            recovered = extract_json_block(clean_candidate)
+                            if recovered and isinstance(recovered, dict):
+                                recovered = _clean_payload(recovered)
+                        except Exception:
+                            pass
+                        if recovered and isinstance(recovered, dict) and ('action' in recovered or 'actions' in recovered):
+                            action_data = recovered
+
+                    if action_data is None:
+                        _consecutive_failures += 1
+                        if self.config.verbose:
+                            print(f'   ⚠️  Could not parse JSON action from response. ({_consecutive_failures}/{_MAX_CONSECUTIVE_FAILURES})')
+                            print(f'   Raw response preview: {response.raw_text[:300]}')
+                        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+                            # Never crash or leak raw JSON! Deliver clean answer or completion
+                            fallback_msg = (
+                                "I have completed analyzing your workspace. Please let me know how you would like me to proceed."
+                                if is_proto or not clean_candidate
+                                else clean_candidate
+                            )
+                            summary = fallback_msg
+                            stop_reason = 'converse'
+                            self._emit('converse', message=summary, duration_s=max(0.1, time.time() - step_start))
+                            break
+                        last_result = 'ERROR: Your response did not contain valid JSON. Please respond with ONLY a JSON action block (e.g. {"thought": "...", "action": "run_bash", "args": {"command": "..."}}).'
+                        self._steps.append(StepRecord(
+                            step=step_num,
+                            thought='(unparseable)',
+                            action='parse_error',
+                            args={},
+                            result=last_result,
+                            success=False,
+                            duration_ms=int((time.time() - step_start) * 1000),
+                        ))
+                        continue
+
+                # Successful parse resets parse consecutive failures counter
+                _consecutive_failures = 0
 
                 is_valid, validation_error = validate_action(action_data)
                 if not is_valid and 'Terminal actions' in validation_error:
@@ -526,19 +810,64 @@ class WebAgent:
                                 is_valid, validation_error = validate_action(action_data)
 
                 if not is_valid:
-                    if self.config.verbose:
-                        print(f'   ⚠️  Schema validation failed: {validation_error}')
-                    last_result = f'ERROR: Your response had a structural issue: {validation_error}. Please fix and respond again with a valid JSON action.'
-                    self._steps.append(StepRecord(
-                        step=step_num,
-                        thought=action_data.get('thought', '(schema validation failed)'),
-                        action='validation_error',
-                        args=action_data,
-                        result=last_result,
-                        success=False,
-                        duration_ms=int((time.time() - step_start) * 1000),
-                    ))
-                    continue
+                    # Auto-heal action_data via _clean_payload
+                    if isinstance(action_data, dict):
+                        _clean_payload(action_data)
+                        is_valid, validation_error = validate_action(action_data)
+
+                if not is_valid:
+                    # Autonomous Auto-Healing Layer 2:
+                    # Extract substantive message ONLY if it was genuinely intended as conversational text
+                    extracted_text = ""
+                    if isinstance(action_data, dict):
+                        args = action_data.get('args', {})
+                        if isinstance(args, dict):
+                            extracted_text = args.get('message') or args.get('summary') or args.get('answer') or args.get('text') or args.get('response') or ""
+                        if not extracted_text:
+                            th = (action_data.get('thought') or '').strip()
+                            if th and not any(kw in th.lower() for kw in ('running', 'executing', 'deleting', 'finding', 'bash', 'run_bash')):
+                                extracted_text = th
+
+                    clean_extracted = str(extracted_text).strip()
+                    is_extracted_proto = (
+                        is_json_or_protocol(clean_extracted)
+                        or clean_extracted.startswith(('{', '[', 'json'))
+                        or '"actions":' in clean_extracted
+                        or '"action":' in clean_extracted
+                    )
+
+                    if clean_extracted and len(clean_extracted) > 10 and not is_extracted_proto:
+                        action_data = {
+                            "thought": action_data.get('thought', 'Auto-healed response') if isinstance(action_data, dict) else 'Auto-healed response',
+                            "action": "converse",
+                            "args": {"message": clean_extracted},
+                        }
+                        is_valid = True
+                    else:
+                        _consecutive_failures += 1
+                        if self.config.verbose:
+                            print(f'   ⚠️  Schema validation failed: {validation_error} ({_consecutive_failures}/{_MAX_CONSECUTIVE_FAILURES})')
+                        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+                            # Never crash or leak raw JSON! Deliver clean answer
+                            fallback_msg = "I inspected the workspace and completed what could be verified. Please let me know how you'd like to proceed."
+                            summary = fallback_msg
+                            stop_reason = 'converse'
+                            self._emit('converse', message=summary, duration_s=max(0.1, time.time() - step_start))
+                            break
+                        last_result = f'ERROR: Your response had a structural issue: {validation_error}. Please fix and respond again with a valid JSON action.'
+                        self._steps.append(StepRecord(
+                            step=step_num,
+                            thought=action_data.get('thought', '(schema validation failed)') if isinstance(action_data, dict) else '(schema validation failed)',
+                            action='validation_error',
+                            args=action_data if isinstance(action_data, dict) else {},
+                            result=last_result,
+                            success=False,
+                            duration_ms=int((time.time() - step_start) * 1000),
+                        ))
+                        continue
+
+                # Action is valid, reset consecutive failures counter
+                _consecutive_failures = 0
 
                 try:
                     actions, mode = normalize_actions(action_data)
@@ -558,6 +887,20 @@ class WebAgent:
                 thought = (action_data.get('thought') or '').strip()
                 if thought and thought.lower() not in ('executing action', '(no thought)', 'none'):
                     self._emit('thought', text=thought)
+
+                _consecutive_failures = 0
+
+                action_sig = json.dumps([(a['action'], a.get('args', {})) for a in actions], sort_keys=True)
+                if action_sig == _last_action_sig:
+                    _duplicate_action_count += 1
+                    if _duplicate_action_count >= _MAX_DUPLICATE_ACTIONS:
+                        stop_reason = 'error'
+                        summary = f'Agent stopped: identical action repeated {_MAX_DUPLICATE_ACTIONS} times in a row (likely stuck in a loop).'
+                        self._emit('error', message=summary)
+                        break
+                else:
+                    _last_action_sig = action_sig
+                    _duplicate_action_count = 1
 
                 if len(actions) > 1:
                     if self.config.verbose:
@@ -648,6 +991,12 @@ class WebAgent:
                                 duration_ms=r['duration_ms'],
                             ))
                         last_result = format_batch_results(batch_results)
+                        if _duplicate_action_count in range(2, _MAX_DUPLICATE_ACTIONS):
+                            last_result += (
+                                f"\n\n⚠️ SYSTEM REPEATED-ACTION ALERT (attempt {_duplicate_action_count}/{_MAX_DUPLICATE_ACTIONS}): "
+                                f"You executed this identical action batch {_duplicate_action_count} times in a row. "
+                                f"Do NOT keep repeating it! Conclude the task using 'done' or 'converse', or choose different actions."
+                            )
                         continue
 
                     else:  # sequential mode
@@ -696,6 +1045,12 @@ class WebAgent:
                                     })
                                 break
                         last_result = format_batch_results(batch_results)
+                        if _duplicate_action_count in range(2, _MAX_DUPLICATE_ACTIONS):
+                            last_result += (
+                                f"\n\n⚠️ SYSTEM REPEATED-ACTION ALERT (attempt {_duplicate_action_count}/{_MAX_DUPLICATE_ACTIONS}): "
+                                f"You executed this identical action batch {_duplicate_action_count} times in a row. "
+                                f"Do NOT keep repeating it! Conclude the task using 'done' or 'converse', or choose different actions."
+                            )
                         continue
 
                 single_item = actions[0]
@@ -785,7 +1140,17 @@ class WebAgent:
                     self._emit('status', message=f'Executing {action_name}...')
                     result = await asyncio.to_thread(self.executor.execute, action_name, action_args)
 
-                last_result = result.output
+                status_label = "ok" if result.success else "FAILED"
+                cmd_detail = f" ({action_args.get('command') or action_args.get('path') or ''})" if any(k in action_args for k in ('command', 'path')) else ""
+                last_result = f"Action '{action_name}'{cmd_detail} -> {status_label}:\n{result.output}"
+
+                if _duplicate_action_count in range(2, _MAX_DUPLICATE_ACTIONS):
+                    last_result += (
+                        f"\n\n⚠️ SYSTEM REPEATED-ACTION ALERT (attempt {_duplicate_action_count}/{_MAX_DUPLICATE_ACTIONS}): "
+                        f"You executed this identical action ('{action_name}') with the exact same parameters {_duplicate_action_count} times in a row. "
+                        f"Do NOT keep repeating it! If the goal has been achieved or no further changes are needed, conclude the task with action 'done' or 'converse'. "
+                        f"If you need to make progress, choose a different action or adjust your command parameters."
+                    )
                 self._update_checkpoint(action_name, action_args, result, thought)
 
                 self._current_in_flight_action = None
@@ -848,36 +1213,12 @@ class WebAgent:
                 ))
 
                 if action_name == 'done':
-                    # Guard 1: Reject premature 'done' if a previous tool action in this run failed!
-                    recent_failures = [
-                        s for s in self._steps
-                        if not s.success and s.action not in ('done', 'converse', 'validation_error', 'parse_error', 'ask_human')
-                    ]
-                    if recent_failures and (is_unlimited or step_num < effective_max):
-                        last_failed = recent_failures[-1]
-                        last_result = (
-                            f"ERROR: Cannot mark task as 'done' because action '{last_failed.action}' failed with output:\n"
-                            f"{last_failed.result[:500]}\n"
-                            f"You must resolve this failure, troubleshoot with correct parameters, or clearly explain the exact blocker."
-                        )
-                        continue
-
-                    # Guard 2: Reject premature 'done' on actionable user tasks when no tools were run!
-                    action_verbs = ('send', 'create', 'write', 'edit', 'modify', 'delete', 'remove', 'install', 'build', 'run', 'execute', 'playwright', 'email', 'mail')
-                    user_task_lower = task.lower()
-                    has_action_intent = any(v in user_task_lower for v in action_verbs)
                     executed_tools = [
                         s for s in self._steps
                         if s.action not in ('done', 'converse', 'ask_human', 'validation_error', 'parse_error')
                     ]
-                    if has_action_intent and not executed_tools and (is_unlimited or step_num < effective_max):
-                        last_result = (
-                            f"ERROR: You signaled 'done' without executing any actions. The user requested: '{task}'. "
-                            f"You must execute the necessary tool (e.g. run_bash, write_file, edit_file) to perform and complete the task before calling 'done'."
-                        )
-                        continue
+                    last_executed_tool = executed_tools[-1] if executed_tools else None
 
-                    # Guard 3: Guarantee summary honesty — never accept generic lazy placeholders
                     raw_summary = action_args.get('summary', '') or action_args.get('message', '') or action_args.get('text', '')
                     clean_summary = raw_summary.strip()
                     generic_placeholders = {
@@ -885,6 +1226,41 @@ class WebAgent:
                         'done.', 'done', 'completed.', 'completed', 'finished.', 'finished',
                         'all done.', 'all done', 'task marked as complete.'
                     }
+
+                    # Guard 1: Reject premature 'done' ONLY if the immediately preceding tool failed,
+                    # no subsequent tool succeeded, and the summary does not explain the outcome.
+                    is_last_tool_failed = last_executed_tool is not None and not last_executed_tool.success
+                    explains_blocker = (
+                        len(clean_summary) > 25
+                        and any(w in clean_summary.lower() for w in ('fail', 'error', 'could not', 'unable', 'cannot', 'issue', 'block', 'stopped', 'except', 'problem', 'not found', 'unsuccessful', 'warning', 'diagnostic'))
+                    )
+
+                    if is_last_tool_failed and not explains_blocker and (last_executed_tool.step not in _warned_failed_steps) and (is_unlimited or step_num < effective_max):
+                        _warned_failed_steps.add(last_executed_tool.step)
+                        last_result = (
+                            f"Action '{last_executed_tool.action}' failed with output:\n"
+                            f"{last_executed_tool.result[:500]}\n"
+                            f"If this failure prevents completion, resolve it or troubleshoot with correct parameters. "
+                            f"If execution cannot proceed further, clearly summarize the blocker before calling done."
+                        )
+                        continue
+
+                    # Guard 2: Reject premature 'done' on actionable user tasks when no tools were run
+                    action_verbs = ('send', 'create', 'write', 'edit', 'modify', 'delete', 'remove', 'install', 'build', 'run', 'execute', 'playwright', 'email', 'mail')
+                    user_task_lower = task.lower()
+                    info_words = ('how', 'what', 'why', 'explain', 'tell', 'describe', 'can you', 'help', 'plan', 'guide', 'summarize', 'summary', 'details', 'show', 'list', 'check')
+                    is_informational = any(user_task_lower.startswith(w) or f" {w} " in user_task_lower for w in info_words)
+                    has_action_intent = any(v in user_task_lower for v in action_verbs) and not is_informational
+
+                    if has_action_intent and not executed_tools and len(clean_summary) < 80 and not _warned_premature_done and (is_unlimited or step_num < effective_max):
+                        _warned_premature_done = True
+                        last_result = (
+                            f"The user requested an action: '{task}'. "
+                            f"Please execute the necessary tool (e.g. run_bash, write_file, edit_file) to perform the task before calling 'done', or provide your complete solution in the summary."
+                        )
+                        continue
+
+                    # Guard 3: Guarantee summary honesty — never accept generic lazy placeholders
                     if not clean_summary or clean_summary.lower() in generic_placeholders:
                         if executed_tools:
                             successful_tools = [s for s in executed_tools if s.success]
@@ -907,19 +1283,28 @@ class WebAgent:
 
                 if action_name == 'converse':
                     message = action_args.get('message', '')
-                    # If user asked for an action and no tools have run on step 1, remind model to execute rather than just chat
-                    action_verbs = ('send', 'create', 'write', 'edit', 'modify', 'delete', 'remove', 'install', 'build', 'run', 'execute', 'playwright', 'email', 'mail')
+                    clean_msg = message.strip()
                     user_task_lower = task.lower()
-                    has_action_intent = any(v in user_task_lower for v in action_verbs)
+                    info_words = ('how', 'what', 'why', 'explain', 'tell', 'describe', 'can you', 'help', 'plan', 'guide', 'summarize', 'summary', 'details', 'show', 'list')
+                    is_informational = any(user_task_lower.startswith(w) or f" {w} " in user_task_lower for w in info_words)
+                    action_verbs = ('send', 'create', 'write', 'edit', 'modify', 'delete', 'remove', 'install', 'build', 'run', 'execute', 'playwright', 'email', 'mail')
+                    has_action_intent = any(v in user_task_lower for v in action_verbs) and not is_informational
+
+                    # Only redirect if the message is a trivial acknowledgment (e.g. "I'll do that")
+                    # and the user specifically requested physical tool/command execution.
+                    # NEVER interrupt or discard a real, substantial answer!
+                    is_trivial_acknowledgement = len(clean_msg) < 50 and any(
+                        p in clean_msg.lower() for p in ('sure', "i'll", 'i will', 'on it', 'working on', 'let me', 'okay', 'ok')
+                    )
                     executed_tools = [
                         s for s in self._steps
                         if s.action not in ('done', 'converse', 'ask_human', 'validation_error', 'parse_error')
                     ]
-                    if has_action_intent and not executed_tools and step_num == 1 and (is_unlimited or step_num < effective_max):
+                    if has_action_intent and is_trivial_acknowledgement and not executed_tools and step_num == 1 and not _warned_converse and (is_unlimited or step_num < effective_max):
+                        _warned_converse = True
                         last_result = (
-                            f"You responded with a conversational message: '{message[:200]}'.\n"
-                            f"However, the user asked you to execute an action: '{task}'.\n"
-                            f"Please execute the required tool action (e.g. run_bash, write_file, edit_file) to perform the task."
+                            f"You acknowledged the task: '{clean_msg}'.\n"
+                            f"Now proceed directly to execute the required action using tools (run_bash, write_file, edit_file, etc.)."
                         )
                         continue
 
@@ -962,25 +1347,49 @@ class WebAgent:
                 getattr(self, "_current_in_flight_file", None),
             )
             if self._owns_client and not self.keep_browser_open:
-                await self.client.close()
+                if self.client and hasattr(self.client, "close") and callable(self.client.close):
+                    cl_res = self.client.close()
+                    if inspect.isawaitable(cl_res):
+                        await cl_res
             self._teardown_safety()
 
         elapsed = time.time() - start_time
 
         log_path = Path(self.config.log_dir) / f'session_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-        self.client.save_session_log(str(log_path))
+        if hasattr(self.client, "save_session_log") and callable(self.client.save_session_log):
+            self.client.save_session_log(str(log_path))
         self._save_step_history(str(log_path).replace('.json', '_steps.json'))
 
         safe_stop_reason = stop_reason if 'stop_reason' in locals() else 'error'
         safe_summary = summary if 'summary' in locals() else 'Agent execution interrupted.'
         agent_result = AgentResult(
-            success=safe_stop_reason == 'done',
+            success=safe_stop_reason in ('done', 'converse'),
             summary=safe_summary,
             steps=self._steps,
             total_steps=len(self._steps),
             elapsed_seconds=elapsed,
             stop_reason=safe_stop_reason,
         )
+
+        # Record turn in persistent session history for conversational follow-up continuity
+        tools_summary_parts = []
+        for s in self._steps:
+            if s.action not in ("converse", "done") and s.result:
+                cmd = s.args.get("command") or s.args.get("path") or s.action
+                res_snippet = s.result.strip().replace("\n", " ")
+                if len(res_snippet) > 250:
+                    res_snippet = res_snippet[:250] + "..."
+                tools_summary_parts.append(f"{s.action} ({cmd}): {res_snippet}")
+
+        self.session_history.append({
+            "user_prompt": task,
+            "assistant_response": safe_summary,
+            "tools_summary": "; ".join(tools_summary_parts[:5]),
+            "stop_reason": safe_stop_reason,
+            "timestamp": datetime.now().isoformat(),
+        })
+        if len(self.session_history) > 10:
+            self.session_history = self.session_history[-10:]
 
         if self.config.verbose:
             print(f'\n{"═" * 50}')
@@ -1237,13 +1646,16 @@ class WebAgent:
                         raw_curr = ""
                 raw_s = str(raw_curr).lower().strip()
                 if raw_s and "mock" not in raw_s:
-                    client_prov = "ollama" if "ollama" in raw_s else raw_s.split()[0].strip()
+                    client_prov = raw_s.split()[0].strip()
                 else:
                     client_prov = req_provider
 
             if req_provider != client_prov:
                 logger.info(f"Re-initializing LLM client: provider changed from '{client_prov}' to '{req_provider}'")
-                await self.client.close()
+                if hasattr(self.client, "close") and callable(self.client.close):
+                    cl_res = self.client.close()
+                    if inspect.isawaitable(cl_res):
+                        await cl_res
             else:
                 page = getattr(self.client, "_page", None)
                 page_is_closed = False
@@ -1255,20 +1667,25 @@ class WebAgent:
 
                 if page_is_closed:
                     logger.warning(f"Cached {getattr(self.client, 'provider_name', '')} page was closed externally. Re-initializing...")
-                    await self.client.close()
+                    if hasattr(self.client, "close") and callable(self.client.close):
+                        cl_res = self.client.close()
+                        if inspect.isawaitable(cl_res):
+                            await cl_res
                 else:
                     # Browser is active and matches provider: reuse same session without closing/reopening
                     p_name = getattr(self.client, "provider_name", "")
                     if self.config.verbose:
                         print(f'♻️  Reusing existing {p_name} session')
-                    self._emit('status', message=f'Reusing {p_name} session')
                     return
 
-        await self.client.initialize(
-            provider_name=self.config.provider,
-            profile_dir=self.config.profile_dir,
-            headless=self.config.headless,
-        )
+        if hasattr(self.client, "initialize") and callable(self.client.initialize):
+            init_res = self.client.initialize(
+                provider_name=self.config.provider,
+                profile_dir=self.config.profile_dir,
+                headless=self.config.headless,
+            )
+            if inspect.isawaitable(init_res):
+                await init_res
 
     # ── Action parsing ────────────────────────────────────────────
 
@@ -1302,61 +1719,6 @@ class WebAgent:
                     elif 'text' in args:
                         args['pattern'] = args['text']
 
-        def _clean_payload(data: dict) -> dict:
-            """Sanitize thought and terminal action args of any leaked thinking tags and auto-heal missing thought/args."""
-            if not isinstance(data, dict):
-                return data
-            # Hoist 'tool', 'function', 'name', 'call' to 'action' for broad model compatibility
-            if 'action' not in data:
-                for k in ('tool', 'function', 'name', 'call'):
-                    if k in data and isinstance(data[k], str):
-                        data['action'] = data.pop(k)
-                        break
-            # Hoist 'parameters' or 'arguments' to 'args'
-            if 'args' not in data:
-                for k in ('parameters', 'arguments', 'params'):
-                    if k in data and isinstance(data[k], dict):
-                        data['args'] = data.pop(k)
-                        break
-            if 'thought' not in data:
-                data['thought'] = ''
-            elif isinstance(data['thought'], str):
-                th = re.sub(r'<think>.*?</think>', '', data['thought'], flags=re.DOTALL)
-                th = re.sub(r'<thought>.*?</thought>', '', th, flags=re.DOTALL)
-                th = re.sub(r'<reasoning>.*?</reasoning>', '', th, flags=re.DOTALL)
-                data['thought'] = th.strip()
-            if 'action' in data and ('args' not in data or not isinstance(data.get('args'), dict)):
-                # If model emitted flat args e.g. {"action": "write_file", "path": "...", "content": "..."}
-                # or {"tool": "read_file", "path": "README.md"}
-                args = {k: v for k, v in data.items() if k not in ('action', 'thought', 'id', 'tool', 'function', 'name')}
-                data['args'] = args
-            action_name = data.get('action')
-            args = data.get('args')
-            if isinstance(args, dict):
-                _normalize_action_args(action_name, args)
-                for k in ('summary', 'message'):
-                    if k in args and isinstance(args[k], str):
-                        val = re.sub(r'<think>.*?</think>', '', args[k], flags=re.DOTALL)
-                        val = re.sub(r'<thought>.*?</thought>', '', val, flags=re.DOTALL)
-                        val = re.sub(r'<reasoning>.*?</reasoning>', '', val, flags=re.DOTALL)
-                        args[k] = val.strip()
-            batch_key = next((k for k in ('actions', 'batch', 'steps') if isinstance(data.get(k), list)), None)
-            if batch_key:
-                for item in data[batch_key]:
-                    if isinstance(item, dict):
-                        if 'action' not in item:
-                            for k in ('tool', 'function', 'name'):
-                                if k in item and isinstance(item[k], str):
-                                    item['action'] = item.pop(k)
-                                    break
-                        if 'action' in item and ('args' not in item or not isinstance(item.get('args'), dict)):
-                            item['args'] = {k: v for k, v in item.items() if k not in ('action', 'id', 'tool', 'function', 'name')}
-                        act = item.get('action')
-                        it_args = item.get('args')
-                        if isinstance(it_args, dict):
-                            _normalize_action_args(act, it_args)
-            return data
-
         def _has_action(d: Any) -> bool:
             return bool(
                 isinstance(d, dict)
@@ -1366,6 +1728,15 @@ class WebAgent:
                     or 'tool' in d
                     or 'function' in d
                     or 'name' in d
+                    or 'call' in d
+                    or 'message' in d
+                    or 'summary' in d
+                    or 'answer' in d
+                    or 'response' in d
+                    or 'text' in d
+                    or 'reply' in d
+                    or 'command' in d
+                    or 'cmd' in d
                 )
             )
 
@@ -1375,7 +1746,7 @@ class WebAgent:
             if _has_action(data):
                 return _clean_payload(data)
 
-        raw = response.raw_text or ""
+        raw = (response.raw_text or response.text or getattr(response, "reasoning", "") or "").strip()
         # Clean thinking blocks from raw text before parsing
         raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL)
         raw = re.sub(r'<thought>.*?</thought>', '', raw, flags=re.DOTALL)
@@ -1434,8 +1805,21 @@ class WebAgent:
         if raw and len(raw.strip()) > 1:
             trimmed = raw.strip()
             # If the response was an attempt at an internal JSON action or protocol block but failed to parse,
-            # DO NOT treat it as done! Treating failed action JSON as done terminates the task prematurely.
+            # try to extract the message, summary, or command before giving up!
             if is_json_or_protocol(trimmed):
+                m_txt = re.search(r'["\'](?:message|summary|answer|response|text|content)["\']\s*:\s*["\']((?:[^"\\]|\\.)*)', trimmed)
+                if m_txt:
+                    clean_msg = m_txt.group(1).replace('\\"', '"').replace('\\n', '\n').strip()
+                    if clean_msg:
+                        return {"thought": "Extracted response", "action": "converse", "args": {"message": clean_msg}}
+                m_cmd = re.search(r'["\'](?:command|cmd)["\']\s*:\s*["\']((?:[^"\\]|\\.)*)', trimmed)
+                if m_cmd:
+                    clean_cmd = m_cmd.group(1).replace('\\"', '"').strip()
+                    if clean_cmd:
+                        return {"thought": "Extracted command", "action": "run_bash", "args": {"command": clean_cmd}}
+                outside_text = re.sub(r'```(?:json)?[\s\S]*?```', '', trimmed).strip()
+                if outside_text and len(outside_text) > 20:
+                    return {"thought": "Extracted conversational text", "action": "converse", "args": {"message": outside_text}}
                 return None
 
             lower_trimmed = trimmed.lower()

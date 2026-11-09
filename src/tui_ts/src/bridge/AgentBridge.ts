@@ -31,6 +31,7 @@ export declare interface AgentBridge {
   on(event: 'bridge_event', listener: (event: JuliusBridgeEvent) => void): this;
   on(event: 'status_update', listener: (status: string) => void): this;
   on(event: 'model_switched', listener: (model: string) => void): this;
+  on(event: 'mode_switched', listener: (mode: string) => void): this;
   on(event: 'models_list', listener: (data: { models: ModelOption[]; active_model: string }) => void): this;
   on(event: 'prompt_finished', listener: (payload: IPCPromptFinishedPayload) => void): this;
   on(event: 'confirmation_ack', listener: (data: { allow: boolean }) => void): this;
@@ -49,13 +50,15 @@ export class AgentBridge extends EventEmitter {
   private isReady = false;
   private readyPromise: Promise<IPCReadyPayload>;
   private readyResolver!: (payload: IPCReadyPayload) => void;
+  private readyRejecter!: (err: Error) => void;
   private options: AgentBridgeOptions;
 
   constructor(options: AgentBridgeOptions = {}) {
     super();
     this.options = options;
-    this.readyPromise = new Promise((res) => {
+    this.readyPromise = new Promise((res, rej) => {
       this.readyResolver = res;
+      this.readyRejecter = rej;
     });
   }
 
@@ -131,15 +134,23 @@ export class AgentBridge extends EventEmitter {
       }
     });
 
+    let stderrBuffer = '';
     this.proc.stderr?.on('data', (chunk: Buffer) => {
-      // Optional debug logging can be wired here
+      stderrBuffer += chunk.toString();
     });
 
     this.proc.on('error', (err: Error) => {
+      if (!this.isReady) {
+        this.readyRejecter(err);
+      }
       this.emit('error', err);
     });
 
     this.proc.on('close', (code: number | null) => {
+      if (!this.isReady) {
+        const errMsg = stderrBuffer.trim() || `Agent process exited with code ${code} before becoming ready`;
+        this.readyRejecter(new Error(errMsg));
+      }
       this.isReady = false;
       this.proc = null;
       this.emit('close', code);
@@ -235,6 +246,11 @@ export class AgentBridge extends EventEmitter {
         break;
       }
 
+      case 'mode_switched': {
+        this.emit('mode_switched', String(msg.mode || 'auto'));
+        break;
+      }
+
       default:
         // Ignore unhandled event types gracefully
         break;
@@ -262,8 +278,16 @@ export class AgentBridge extends EventEmitter {
     this.sendCommand({ action: 'answer_question', answer });
   }
 
+  public sendInput(input: string): void {
+    this.answerQuestion(input);
+  }
+
   public clearSession(): void {
     this.sendCommand({ action: 'clear' });
+  }
+
+  public setMode(mode: string): void {
+    this.sendCommand({ action: 'set_mode', mode });
   }
 
   public undo(): void {

@@ -11,6 +11,7 @@ Guarantees:
 
 from __future__ import annotations
 
+import json
 import time
 import re
 from typing import Any, Dict, Optional, Callable
@@ -20,6 +21,97 @@ from .state import SessionState, ToolExecutionRecord
 from .components.message import AssistantMessage, UserMessage, ThinkingDot
 from .components.tool_summary import ToolSummary
 from ..agent_prompts import is_json_or_protocol
+
+_EMOJI_MAP = {
+    '✅': '[DONE]',
+    '✔': '[DONE]',
+    '☑': '[DONE]',
+    '❌': '[FAIL]',
+    '✖': '[FAIL]',
+    '✗': '[FAIL]',
+    '⚠️': '[!]',
+    '⚡': '[!]',
+    '💡': '[INFO]',
+    '🚀': '[RUN]',
+    '📦': '[PKG]',
+    '🔒': '[LOCK]',
+    '🔍': '[FIND]',
+    '🔎': '[FIND]',
+    '🤖': '[AI]',
+}
+_EMOJI_PATTERN = re.compile(r'[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF\U0001F680-\U0001F6FF\U0001F700-\U0001F77F\U0001F780-\U0001F7FF\U0001F800-\U0001F8FF\U0001F900-\U0001F9FF\U0001FA00-\U0001FA6F\U0001FA70-\U0001FAFF\U00002600-\U000026FF\U00002700-\U000027BF]')
+
+
+def sanitize_terminal_emojis(text: str) -> str:
+    """Replace common status emojis with clean ASCII and strip decorative ones to preserve column alignment."""
+    if not isinstance(text, str) or not text:
+        return text or ""
+    res = text
+    for emoji_char, ascii_replacement in _EMOJI_MAP.items():
+        if emoji_char in res:
+            res = res.replace(emoji_char, ascii_replacement)
+    res = _EMOJI_PATTERN.sub('', res)
+    return res
+
+
+def _clean_field_text(val: Any, field_name: str) -> str:
+    """Extract clean text field from raw strings without truncating on internal quotes."""
+    if not isinstance(val, str):
+        return sanitize_terminal_emojis(str(val)) if val is not None else ""
+    trimmed = val.strip()
+    result_text = val
+    if trimmed.startswith(('{', 'json{', '```json', '```')) or is_json_or_protocol(trimmed):
+        try:
+            cleaned = trimmed.strip('`').strip()
+            if cleaned.startswith('json'):
+                cleaned = cleaned[4:].strip()
+            parsed = json.loads(cleaned)
+            if isinstance(parsed, dict):
+                # 1. Direct field match
+                if field_name in parsed and parsed[field_name]:
+                    return sanitize_terminal_emojis(str(parsed[field_name]))
+                if "args" in parsed and isinstance(parsed["args"], dict) and field_name in parsed["args"] and parsed["args"][field_name]:
+                    return sanitize_terminal_emojis(str(parsed["args"][field_name]))
+                # 2. Check alternative text fields
+                for alt in ("summary", "message", "answer", "text", "response"):
+                    if alt in parsed and parsed[alt]:
+                        return sanitize_terminal_emojis(str(parsed[alt]))
+                    if "args" in parsed and isinstance(parsed["args"], dict) and alt in parsed["args"] and parsed["args"][alt]:
+                        return sanitize_terminal_emojis(str(parsed["args"][alt]))
+                # 3. Check actions list for commands or summary
+                if "actions" in parsed and isinstance(parsed["actions"], list):
+                    for a in parsed["actions"]:
+                        if isinstance(a, dict):
+                            a_args = a.get("args") or a.get("arguments") or {}
+                            if isinstance(a_args, dict):
+                                if "summary" in a_args:
+                                    return sanitize_terminal_emojis(str(a_args["summary"]))
+                                if "message" in a_args:
+                                    return sanitize_terminal_emojis(str(a_args["message"]))
+                                if "command" in a_args or "cmd" in a_args:
+                                    cmd = a_args.get("command") or a_args.get("cmd")
+                                    return sanitize_terminal_emojis(f"Executed command: {cmd}")
+                # 4. Single command in args
+                if "args" in parsed and isinstance(parsed["args"], dict):
+                    cmd = parsed["args"].get("command") or parsed["args"].get("cmd")
+                    if cmd:
+                        return sanitize_terminal_emojis(f"Executed command: {cmd}")
+                # 5. Fallback to thought if available
+                th = (parsed.get("thought") or "").strip()
+                if th and not any(kw in th.lower() for kw in ("executing", "running", "finding", "bash")):
+                    return sanitize_terminal_emojis(th)
+        except Exception:
+            pass
+        m = re.search(rf'"{field_name}"\s*:\s*"((?:[^"\\]|\\.)*)"', val, re.DOTALL)
+        if m:
+            result_text = m.group(1).replace('\\"', '"').replace('\\n', '\n').replace('\\\\', '\\')
+            return sanitize_terminal_emojis(result_text)
+        # If still raw JSON, do not dump raw braces to user
+        m_cmd = re.search(r'["\'](?:cmd|command)["\']\s*:\s*["\']([^"\']+)["\']', val)
+        if m_cmd:
+            return sanitize_terminal_emojis(f"Executed command: {m_cmd.group(1)}")
+        return "Task step executed."
+    return sanitize_terminal_emojis(result_text)
 
 
 class EventBridge:
@@ -50,7 +142,7 @@ class EventBridge:
         if event_type == "thought":
             thought_text = event.get("text") or event.get("thought") or ""
             if thought_text:
-                self.post_message({"kind": "thought", "thought": thought_text})
+                self.post_message({"kind": "thought", "thought": sanitize_terminal_emojis(thought_text)})
 
         # 2. ask_user_question
         elif event_type == "ask_user_question":
@@ -136,13 +228,11 @@ class EventBridge:
                 _suppress = (
                     "connected to" in m_low
                     or "connecting to" in m_low
+                    or "reusing" in m_low
+                    or "session" in m_low
                 )
                 if not _suppress:
-                    if "reusing" in m_low and "session" in m_low:
-                        provider_part = msg.replace("Reusing ", "").replace(" session", "").strip()
-                        self.update_status(f"♻ {provider_part} · session active")
-                    else:
-                        self.update_status(msg)
+                    self.update_status(msg)
 
         # 6. step_start
         elif event_type == "step_start":
@@ -157,7 +247,7 @@ class EventBridge:
             text = event.get("text", "")
             if text:
                 self.state.token_count += max(1, len(text) // 4)
-                clean_chunk = text.replace('\\n', '\n')
+                clean_chunk = sanitize_terminal_emojis(text.replace('\\n', '\n'))
                 if not is_json_or_protocol(clean_chunk) and not re.fullmatch(r'(?:\\[nrt]|[\s])+', clean_chunk):
                     self.post_message({"kind": "stream_chunk", "chunk": clean_chunk})
 
@@ -319,9 +409,7 @@ class EventBridge:
                 self._has_finalized_turn = True
                 turn_dur = max(0.1, time.time() - getattr(self, "_turn_start_time", time.time()))
                 summary = event.get("summary", "Task complete.")
-                if isinstance(summary, str) and (is_json_or_protocol(summary) or summary.strip().startswith(('{', 'json{', '```'))):
-                    m = re.search(r'"summary"\s*:\s*"([^"]+)"', summary)
-                    summary = m.group(1) if m else "Task complete."
+                summary = _clean_field_text(summary, "summary")
                 if (not summary or summary.strip() in ("Task complete.", "Task completed.", "Done.", "Finished.")) and self.state.current_turn_tools:
                     real_tools = [t for t in self.state.current_turn_tools if t.tool_name not in ("done", "converse", "ask_human")]
                     if real_tools:
@@ -335,9 +423,7 @@ class EventBridge:
                 self._has_finalized_turn = True
                 turn_dur = max(0.1, time.time() - getattr(self, "_turn_start_time", time.time()))
                 msg = event.get("message", "")
-                if isinstance(msg, str) and (is_json_or_protocol(msg) or msg.strip().startswith(('{', 'json{', '```'))):
-                    m = re.search(r'"message"\s*:\s*"([^"]+)"', msg)
-                    msg = m.group(1) if m else msg
+                msg = _clean_field_text(msg, "message")
                 self.state.finish_turn(msg)
                 self.post_message({"kind": "converse", "message": msg, "tools": list(self.state.current_turn_tools), "duration_s": turn_dur})
 

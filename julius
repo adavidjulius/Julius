@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Julius CLI wrapper script
-# Runs the autonomous web agent inside the project virtual environment.
+# Runs the autonomous AI copilot inside the project virtual environment.
 
 # Ensure standard tool directories and runtime node are included in PATH
 export PATH="${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:${HOME}/.local/bin:${PATH}"

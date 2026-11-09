@@ -75,19 +75,29 @@ class CryptographicAuditLedger:
         self._last_hash = self._initialize_chain_state()
 
     def _get_or_create_audit_key(self) -> bytes:
-        """Retrieve audit HMAC key from OS keychain or local protected store."""
-        sec_mgr = get_secrets_manager()
-        stored = sec_mgr.get_secret("JULIUS_AUDIT_HMAC_KEY")
-        if stored:
+        """Retrieve audit HMAC key from local protected store, env, or keychain."""
+        env_val = os.getenv("JULIUS_AUDIT_HMAC_KEY")
+        if env_val:
             try:
-                return base64.b64decode(stored)
+                return base64.b64decode(env_val)
+            except Exception:
+                pass
+        key_file = Path.home() / ".julius" / "audit_hmac.key"
+        if key_file.exists():
+            try:
+                return key_file.read_bytes()
             except Exception:
                 pass
 
-        # Generate new high-entropy 256-bit key
+        # Generate new high-entropy 256-bit key and persist with 0600 permissions
         new_key = os.urandom(32)
-        b64_key = base64.b64encode(new_key).decode("utf-8")
-        sec_mgr.store_secret("JULIUS_AUDIT_HMAC_KEY", b64_key)
+        try:
+            key_file.parent.mkdir(parents=True, exist_ok=True)
+            key_file.write_bytes(new_key)
+            if os.name != "nt":
+                os.chmod(key_file, 0o600)
+        except Exception:
+            pass
         return new_key
 
     def _get_or_create_checkpoint_key(self) -> ed25519.Ed25519PrivateKey:
@@ -246,6 +256,17 @@ class CryptographicAuditLedger:
             f.write(json.dumps(full_checkpoint, ensure_ascii=False) + "\n")
 
         return full_checkpoint
+
+    def anchor_to_zephon(self, node_url: str = "http://localhost:8332") -> Dict[str, Any]:
+        """Anchor the latest signed checkpoint to the Zephon blockchain."""
+        checkpoint = self.create_signed_checkpoint()
+        try:
+            from src.integrations.zephon import ZephonAuditNotary
+            notary = ZephonAuditNotary(node_url=node_url)
+            return notary.anchor_checkpoint(checkpoint)
+        except Exception as e:
+            logger.warning(f"Could not anchor to Zephon: {e}")
+            return {"status": "error", "error": str(e), "checkpoint": checkpoint}
 
     def verify_chain(self) -> Tuple[bool, Optional[str], int]:
         """
